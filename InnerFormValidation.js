@@ -277,7 +277,7 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".mask.cep").on('input', function () {
-        _cpfMask(this);
+        _cepMask(this);
     });
 
     jQuery(".mask.cnpj").on('input', function () {
