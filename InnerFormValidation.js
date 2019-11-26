@@ -205,28 +205,91 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                         }
                         break;
+                    case "cnpj":
+
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        value = value.replace(/[^\d]+/g, '');
+
+                        if (value.length !== 14) { results.push(false); break; }
+
+                        // Elimina CNPJs invalidos conhecidos
+                        if (value == "00000000000000" ||
+                            value == "11111111111111" ||
+                            value == "22222222222222" ||
+                            value == "33333333333333" ||
+                            value == "44444444444444" ||
+                            value == "55555555555555" ||
+                            value == "66666666666666" ||
+                            value == "77777777777777" ||
+                            value == "88888888888888" ||
+                            value == "99999999999999") { results.push(false); break; }
+
+                        // Valida DVs
+                        tamanho = value.length - 2;
+                        numeros = value.substring(0, tamanho);
+                        digitos = value.substring(tamanho);
+                        soma = 0;
+                        pos = tamanho - 7;
+                        for (i = tamanho; i >= 1; i--) {
+                            soma += numeros.charAt(tamanho - i) * pos--;
+                            if (pos < 2)
+                                pos = 9;
+                        }
+                        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                        if (resultado != digitos.charAt(0)) { results.push(false); break; }
+
+                        tamanho = tamanho + 1;
+                        numeros = value.substring(0, tamanho);
+                        soma = 0;
+                        pos = tamanho - 7;
+                        for (i = tamanho; i >= 1; i--) {
+                            soma += numeros.charAt(tamanho - i) * pos--;
+                            if (pos < 2)
+                                pos = 9;
+                        }
+                        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                        if (resultado !== digitos.charAt(1)) { results.push(false); break; }
+
+                        results.push(true);
+                        break;
                     case "cpf":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
+                        value = value.replace(/[^\d]+/g, '');
+
+                        // Elimina CPFS invalidos conhecidos
+                        if (value == "00000000000000" ||
+                            value == "11111111111111" ||
+                            value == "22222222222222" ||
+                            value == "33333333333333" ||
+                            value == "44444444444444" ||
+                            value == "55555555555555" ||
+                            value == "66666666666666" ||
+                            value == "77777777777777" ||
+                            value == "88888888888888" ||
+                            value == "99999999999999") { results.push(false); break; }
+
                         var Soma;
                         var Resto;
-                        Soma = 0;
-                        if (strCPF == "00000000000") { results.push(false); break; }
+                        Soma = 0; 
 
-                        for (i = 1; i <= 9; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+                        for (i = 1; i <= 9; i++) Soma = Soma + parseInt(value.substring(i - 1, i)) * (11 - i);
                         Resto = (Soma * 10) % 11;
 
                         if ((Resto == 10) || (Resto == 11)) Resto = 0;
-                        if (Resto != parseInt(strCPF.substring(9, 10))) { results.push(false); break; }
+                        if (Resto != parseInt(value.substring(9, 10))) { results.push(false); break; }
 
                         Soma = 0;
-                        for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+                        for (i = 1; i <= 10; i++) Soma = Soma + parseInt(value.substring(i - 1, i)) * (12 - i);
                         Resto = (Soma * 10) % 11;
 
                         if ((Resto == 10) || (Resto == 11)) Resto = 0;
-                        if (Resto != parseInt(strCPF.substring(10, 11))) { results.push(false); break; }
+                        if (Resto != parseInt(value.substring(10, 11))) { results.push(false); break; }
                         results.push(true);
                         break;
                     case "debitcard":
@@ -239,7 +302,7 @@ jQuery.fn.isValid = function () {
                         var flagcard = _validatecardbrand(value);
                         jQuery(this).attr("data-cardbrand", flagcard.toString());
                         if (jQuery(this).is(".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura")) {
-                            if (flagcard) {                               
+                            if (flagcard) {
                                 results.push(jQuery(this).hasClass(flagcard.toString()));
                             } else {
                                 results.push(false);
