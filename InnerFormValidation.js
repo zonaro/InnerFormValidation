@@ -93,6 +93,36 @@ const _checkLuhn = (cardNo) => {
     return s % 10 == 0;
 };
 
+const _AmexCardNumber(inputtxt) => {
+    var cardno = /^(?:3[47][0-9]{13})$/;
+    return cardno.test(inputtxt);
+}
+
+const _VisaCardnumber(inputtxt) => {
+    var cardno = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+    return cardno.test(inputtxt);
+}
+
+const _MasterCardnumber(inputtxt) => {
+    var cardno = /^(?:5[1-5][0-9]{14})$/;
+    return cardno.test(inputtxt);
+}
+
+const _DiscoverCardnumber(inputtxt) => {
+    var cardno = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;
+    return cardno.test(inputtxt);
+}
+
+const _DinerClubCardnumber(inputtxt) => {
+    var cardno = /^(?:3(?:0[0-5]|[68][0-9])[0-9]{11})$/;
+    return cardno.test(inputtxt);
+}
+
+const _JCBCardnumber(inputtxt) => {
+    var cardno = /^(?:(?:2131|1800|35\d{3})\d{11})$/;
+    return cardno.test(inputtxt);
+}
+
 
 jQuery.fn.isValid = function () {
     var results = [];
@@ -187,7 +217,43 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(_checkLuhn(value));
+                        results.push(_checkLuhn(value));                   
+                        break;
+                    case "amexcard":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_AmexCardNumber(value) && jQuery(this).isValid("creditcard"));
+                        break;
+                    case "visacard":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_VisaCardnumber(value) && jQuery(this).isValid("creditcard"));
+                        break;
+                    case "discovercard":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_DiscoverCardnumber(value) && jQuery(this).isValid("creditcard"));
+                        break;
+                    case "dinercard":
+                    case "dinerclubcard":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_DinerClubCardnumber(value) && jQuery(this).isValid("creditcard"));
+                        break;
+                    case "jcbcard":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_JCBCardnumber(value) && jQuery(this).isValid("creditcard"));
                         break;
                     default:
                         var c = valids[i];
@@ -299,6 +365,7 @@ jQuery.fn.isValid = function () {
         return true;
     }
 };
+ 
 
 
 jQuery(document).ready(function () {
@@ -322,7 +389,7 @@ jQuery(document).ready(function () {
         _cnpjMask(this);
     });
 
-    jQuery(".mask.credicard, .mask.debitcard").on('input', function () {
+    jQuery(".mask.creditcard, .mask.debitcard").on('input', function () {
         _cardNumberMaks(this);
     });
 
