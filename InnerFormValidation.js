@@ -58,11 +58,41 @@ const _cnpjMask = (input) => {
     input.value = text;
 };
 
+const _cardNumberMaks = (input) => {
+    let text = input.value;
+    text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
+    text = text.replace(/^(\d{4} \d{4})(\d+)$/g, "$1 $2");
+    text = text.replace(/^(\d{4} \d{4} \d{4})(\d{1,4})$/g, "$1 $2");
+    if (/^[\d]{4} [\d]{4} [\d]{4} [\d]{4}$/g.test(text)) {
+        input.maxLength = text.length;
+    }
+    input.value = text;
+};
+
 const _onlyNumbers = (input) => {
     let text = input.value;
     text = text.replace(/\D/g, "");
     input.value = text;
-}; 
+};
+
+
+const _checkLuhn = (cardNo) => {
+    var s = 0;
+    var doubleDigit = false;
+    cardNo = cardNo.split(" ").join("");
+    for (var i = cardNo.length - 1; i >= 0; i--) {
+        var digit = +cardNo[i];
+        if (doubleDigit) {
+            digit *= 2;
+            if (digit > 9)
+                digit -= 9;
+        }
+        s += digit;
+        doubleDigit = !doubleDigit;
+    }
+    return s % 10 == 0;
+};
+
 
 jQuery.fn.isValid = function () {
     var results = [];
@@ -150,6 +180,14 @@ jQuery.fn.isValid = function () {
                         } else {
                             results.push(true);
                         }
+                        break;
+                    case "debitcard":
+                    case "creditcard":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_checkLuhn(value));
                         break;
                     default:
                         var c = valids[i];
@@ -282,6 +320,10 @@ jQuery(document).ready(function () {
 
     jQuery(".mask.cnpj").on('input', function () {
         _cnpjMask(this);
+    });
+
+    jQuery(".mask.credicard, .mask.debitcard").on('input', function () {
+        _cardNumberMaks(this);
     });
 
     jQuery(".mask.date, .mask.data").on('input', function () {
