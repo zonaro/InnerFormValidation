@@ -205,6 +205,30 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                         }
                         break;
+                    case "cpf":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        var Soma;
+                        var Resto;
+                        Soma = 0;
+                        if (strCPF == "00000000000") { results.push(false); break; }
+
+                        for (i = 1; i <= 9; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+                        Resto = (Soma * 10) % 11;
+
+                        if ((Resto == 10) || (Resto == 11)) Resto = 0;
+                        if (Resto != parseInt(strCPF.substring(9, 10))) { results.push(false); break; }
+
+                        Soma = 0;
+                        for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i);
+                        Resto = (Soma * 10) % 11;
+
+                        if ((Resto == 10) || (Resto == 11)) Resto = 0;
+                        if (Resto != parseInt(strCPF.substring(10, 11))) { results.push(false); break; }
+                        results.push(true);
+                        break;
                     case "debitcard":
                     case "creditcard":
                         if (jQuery.trim(value) === "") {
@@ -212,18 +236,20 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(_checkLuhn(value));
+                        var flagcard = _validatecardbrand(value);
+                        jQuery(this).attr("data-cardbrand", flagcard.toString());
                         if (jQuery(this).is(".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura")) {
-                            var flagcard = _validatecardbrand(value);
-                            if (flagcard) {
-                                jQuery(this).attr("data-cardbrand", flagcard.toString());
+                            if (flagcard) {                               
                                 results.push(jQuery(this).hasClass(flagcard.toString()));
                             } else {
                                 results.push(false);
                             }
-                        }                       
+                        } else {
+                            result.push(flagcard !== false);
+                        }
                         break;
                     default:
-                        var c = valids[i]; 
+                        var c = valids[i];
                         if (c.startsWith("eq:") || c.startsWith("equal:")) {
                             var selector = c.split(':')[1] || jQuery(this).data("eq");
                             var valor1 = jQuery(this).val();
