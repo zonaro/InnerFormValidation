@@ -97,15 +97,15 @@ const _checkLuhn = (cardNo) => {
 const _validatecardbrand = (cardnumber) => {
     cardnumber = cardnumber.replace(/[^0-9]+/g, '');
     var cards = {
-        visacard: /^4[0-9]{12}(?:[0-9]{3})/,
+        visa: /^4[0-9]{12}(?:[0-9]{3})/,
         mastercard: /^5[1-5][0-9]{14}/,
-        dinerscard: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
-        amexcard: /^3[47][0-9]{13}/,
-        discovercard: /^6(?:011|5[0-9]{2})[0-9]{12}/,
-        hipercard: /^(606282\d{10}(\d{3})?)|(3841\d{15})/,
-        elocard: /^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})/,
-        jcbcard: /^(?:2131|1800|35\d{3})\d{11}/,
-        auracard: /^(5078\d{2})(\d{2})(\d{11})$/
+        diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
+        amex: /^3[47][0-9]{13}/,
+        discover: /^6(?:011|5[0-9]{2})[0-9]{12}/,
+        hiper: /^(606282\d{10}(\d{3})?)|(3841\d{15})/,
+        elo: /^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})/,
+        jcb: /^(?:2131|1800|35\d{3})\d{11}/,
+        aura: /^(5078\d{2})(\d{2})(\d{11})$/
     };
 
     for (var flag in cards) {
@@ -212,30 +212,18 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(_checkLuhn(value));
-                        break;
-                    case "visacard":
-                    case "mastercard":
-                    case "dinerscard":
-                    case "amexcard":
-                    case "discovercard":
-                    case "hipercard":
-                    case "elocard":
-                    case "jcbcard":
-                    case "auracard":
-                        if (jQuery.trim(value) === "") {
-                            results.push(true);
-                            break;
-                        }
-                        var flagcard = _validatecardbrand(value);
-                        if (flagcard) {
-                            jQuery(this).attr("data-cardbrand", flagcard.toString());
-                            results.push(valids[i].toLowerCase() == flagcard.toString().toLowerCase());
-                        } else {
-                            results.push(false);
-                        }
+                        if (jQuery(this).is(".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura")) {
+                            var flagcard = _validatecardbrand(value);
+                            if (flagcard) {
+                                jQuery(this).attr("data-cardbrand", flagcard.toString());
+                                results.push(jQuery(this).hasClass(flagcard.toString()));
+                            } else {
+                                results.push(false);
+                            }
+                        }                       
                         break;
                     default:
-                        var c = valids[i];
+                        var c = valids[i]; 
                         if (c.startsWith("eq:") || c.startsWith("equal:")) {
                             var selector = c.split(':')[1] || jQuery(this).data("eq");
                             var valor1 = jQuery(this).val();
