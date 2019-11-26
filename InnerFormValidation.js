@@ -60,6 +60,7 @@ const _cnpjMask = (input) => {
 
 const _cardNumberMaks = (input) => {
     let text = input.value;
+    text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
     text = text.replace(/^(\d{4} \d{4})(\d+)$/g, "$1 $2");
     text = text.replace(/^(\d{4} \d{4} \d{4})(\d{1,4})$/g, "$1 $2");
@@ -93,35 +94,28 @@ const _checkLuhn = (cardNo) => {
     return s % 10 == 0;
 };
 
-const _AmexCardNumber(inputtxt) => {
-    var cardno = /^(?:3[47][0-9]{13})$/;
-    return cardno.test(inputtxt);
-}
+const _validatecardbrand = (cardnumber) => {
+    cardnumber = cardnumber.replace(/[^0-9]+/g, '');
+    var cards = {
+        visacard: /^4[0-9]{12}(?:[0-9]{3})/,
+        mastercard: /^5[1-5][0-9]{14}/,
+        dinerscard: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
+        amexcard: /^3[47][0-9]{13}/,
+        discovercard: /^6(?:011|5[0-9]{2})[0-9]{12}/,
+        hipercard: /^(606282\d{10}(\d{3})?)|(3841\d{15})/,
+        elocard: /^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})/,
+        jcbcard: /^(?:2131|1800|35\d{3})\d{11}/,
+        auracard: /^(5078\d{2})(\d{2})(\d{11})$/
+    };
 
-const _VisaCardnumber(inputtxt) => {
-    var cardno = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
-    return cardno.test(inputtxt);
-}
+    for (var flag in cards) {
+        if (cards[flag].test(cardnumber)) {
+            return flag;
+        }
+    }
 
-const _MasterCardnumber(inputtxt) => {
-    var cardno = /^(?:5[1-5][0-9]{14})$/;
-    return cardno.test(inputtxt);
-}
-
-const _DiscoverCardnumber(inputtxt) => {
-    var cardno = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;
-    return cardno.test(inputtxt);
-}
-
-const _DinerClubCardnumber(inputtxt) => {
-    var cardno = /^(?:3(?:0[0-5]|[68][0-9])[0-9]{11})$/;
-    return cardno.test(inputtxt);
-}
-
-const _JCBCardnumber(inputtxt) => {
-    var cardno = /^(?:(?:2131|1800|35\d{3})\d{11})$/;
-    return cardno.test(inputtxt);
-}
+    return false;
+};
 
 
 jQuery.fn.isValid = function () {
@@ -217,43 +211,28 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(_checkLuhn(value));                   
-                        break;
-                    case "amexcard":
-                        if (jQuery.trim(value) === "") {
-                            results.push(true);
-                            break;
-                        }
-                        results.push(_AmexCardNumber(value) && jQuery(this).isValid("creditcard"));
+                        results.push(_checkLuhn(value));
                         break;
                     case "visacard":
-                        if (jQuery.trim(value) === "") {
-                            results.push(true);
-                            break;
-                        }
-                        results.push(_VisaCardnumber(value) && jQuery(this).isValid("creditcard"));
-                        break;
+                    case "mastercard":
+                    case "dinerscard":
+                    case "amexcard":
                     case "discovercard":
-                        if (jQuery.trim(value) === "") {
-                            results.push(true);
-                            break;
-                        }
-                        results.push(_DiscoverCardnumber(value) && jQuery(this).isValid("creditcard"));
-                        break;
-                    case "dinercard":
-                    case "dinerclubcard":
-                        if (jQuery.trim(value) === "") {
-                            results.push(true);
-                            break;
-                        }
-                        results.push(_DinerClubCardnumber(value) && jQuery(this).isValid("creditcard"));
-                        break;
+                    case "hipercard":
+                    case "elocard":
                     case "jcbcard":
+                    case "auracard":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
-                        results.push(_JCBCardnumber(value) && jQuery(this).isValid("creditcard"));
+                        var flagcard = _validatecardbrand(value);
+                        if (flagcard) {
+                            jQuery(this).attr("data-cardbrand", flagcard.toString());
+                            results.push(valids[i].toLowerCase() == flagcard.toString().toLowerCase());
+                        } else {
+                            results.push(false);
+                        }
                         break;
                     default:
                         var c = valids[i];
@@ -365,7 +344,7 @@ jQuery.fn.isValid = function () {
         return true;
     }
 };
- 
+
 
 
 jQuery(document).ready(function () {
@@ -400,4 +379,5 @@ jQuery(document).ready(function () {
     jQuery(".mask.num, .mask.number").on('input', function () {
         _onlyNumbers(this);
     });
+
 });
