@@ -179,6 +179,16 @@ const _ValidateCnpj = (cnpj) => {
 
 };
 
+string.prototype.replaceAll = (from, to) => {
+    var array = from.split(from);
+    array = array.filter(function (el) {
+        return el != null && el != "";
+    });
+    return array.join(to);
+};
+
+
+
 jQuery.fn.isValid = function () {
     var results = [];
 
@@ -216,7 +226,18 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(!isNaN(value.replace(',', '.')));
+                        results.push(!isNaN(value.replaceAll(',', '.')));
+                        break;
+                    case "tel":
+                    case "cel":
+                    case "telephone":
+                    case "mobilephone":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        value = value.replaceAll("(").replaceAll(")").replaceAll(" ").replaceAll("-");
+                        results.push(!isNaN(value) && value.length >= 8);
                         break;
                     case "mail":
                     case "email":
@@ -360,6 +381,7 @@ jQuery.fn.isValid = function () {
                             result.push(flagcard !== false);
                         }
                         break;
+
                     default:
                         var c = valids[i];
                         if (c.startsWith("eq:") || c.startsWith("equal:")) {
