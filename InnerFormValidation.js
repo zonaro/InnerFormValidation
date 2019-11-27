@@ -35,7 +35,7 @@ const _cpfMask = (input) => {
 };
 
 const _cepMask = (input) => {
-    let text = input.value
+    let text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
     if (/^[\d]{5}-[\d]{3}$/g.test(text)) {
