@@ -1,5 +1,4 @@
-﻿
-const _phoneMask = (input) => {
+﻿const _phoneMask = (input) => {
     let text = input.value
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{1,2})/g, "($1");
@@ -86,7 +85,6 @@ const _monthYear = (input) => {
     input.value = text;
 };
 
-
 const _checkLuhn = (cardNo) => {
     var s = 0;
     var doubleDigit = false;
@@ -127,7 +125,6 @@ const _validatecardbrand = (cardnumber) => {
     return false;
 };
 
-
 jQuery.fn.isValid = function () {
     var results = [];
 
@@ -157,6 +154,7 @@ jQuery.fn.isValid = function () {
         }
         for (var i = 0; i < valids.length; i++) {
             if (jQuery(this).prop("disabled") == false) {
+          
                 switch (valids[i].toLowerCase()) {
                     case "number":
                     case "num":
@@ -230,7 +228,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         var mesano = value.split("/");
-                        
+
                         if (mesano.length == 2) {
                             results.push(mesano[0] > 0 && mesano[0] <= 12);
                             results.push(!isNaN(mesano[1]));
@@ -243,13 +241,13 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(false);
                         break;
-                    
-                    case "cnpj":
 
+                    case "cnpj":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
+
                         value = value.replace(/[^\d]+/g, '');
 
                         if (value.length !== 14) { results.push(false); break; }
@@ -267,30 +265,35 @@ jQuery.fn.isValid = function () {
                             value == "99999999999999") { results.push(false); break; }
 
                         // Valida DVs
-                        tamanho = value.length - 2;
-                        numeros = value.substring(0, tamanho);
-                        digitos = value.substring(tamanho);
-                        soma = 0;
-                        pos = tamanho - 7;
-                        for (i = tamanho; i >= 1; i--) {
-                            soma += numeros.charAt(tamanho - i) * pos--;
-                            if (pos < 2)
+                        var tamanho = value.length - 2;
+                        var numeros = value.substring(0, tamanho);
+                        var digitos = value.substring(tamanho);
+                        var soma = 0;
+                        var pos = tamanho - 7;
+                        for (b = tamanho; b >= 1; i--) {
+                            soma += numeros.charAt(tamanho - b) * pos--;
+                            if (pos < 2) {
                                 pos = 9;
+                            }
                         }
                         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                        if (resultado != digitos.charAt(0)) { results.push(false); break; }
-
+                        if (resultado != digitos.charAt(0)) {
+                            results.push(false); break;
+                        }
                         tamanho = tamanho + 1;
                         numeros = value.substring(0, tamanho);
                         soma = 0;
                         pos = tamanho - 7;
-                        for (i = tamanho; i >= 1; i--) {
-                            soma += numeros.charAt(tamanho - i) * pos--;
-                            if (pos < 2)
+                        for (bb = tamanho; bb >= 1; i--) {
+                            soma += numeros.charAt(tamanho - bb) * pos--;
+                            if (pos < 2) {
                                 pos = 9;
+                            }
                         }
                         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                        if (resultado !== digitos.charAt(1)) { results.push(false); break; }
+                        if (resultado !== digitos.charAt(1)) {
+                            results.push(false); break;
+                        }
 
                         results.push(true);
                         break;
@@ -313,22 +316,23 @@ jQuery.fn.isValid = function () {
                             value == "88888888888" ||
                             value == "99999999999") { results.push(false); break; }
 
-                        var Soma;
-                        var Resto;
-                        Soma = 0; 
+                        var Soma = 0;
+                        var Resto = 0;
 
-                        for (i = 1; i <= 9; i++) Soma = Soma + parseInt(value.substring(i - 1, i)) * (11 - i);
+                        for (x = 1; x <= 9; x++) Soma = Soma + parseInt(value.substring(x - 1, x)) * (11 - x);
                         Resto = (Soma * 10) % 11;
 
                         if ((Resto == 10) || (Resto == 11)) Resto = 0;
                         if (Resto != parseInt(value.substring(9, 10))) { results.push(false); break; }
 
                         Soma = 0;
-                        for (i = 1; i <= 10; i++) Soma = Soma + parseInt(value.substring(i - 1, i)) * (12 - i);
+                        for (x = 1; x <= 10; x++) Soma = Soma + parseInt(value.substring(x - 1, x)) * (12 - x);
                         Resto = (Soma * 10) % 11;
 
                         if ((Resto == 10) || (Resto == 11)) Resto = 0;
-                        if (Resto != parseInt(value.substring(10, 11))) { results.push(false); break; }
+                        if (Resto != parseInt(value.substring(10, 11))) {
+                            results.push(false); break;
+                        }
                         results.push(true);
                         break;
                     case "debitcard":
@@ -461,8 +465,6 @@ jQuery.fn.isValid = function () {
     }
 };
 
-
-
 jQuery(document).ready(function () {
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').on('submit', function () {
         return jQuery(this).isValid();
@@ -499,5 +501,4 @@ jQuery(document).ready(function () {
     jQuery(".mask.num, .mask.number, .mask.month").on('input', function () {
         _onlyNumbers(this);
     });
-
 });
