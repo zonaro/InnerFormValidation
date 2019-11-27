@@ -90,7 +90,7 @@ const _monthYear = (input) => {
 const _checkLuhn = (cardNo) => {
     var s = 0;
     var doubleDigit = false;
-    cardNo = cardNo.split(" ").join("");
+    cardNo = cardNo.replace(/[^\d]+/g, '');
     for (var i = cardNo.length - 1; i >= 0; i--) {
         var digit = +cardNo[i];
         if (doubleDigit) {
@@ -364,7 +364,7 @@ jQuery.fn.isValid = function () {
                             var any = false;
                             var allchecks = c.split(" or ");
                             for (var i = 0; i < allchecks.length; i++) {
-                                allchecks[i] = allchecks[i].split(" ").join("");
+                                allchecks[i] = allchecks[i].replace(/[^\d]+/g, '');
                                 any = jQuery(this).isValid(allchecks[i]);
                                 if (any == true) { break; }
                             }
