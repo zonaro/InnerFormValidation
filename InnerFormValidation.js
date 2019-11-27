@@ -76,6 +76,16 @@ const _onlyNumbers = (input) => {
     input.value = text;
 };
 
+const _monthYear = (input) => {
+    let text = input.value;
+    text = text.replace(/\D/g, "");
+    text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
+    if (/^[\d]{2}\/[\d]{4}$/g.test(text)) {
+        input.maxLength = text.length;
+    }
+    input.value = text;
+}
+
 
 const _checkLuhn = (cardNo) => {
     var s = 0;
@@ -205,6 +215,35 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                         }
                         break;
+                    case "month":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push($(this).isValid("num"));
+                        var numero = parseInt(value);
+                        results.push(num > 0 && num <= 12);
+                        break;
+                    case "monthyear":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        var mesano = value.split("/");
+                        
+                        if (mesano.length == 2) {
+                            results.push(mesano[0] > 0 && mesano[0] <= 12);
+                            results.push(!isNaN(mesano[1]));
+                            break;
+                        }
+                        if (mesano.length == 3) {
+                            results.push(mesano[1] > 0 && mesano[1] <= 12)
+                            results.push(!isNaN(mesano[2]));
+                            break;
+                        }
+                        results.push(false);
+                        break;
+                    
                     case "cnpj":
 
                         if (jQuery.trim(value) === "") {
@@ -453,7 +492,11 @@ jQuery(document).ready(function () {
         _dateMask(this);
     });
 
-    jQuery(".mask.num, .mask.number").on('input', function () {
+    jQuery(".mask.monthyear").on('input', function () {
+        _monthYear(this);
+    });
+
+    jQuery(".mask.num, .mask.number, .mask.month").on('input', function () {
         _onlyNumbers(this);
     });
 
