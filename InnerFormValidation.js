@@ -1,4 +1,6 @@
-﻿const _phoneMask = (input) => {
+﻿
+let today = Date.now();
+const _phoneMask = (input) => {
     let text = input.value
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{1,2})/g, "($1");
@@ -185,7 +187,7 @@ String.prototype.replaceAll = function (from, to) {
         return el !== null;
     });
     return array.join(to);
-}
+};
 
 
 
@@ -316,7 +318,13 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(false);
                         break;
-
+                    case "cep":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(value.replace("-", "").length == 8);
+                        break;
                     case "cnpj":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
