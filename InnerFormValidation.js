@@ -125,6 +125,60 @@ const _validatecardbrand = (cardnumber) => {
     return false;
 };
 
+const _ValidateCnpj = (cnpj) => {
+
+    cnpj = cnpj.replace(/[^\d]+/g, '');
+
+    if (cnpj == '') return false;
+
+    if (cnpj.length != 14)
+        return false;
+
+    // Elimina CNPJs invalidos conhecidos
+    if (cnpj == "00000000000000" ||
+        cnpj == "11111111111111" ||
+        cnpj == "22222222222222" ||
+        cnpj == "33333333333333" ||
+        cnpj == "44444444444444" ||
+        cnpj == "55555555555555" ||
+        cnpj == "66666666666666" ||
+        cnpj == "77777777777777" ||
+        cnpj == "88888888888888" ||
+        cnpj == "99999999999999")
+        return false;
+
+    // Valida DVs
+    tamanho = cnpj.length - 2
+    numeros = cnpj.substring(0, tamanho);
+    digitos = cnpj.substring(tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2)
+            pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado != digitos.charAt(0))
+        return false;
+
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (i = tamanho; i >= 1; i--) {
+        soma += numeros.charAt(tamanho - i) * pos--;
+        if (pos < 2)
+            pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado != digitos.charAt(1))
+        return false;
+
+    return true;
+
+};
+
 jQuery.fn.isValid = function () {
     var results = [];
 
@@ -154,7 +208,7 @@ jQuery.fn.isValid = function () {
         }
         for (var i = 0; i < valids.length; i++) {
             if (jQuery(this).prop("disabled") == false) {
-          
+
                 switch (valids[i].toLowerCase()) {
                     case "number":
                     case "num":
@@ -247,55 +301,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-
-                        value = value.replace(/[^\d]+/g, '');
-
-                        if (value.length !== 14) { results.push(false); break; }
-
-                        // Elimina CNPJs invalidos conhecidos
-                        if (value == "00000000000000" ||
-                            value == "11111111111111" ||
-                            value == "22222222222222" ||
-                            value == "33333333333333" ||
-                            value == "44444444444444" ||
-                            value == "55555555555555" ||
-                            value == "66666666666666" ||
-                            value == "77777777777777" ||
-                            value == "88888888888888" ||
-                            value == "99999999999999") { results.push(false); break; }
-
-                        // Valida DVs
-                        var tamanho = value.length - 2;
-                        var numeros = value.substring(0, tamanho);
-                        var digitos = value.substring(tamanho);
-                        var soma = 0;
-                        var pos = tamanho - 7;
-                        for (b = tamanho; b >= 1; i--) {
-                            soma += numeros.charAt(tamanho - b) * pos--;
-                            if (pos < 2) {
-                                pos = 9;
-                            }
-                        }
-                        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                        if (resultado != digitos.charAt(0)) {
-                            results.push(false); break;
-                        }
-                        tamanho = tamanho + 1;
-                        numeros = value.substring(0, tamanho);
-                        soma = 0;
-                        pos = tamanho - 7;
-                        for (bb = tamanho; bb >= 1; i--) {
-                            soma += numeros.charAt(tamanho - bb) * pos--;
-                            if (pos < 2) {
-                                pos = 9;
-                            }
-                        }
-                        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-                        if (resultado !== digitos.charAt(1)) {
-                            results.push(false); break;
-                        }
-
-                        results.push(true);
+                        results.push(_ValidateCnpj(value));
                         break;
                     case "cpf":
                         if (jQuery.trim(value) === "") {
