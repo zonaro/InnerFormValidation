@@ -172,20 +172,20 @@ const _ValidateCnpj = (cnpj) => {
             pos = 9;
     }
     resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-    if (resultado != digitos.charAt(1))
+    if (resultado !== digitos.charAt(1))
         return false;
 
     return true;
 
 };
 
-String.prototype.replaceAll = (from, to) => {
-    var array = from.split(from);
+String.prototype.replaceAll = function (from, to) {
+    var array = this.split(from);
     array = array.filter(function (el) {
-        return el != null && el != "";
+        return el !== null;
     });
     return array.join(to);
-};
+}
 
 
 
@@ -212,8 +212,8 @@ jQuery.fn.isValid = function () {
         var type = this.attr("type");
         if (arguments.length < 1) {
             var classes = (this.attr('class') || 'v_noclass').split(" ");
-            for (var i = 0; i < classes.length; i++) {
-                valids.push("" + classes[i]);
+            for (var vc = 0; vc < classes.length; vc++) {
+                valids.push("" + classes[vc]);
             }
         }
         for (var i = 0; i < valids.length; i++) {
@@ -236,7 +236,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        value = value.replaceAll("(").replaceAll(")").replaceAll(" ").replaceAll("-");
+                        value = value.replaceAll("(", "").replaceAll(")", "").replaceAll(" ", "").replaceAll("-", "");
                         results.push(!isNaN(value) && value.length >= 8);
                         break;
                     case "mail":
