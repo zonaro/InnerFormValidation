@@ -179,7 +179,7 @@ const _ValidateCnpj = (cnpj) => {
 
 };
 
-string.prototype.replaceAll = (from, to) => {
+String.prototype.replaceAll = (from, to) => {
     var array = from.split(from);
     array = array.filter(function (el) {
         return el != null && el != "";
