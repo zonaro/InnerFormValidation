@@ -84,7 +84,7 @@ const _monthYear = (input) => {
         input.maxLength = text.length;
     }
     input.value = text;
-}
+};
 
 
 const _checkLuhn = (cardNo) => {
@@ -237,7 +237,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         if (mesano.length == 3) {
-                            results.push(mesano[1] > 0 && mesano[1] <= 12)
+                            results.push(mesano[1] > 0 && mesano[1] <= 12);
                             results.push(!isNaN(mesano[2]));
                             break;
                         }
