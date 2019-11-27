@@ -400,18 +400,7 @@ jQuery.fn.isValid = function () {
                         } else {
                             results.push(true);
                         }
-                        if (~c.indexOf(" or ")) {
-                            var any = false;
-                            var allchecks = c.split(" or ");
-                            for (var i = 0; i < allchecks.length; i++) {
-                                allchecks[i] = allchecks[i].replace(/[^\d]+/g, '');
-                                any = jQuery(this).isValid(allchecks[i]);
-                                if (any == true) { break; }
-                            }
-                            results.push(any);
-                        } else {
-                            results.push(true);
-                        }
+
                         if (~c.indexOf(" to ")) {
                             var allnums = c.split(" to ");
                             if (allnums[0] > allnums[1]) {
@@ -424,12 +413,13 @@ jQuery.fn.isValid = function () {
                         }
 
                         if (c.startsWith("after")) {
+
                             var mynumber = jQuery(this).val();
                             if (jQuery.trim(mynumber) === "") {
                                 results.push(true);
                                 break;
                             }
-                            var num = c.split("after").join("");
+                            var num = valids[i + 1];
                             if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {
                                 var comp = mynumber.split('/');
                                 var d = parseInt(comp[0], 10);
@@ -458,7 +448,7 @@ jQuery.fn.isValid = function () {
                                 results.push(true);
                                 break;
                             }
-                            var num = c.split("before").join("");
+                            var num = valids[i + 1];
                             if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {
                                 var comp = mynumber.split('/');
                                 var d = parseInt(comp[0], 10);
