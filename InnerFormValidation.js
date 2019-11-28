@@ -1,5 +1,4 @@
-﻿
-let today = Date.now();
+﻿let today = Date.now();
 const _phoneMask = (input) => {
     let text = input.value
     text = text.replace(/\D/g, "");
@@ -128,7 +127,6 @@ const _validatecardbrand = (cardnumber) => {
 };
 
 const _ValidateCnpj = (cnpj) => {
-
     cnpj = cnpj.replace(/[^\d]+/g, '');
 
     if (cnpj == '') return false;
@@ -178,7 +176,6 @@ const _ValidateCnpj = (cnpj) => {
         return false;
 
     return true;
-
 };
 
 String.prototype.replaceAll = function (from, to) {
@@ -188,8 +185,6 @@ String.prototype.replaceAll = function (from, to) {
     });
     return array.join(to);
 };
-
-
 
 jQuery.fn.isValid = function () {
     var results = [];
@@ -202,25 +197,29 @@ jQuery.fn.isValid = function () {
             elements.push(jQuery(this));
         });
 
-        for (var i = 0; i < results.length; i++) {
-            if (results[i] === false) {
+        for (var mm = 0; mm < results.length; mm++) {
+            if (results[mm] === false) {
                 return false;
             }
         }
         return true;
     } else {
-        var valids = Array.prototype.slice.call(arguments);
+        //debugger;
+        var valids = [];
+        var allargs = Array.prototype.slice.call(arguments);
+        for (var vv = 0; vv < allargs.length; vv++) {
+            allargs[vv].split(" ").forEach(function (el) { valids.push(el); });
+        }
         var value = this.val();
         var type = this.attr("type");
         if (arguments.length < 1) {
-            var classes = (this.attr('class') || 'v_noclass').split(" ");
+            var classes = (this.attr('class') || '').split(" ");
             for (var vc = 0; vc < classes.length; vc++) {
                 valids.push("" + classes[vc]);
             }
         }
         for (var i = 0; i < valids.length; i++) {
             if (jQuery(this).prop("disabled") == false) {
-
                 switch (valids[i].toLowerCase()) {
                     case "number":
                     case "num":
@@ -296,7 +295,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push($(this).isValid("num"));
-                        var numero = parseInt(value);
+                        var num = parseInt(value);
                         results.push(num > 0 && num <= 12);
                         break;
                     case "monthyear":
@@ -386,90 +385,80 @@ jQuery.fn.isValid = function () {
                                 results.push(false);
                             }
                         } else {
-                            result.push(flagcard !== false);
+                            results.push(flagcard !== false);
                         }
                         break;
-
-                    default:
-                        var c = valids[i];
-                        if (c.startsWith("eq:") || c.startsWith("equal:")) {
-                            var selector = c.split(':')[1] || jQuery(this).data("eq");
-                            var valor1 = jQuery(this).val();
-                            var valor2 = jQuery(selector).val() || jQuery(selector).text();
-                            results.push(valor1 == valor2);
-                        } else {
+                    case "after":
+                    case "before":
+                        
+                        if (jQuery.trim(value) === "") {
                             results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
                         }
 
-                        if (~c.indexOf(" to ")) {
-                            var allnums = c.split(" to ");
-                            if (allnums[0] > allnums[1]) {
-                                results.push(jQuery(this).isValid("after " + allnums[1]) && jQuery(this).isValid("before " + allnums[0]));
+                        var num = valids[i + 1];
+                        if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {                            
+                            
+                            var comp = value.split('/');
+                            var d = parseInt(comp[0]);
+                            var m = parseInt(comp[1]) - 1;
+                            var y = parseInt(comp[2]);
+                            value = +new Date(y, m, d);
+                            if (num == 'today') {
+                                num = today;
                             } else {
-                                results.push(jQuery(this).isValid("after " + allnums[0]) && jQuery(this).isValid("before " + allnums[1]));
+                                comp = num.split('/');
+                                d = parseInt(comp[0]);
+                                m = parseInt(comp[1]) - 1;
+                                y = parseInt(comp[2]);
+                                num = +new Date(y, m, d);
                             }
-                        } else {
-                            results.push(true);
                         }
-
-                        if (c.startsWith("after")) {
-
-                            var mynumber = jQuery(this).val();
-                            if (jQuery.trim(mynumber) === "") {
-                                results.push(true);
-                                break;
-                            }
-                            var num = valids[i + 1];
-                            if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {
-                                var comp = mynumber.split('/');
-                                var d = parseInt(comp[0], 10);
-                                var m = parseInt(comp[1], 10) - 1;
-                                var y = parseInt(comp[2], 10);
-                                mynumber = +new Date(y, m, d);
-                                if (num == 'today') {
-                                    num = today;
-                                } else {
-                                    comp = num.split('/');
-                                    d = parseInt(comp[0], 10);
-                                    m = parseInt(comp[1], 10) - 1;
-                                    y = parseInt(comp[2], 10);
-                                    num = +new Date(y, m, d);
-                                }
-                            }
-
-                            results.push(parseFloat(mynumber) >= parseFloat(num));
+                        if (valids[i] == "after") {
+                            results.push(parseFloat(value) >= parseFloat(num));
                         } else {
-                            results.push(true);
+                            results.push(parseFloat(value) <= parseFloat(num));
                         }
-
-                        if (c.startsWith("before")) {
-                            var mynumber = jQuery(this).val();
-                            if (jQuery.trim(mynumber) === "") {
-                                results.push(true);
-                                break;
-                            }
-                            var num = valids[i + 1];
-                            if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {
-                                var comp = mynumber.split('/');
-                                var d = parseInt(comp[0], 10);
-                                var m = parseInt(comp[1], 10) - 1;
-                                var y = parseInt(comp[2], 10);
-                                mynumber = +new Date(y, m, d);
-                                if (num == 'today') {
-                                    num = today;
-                                } else {
-                                    comp = num.split('/');
-                                    d = parseInt(comp[0], 10);
-                                    m = parseInt(comp[1], 10) - 1;
-                                    y = parseInt(comp[2], 10);
-                                    num = +new Date(y, m, d);
-                                }
-                            }
-
-                            results.push(parseFloat(mynumber) <= parseFloat(num));
-                        } else {
+                        break;
+                    case "eq":
+                    case "equal":
+                        if (jQuery.trim(value) === "") {
                             results.push(true);
+                            break;
                         }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        var selector = jQuery(this).data("eq") || jQuery(this).data("equal") || valids[i + 1];
+                        var valor1 = jQuery(this).val();
+                        var valor2 = jQuery(selector).val() || jQuery(selector).text() || selector;
+                        results.push(valor1 == valor2);
+                        break;
+
+                    case "to":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        if (typeof valids[i - 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        var v1 = jQuery(this).isValid("after " + valids[i - 1]);
+                        var v2 = jQuery(this).isValid("before " + valids[i + 1]);
+                        results.push(v1 && v2);
+                        break;
+                    default:
+                        results.push(true);
                         break;
                 }
             } else {
@@ -487,6 +476,7 @@ jQuery.fn.isValid = function () {
         }
         jQuery(this).removeClass('error');
         jQuery(this).closest('.form-group').removeClass('has-error');
+        eval(jQuery(this).attr('data-validcallback') || "void(0)");
         return true;
     }
 };
