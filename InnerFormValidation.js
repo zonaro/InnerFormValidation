@@ -1,16 +1,19 @@
 ﻿let today = Date.now();
-const _phoneMask = (input) => {
-    let text = input.value
-    text = text.replace(/\D/g, "");
-    text = text.replace(/^(\d{1,2})/g, "($1");
-    text = text.replace(/^(\(\d{2})(\d+)/g, "$1) $2");
-    text = text.replace(/^(\(\d{2}\) \d{4})(\d{1,4})$/g, "$1-$2");
-    text = text.replace(/^(\(\d{2}\) \d{5})(\d{4})$/g, "$1-$2");
-    if (/\([\d]{2}\) [\d]{5}-[\d]{4}$/g.test(text)) {
+
+const _telMask = (input) => {
+    let value = input.value;
+    value = value.replace(/\D/g, '');
+    value = value.replace(/^(\d{4})(\d{1,4})$/g, '$1-$2');
+    value = value.replace(/^(\d{5})(\d{1,4})$/g, '$1-$2');
+    value = value.replace(/^(\d{2})(\d{4})(\d{1,4})$/g, '($1) $2-$3');
+    value = value.replace(/^(\d{2})(\d{5})(\d{1,4})$/g, '($1) $2-$3');
+    if (/^([\d{2}]) [\d{5}]-[\d{4}]$/g.test(value)) {
         input.maxLength = text.length;
     }
-    input.value = text;
+    input.value = value;
 };
+
+ 
 
 const _dateMask = (input) => {
     let text = input.value;
@@ -390,7 +393,7 @@ jQuery.fn.isValid = function () {
                         break;
                     case "after":
                     case "before":
-                        
+
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -401,8 +404,8 @@ jQuery.fn.isValid = function () {
                         }
 
                         var num = valids[i + 1];
-                        if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {                            
-                            
+                        if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {
+
                             var comp = value.split('/');
                             var d = parseInt(comp[0]);
                             var m = parseInt(comp[1]) - 1;
@@ -487,7 +490,7 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".mask.phone, .mask.tel, [type='tel'].mask").on('input', function () {
-        _phoneMask(this);
+        _telMask(this);
     });
 
     jQuery(".mask.cpf").on('input', function () {
