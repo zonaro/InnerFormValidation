@@ -543,12 +543,14 @@ jQuery.fn.isValid = function () {
                 jQuery(this).addClass('error');
                 jQuery(this).closest('.form-group').addClass('has-error');
                 eval(jQuery(this).attr('data-invalidcallback') || "void(0)");
+                jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "Error");
                 return false;
             }
         }
         jQuery(this).removeClass('error');
         jQuery(this).closest('.form-group').removeClass('has-error');
         eval(jQuery(this).attr('data-validcallback') || "void(0)");
+        jQuery(this)[0].setCustomValidity("");
         return true;
     }
 };
