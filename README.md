@@ -35,13 +35,13 @@ Add one or more classes to any `input` element;
 
 - **cep** = Valid  Brazilian PostalCode;
 
-- **eq **<selector> - Equal selector (eg: `eq #user_email`);
+- **eq ** <selector> - Equal selector (eg: `eq #user_email`);
 
-- **eqv** <value> - Equal value (eg: `eq 20`);
+-  **eqv** <value> - Equal value (eg: `eq 20`);
 
-- **tel** - Telephone/Mobile number;
+-  **tel** - Telephone/Mobile number;
 
-- **link** or **url** - Valid URL;
+-  **link** or **url** - Valid URL;
 
 - **password** - Validate Password Strenght (*Uppercase, Lowercase, Special Character and Number* ):
 
@@ -54,17 +54,17 @@ Add one or more classes to any `input` element;
 - **creditcard** or **debitcard** - Valid Credit Card Number:
 
   - **visa** 
-- **mastercard**
+  - **mastercard**
   - **diners**
-- **amex**
+  - **amex**
   - **discover**
-- **hiper**
+  - **hiper**
   - **elo**
-- **jcb**
+  - **jcb**
   - **aura**
-
+  
   > OBS.: Define one or more brand classes to validate allowed flags. Use only  `creditcard ` class to validate any flag. After validation, this plugin adds the flagname on a `data-flagcard` attr
-
+  
 - **after** <numericvalue> - Numbers greater than <numericvalue>;
 
 - **before** <numericvalue> - Numbers smaller than <numericvalue>;
