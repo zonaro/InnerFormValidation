@@ -1,0 +1,142 @@
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+
+<script src="InnerFormValidation.js"></script>
+
+<form action="javascript:void(0)" class="validate">
+
+
+
+    <label>
+        Campo obrigatório
+        <input type='text' placeholder="Preencha esse campo" class='obg' />
+
+    </label>
+    <br />
+    <label>
+        Email
+        <input type='text' placeholder="Email" class='email' />
+
+    </label>
+    <br />
+    <label>
+        Campo numérico
+        <input type='text' placeholder="Apenas números" class='num' />
+
+    </label>
+    <br />
+    <label>
+        Campo numérico com máscara
+        <input type='text' placeholder="Apenas números" class='mask num' />
+
+    </label>
+    <br />
+    <label>
+        Telefone com Máscara
+        <input type='text' placeholder="Telefone" class='mask tel' />
+
+    </label>
+    <br />
+    <label>
+        Telefone sem Máscara
+        <input type='text' placeholder="Telefone" class='tel' />
+
+    </label>
+    <br />
+    <label>
+        CPF com Máscara
+        <input type='text' placeholder="CPF" class='mask cpf' />
+
+    </label>
+    <br />
+    <label>
+        CNPJ com Máscara
+        <input type='text' placeholder="CNPJ" class='mask cnpj' />
+
+    </label>
+    <br />
+    <label>
+        CEP com Máscara
+        <input type='text' placeholder="CEP" class='mask cep' />
+
+    </label>
+    <br />
+    <label>
+        Data com Máscara
+        <input type='text' placeholder="Data" class='mask date' />
+
+    </label>
+    <br />
+    <label>
+        Numero maior que 10
+        <input type='text' placeholder="Data" class='mask num after 10' />
+
+    </label>
+    <br />
+    <label>
+        Numero menor que 10
+        <input type='text' placeholder="Data" class='mask num before 10' />
+
+    </label>
+    <br />
+    <label>
+        Data Anterior a Hoje
+        <input type='text' placeholder="Data" class='mask date before today' />
+
+    </label>
+    <br />
+    <label>
+        Data Posterior a Hoje
+        <input type='text' placeholder="Data" class='mask date after today' />
+
+    </label>
+    <br />
+    <label>
+        Comparação de Campos
+        <input type='password' id="senha" placeholder="Senha" class='eq #confirmarsenha' />
+        <input type='password' id="confirmarsenha" placeholder="Confirmar Senha" class='eq #senha' />
+
+    </label>
+    <br />
+    <label>
+        Cartão de crédito com Máscara
+        <input type='text' id="senha" placeholder="Qualquer cartão" class='mask creditcard' />
+
+    </label>
+    <br />
+    <label>
+        Cartão de crédito Visa com Máscara
+        <input type='text' placeholder="Visa" class='mask creditcard visa' />
+    </label>
+    <br />
+    <label>
+        Cartão de crédito Mastercard com Máscara
+        <input type='text' placeholder="Mastercard" class='mask creditcard mastercard' />
+    </label>
+    <br />
+    <label>
+        Range de Números
+        <input type='text' placeholder="(entre 1 e 10)" class='mask num 1 to 10' />
+    </label>
+    <br />
+    <label>
+        Range de Datas
+        <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange" class='mask date 01/01/2019 to 31/12/2019' />
+    </label>
+    <br />
+    <label>
+        Callback de Erro e Sucesso (compara com o texto da div #div_OK)
+        <input type='text' placeholder="Escreva OK neste campo" class='obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeIn()" data-validcallback="$('#div_OK').fadeOut()" />
+    </label>
+    <p id="div_OK">OK</p>
+
+    <br />
+    <button>Testar</button>
+    <style>
+        .error {
+            border-color: red;
+        }
+    </style>
+</form>
+
