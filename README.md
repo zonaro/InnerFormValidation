@@ -29,7 +29,7 @@ Add one or more classes to any `input` element;
 
 - **obg** or **req** - Required field;
 
-- **date** or **data** - Valid Date  ( in *dd/MM/yyyy* forma)t;
+- **date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
 - **mail** or **email** - Valid Email;
 
@@ -37,9 +37,9 @@ Add one or more classes to any `input` element;
 
 - **cnpj** - Valid Brazilian CNPJ;
 
-- **cep** = Valid  Brazilian PostalCode;
+- **cep** - Valid  Brazilian PostalCode;
 
-- **eq ** `selector` - Equal selector (eg: `eq #user_email`);
+- **eq** `selector` - Equal selector (eg: `eq #user_email`);
 
 -  **eqv** `value` - Equal value (eg: `eq 20`);
 
