@@ -431,8 +431,13 @@ jQuery.fn.isValid = function () {
                             case "strong":
                                 strenght = 4;
                                 break;
-                            default:
+                            case "medium":
                                 strenght = 3;
+                                break;
+                            default:
+                                if (isNaN(strenght)) {
+                                    strenght = 3;
+                                }
                                 break;
                         }
 
