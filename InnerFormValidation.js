@@ -13,7 +13,7 @@ const _telMask = (input) => {
     input.value = value;
 };
 
- 
+
 
 const _dateMask = (input) => {
     let text = input.value;
@@ -179,6 +179,35 @@ const _ValidateCnpj = (cnpj) => {
         return false;
 
     return true;
+};
+
+
+const _validatePass = (input) => {
+
+    // Create an array and push all possible values that you want in password
+    var matchedCase = new Array();
+    matchedCase.push("[$@$!%*#?&]"); // Special Charector
+    matchedCase.push("[A-Z]");      // Uppercase Alpabates
+    matchedCase.push("[0-9]");      // Numbers
+    matchedCase.push("[a-z]");     // Lowercase Alphabates
+
+    // Check the conditions
+    var ctr = 0;
+    for (var i = 0; i < matchedCase.length; i++) {
+        if (new RegExp(matchedCase[i]).test(input.value)) {
+            ctr++;
+        }
+    }
+    
+    var attr = $(this).attr('min');
+    if (typeof attr !== typeof undefined && attr !== false) {
+        if (input.lenght < jQuery(input).attr("min")) {
+            return 0;
+        }
+    }
+     
+    jQuery(input).attr("data-pwstrength", ctr);
+
 };
 
 String.prototype.replaceAll = function (from, to) {
@@ -391,6 +420,25 @@ jQuery.fn.isValid = function () {
                             results.push(flagcard !== false);
                         }
                         break;
+                    case "password":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        var strenght = valid[i + 1] || "3";
+
+                        switch (strenght) {
+                            case "strong":
+                                strenght = 4;
+                                break;
+                            default:
+                                strenght = 3;
+                                break;
+                        }
+
+                        result.push(_validatePass(this) >= strenght);
+                        break;
+
                     case "after":
                     case "before":
 
@@ -403,7 +451,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
 
-                        var num = valids[i + 1];
+                        var num = valids[i + 1] || "0";
                         if ((num.indexOf("today") || num.indexOf("/")) && jQuery(this).isValid("date")) {
 
                             var comp = value.split('/');
@@ -437,9 +485,25 @@ jQuery.fn.isValid = function () {
                             results.push(false);
                             break;
                         }
-                        var selector = jQuery(this).data("eq") || jQuery(this).data("equal") || valids[i + 1];
+                        var selector = jQuery(this).attr("data-eq") || jQuery(this).data("data-equal") || valids[i + 1] || null;
                         var valor1 = jQuery(this).val();
-                        var valor2 = jQuery(selector).val() || jQuery(selector).text() || selector;
+                        var valor2 = jQuery(selector).val() || jQuery(selector).text();
+                        results.push(valor1 == valor2);
+                        break;
+                    case "eqv":
+                    case "equalvalue":
+                    case "equal-value":
+                    case "eq-v":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        var valor2 = jQuery(this).attr("data-eq") || jQuery(this).attr("data-equal") || valids[i + 1] || null;
+                        var valor1 = jQuery(this).val();
                         results.push(valor1 == valor2);
                         break;
 
