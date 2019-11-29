@@ -39,7 +39,7 @@ Add one or more classes to any `input` element;
 
 - **cep** = Valid  Brazilian PostalCode;
 
-- **eq ** `selector> - Equal selector (eg: `eq #user_email`);
+- **eq ** `selector` - Equal selector (eg: `eq #user_email`);
 
 -  **eqv** `value` - Equal value (eg: `eq 20`);
 
