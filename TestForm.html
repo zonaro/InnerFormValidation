@@ -1,163 +1,165 @@
 ﻿<head>
     <meta charset="utf-8" />
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script src="InnerFormValidation.js"></script>
 </head>
+<body>
 
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous"></script>
-
-<script src="InnerFormValidation.js"></script>
-
-<form action="javascript:void(0)" class="validate">
+    <form action="javascript:void(0)" class="validate">
 
 
 
-    <label>
-        Campo obrigatorio
-        <input type='text' placeholder="Preencha esse campo" class='obg' />
+        <div class="form-group">
+            <label>Campo obrigatorio</label>
+            <input type='text' placeholder="Preencha esse campo" class='form-control obg' />
 
-    </label>
-    <br />
-    <label>
-        Email
-        <input type='text' placeholder="Email" class='email' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        Campo numerico
-        <input type='text' placeholder="Apenas Numeros" class='num' />
+        <div class="form-group">
+            <label>Email</label>
+            <input type='text' placeholder="Email" class='form-control email' />
 
-    </label>
-    <br />
-    <label>
-        Campo numerico com Mascara
-        <input type='text' placeholder="Apenas Numeros" class='mask num' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        Telefone com Mascara
-        <input type='text' placeholder="Telefone" class='mask tel' />
+        <div class="form-group">
+            <label>  Campo numerico</label>
+            <input type='text' placeholder="Apenas Numeros" class='form-control num' />
 
-    </label>
-    <br />
-    <label>
-        Telefone sem Mascara
-        <input type='text' placeholder="Telefone" class='tel' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        CPF com Mascara
-        <input type='text' placeholder="CPF" class='mask cpf' />
+        <div class="form-group">
+            <label> Campo numerico com Mascara</label>
+            <input type='text' placeholder="Apenas Numeros" class='form-control mask num' />
 
-    </label>
-    <br />
-    <label>
-        CNPJ com Mascara
-        <input type='text' placeholder="CNPJ" class='mask cnpj' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        CEP com Mascara
-        <input type='text' placeholder="CEP" class='mask cep' />
+        <div class="form-group">
+            <label>  Telefone com Mascara</label>
+            <input type='text' placeholder="Telefone" class='form-control mask tel' />
 
-    </label>
-    <br />
+        </div>
 
-    <label>
-        URL
-        <input type='text' placeholder="CEP" class='mask url' />
+        <div class="form-group">
+            <label>   Telefone sem Mascara</label>
+            <input type='text' placeholder="Telefone" class='form-control tel' />
 
-    </label>
-    <br />
-    <label>
-        Data com Mascara
-        <input type='text' placeholder="Data" class='mask date' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        Numero maior que 10
-        <input type='text' placeholder="Data" class='mask num after 10' />
+        <div class="form-group">
+            <label>  CPF com Mascara</label>
+            <input type='text' placeholder="CPF" class='form-control mask cpf' />
 
-    </label>
-    <br />
-    <label>
-        Numero menor que 10
-        <input type='text' placeholder="Data" class='mask num before 10' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        Data Anterior a Hoje
-        <input type='text' placeholder="Data" class='mask date before today' />
+        <div class="form-group">
+            <div>   CNPJ com Mascara</div>
+            <input type='text' placeholder="CNPJ" class='form-control mask cnpj' />
 
-    </label>
-    <br />
-    <label>
-        Data Posterior a Hoje
-        <input type='text' placeholder="Data" class='mask date after today' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        Comparaooo de Campos
-        <input type='text' id="c1" placeholder="Senha" class='eq #c1' />
-        <input type='text' id="c2" placeholder="Confirmar Senha" class='eq #c2' />
+        <div class="form-group">
+            <label>   CEP com Mascara</label>
+            <input type='text' placeholder="CEP" class='form-control mask cep' />
 
-    </label>
-    <br />
-    <label>
-        Senha Forte (Minimo 8 caracteres e 4 critérios)
-        <input type='password' placeholder="Senha" min="8" class='password strong' />
-    </label>
-    <br />
-    <label>
-        Senha Modia (Minimo 4 caracteres e 3 critérios)
-        <input type='password'  placeholder="Senha"  min="8" class='password medium' />
-    </label>
-    <br />
-    <label>
-        Cartao de Credito com Mascara
-        <input type='text' id="senha" placeholder="Qualquer Cartao" class='mask creditcard' />
+        </div>
 
-    </label>
-    <br />
-    <label>
-        Cartao de Credito Visa com Mascara
-        <input type='text' placeholder="Visa" class='mask creditcard visa' />
-    </label>
-    <br />
-    <label>
-        Cartao de Credito Mastercard com Mascara
-        <input type='text' placeholder="Mastercard" class='mask creditcard mastercard' />
-    </label>
-    <br />
-    <label>
-        Range de Numeros
-        <input type='text' placeholder="(entre 1 e 10)" class='mask num 1 to 10' />
-    </label>
-    <br />
-    <label>
-        Range de Datas
-        <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange" class='mask date 01/01/2019 to 31/12/2019' />
-    </label>
-    <br />
-    <label>
-        Callback de Erro e Sucesso (compara com o texto da div #div_OK)
-        <input type='text' placeholder="Escreva OK neste campo" class='obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeIn()" data-validcallback="$('#div_OK').fadeOut()" />
-    </label>
-    <p id="div_OK">OK</p>
 
-    <br />
-    <button>Testar</button>
-    <style>
-        .error {
-            border-color: red;
-        }
-    </style>
-</form>
+        <div class="form-group">
+            <label>URL</label>
+            <input type='text' placeholder="CEP" class='form-control mask url' />
 
+        </div>
+
+        <div class="form-group">
+            <label> Data com Mascara</label>
+            <input type='text' placeholder="Data" class='form-control mask date' />
+
+        </div>
+
+        <div class="form-group">
+            <label>Numero maior que 10</label>
+            <input type='text' placeholder="Data" class='form-control mask num after 10' />
+
+        </div>
+
+        <div class="form-group">
+            <label>Numero menor que 10</label>
+            <input type='text' placeholder="Data" class='form-control mask num before 10' />
+
+        </div>
+
+        <div class="form-group">
+            <label>Data Anterior a Hoje</label>
+            <input type='text' placeholder="Data" class='form-control mask date before today' />
+
+        </div>
+
+        <div class="form-group">
+            <label>Data Posterior a Hoje</label>
+            <input type='text' placeholder="Data" class='form-control mask date after today' />
+
+        </div>
+
+        <div class="form-group">
+            <label>Comparacao de Campos</label>
+            <input type='text' id="c1" placeholder="Senha" class='form-control eq #c1' />
+            <input type='text' id="c2" placeholder="Confirmar Senha" class='form-control eq #c2' />
+
+        </div>
+
+        <div class="form-group">
+            <label> Senha Forte (Minimo 8 caracteres e 4 critérios)</label>
+            <input type='password' placeholder="Senha" min="8" class='form-control password strong' />
+        </div>
+
+        <div class="form-group">
+            <label>  Senha Modia (Minimo 4 caracteres e 3 critérios)</label>
+            <input type='password' placeholder="Senha" min="8" class='form-control password medium' />
+        </div>
+
+        <div class="form-group">
+            <label>Cartao de Credito com Mascara</label>
+            <input type='text' id="senha" placeholder="Qualquer Cartao" class='form-control mask creditcard' />
+
+        </div>
+
+        <div class="form-group">
+            <label> Cartao de Credito Visa com Mascara</label>
+            <input type='text' placeholder="Visa" class='form-control mask creditcard visa' />
+        </div>
+
+        <div class="form-group">
+            <label>Cartao de Credito Mastercard com Mascara</label>
+            <input type='text' placeholder="Mastercard" class='form-control mask creditcard mastercard' />
+        </div>
+
+        <div class="form-group">
+            <label>Range de Numeros</label>
+            <input type='text' placeholder="(entre 1 e 10)" class='form-control mask num 1 to 10' />
+        </div>
+
+        <div class="form-group">
+            <label>Range de Datas</label>
+            <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange" class='form-control mask date 01/01/2019 to 31/12/2019' />
+        </div>
+
+        <div class="form-group">
+            <label>Callback de Erro e Sucesso (compara com o texto da div #div_OK)</label>
+            <input type='text' placeholder="Escreva OK neste campo" class='obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeIn()" data-validcallback="$('#div_OK').fadeOut()" />
+        </div>
+        <p id="div_OK">OK</p>
+
+
+        <button class="btn btn-success">Testar</button>
+
+    </form>
+</body>
