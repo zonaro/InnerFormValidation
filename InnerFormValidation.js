@@ -183,7 +183,6 @@ const _ValidateCnpj = (cnpj) => {
 
 
 const _validatePass = (input) => {
-
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
     matchedCase.push("[$@$!%*#?&]"); // Special Charector
@@ -194,20 +193,20 @@ const _validatePass = (input) => {
     // Check the conditions
     var ctr = 0;
     for (var i = 0; i < matchedCase.length; i++) {
-        if (new RegExp(matchedCase[i]).test(input.value)) {
+        if (new RegExp(matchedCase[i]).test(jQuery(input).val())) {
             ctr++;
         }
     }
-    
-    var attr = $(this).attr('min');
+
+    var attr = jQuery(input).attr('min');
     if (typeof attr !== typeof undefined && attr !== false) {
-        if (input.lenght < jQuery(input).attr("min")) {
+        if (input.lenght < attr) {
             return 0;
         }
     }
-     
-    jQuery(input).attr("data-pwstrength", ctr);
 
+    jQuery(input).attr("data-pwstrength", ctr);
+    return ctr;
 };
 
 String.prototype.replaceAll = function (from, to) {
@@ -409,7 +408,7 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(_checkLuhn(value));
                         var flagcard = _validatecardbrand(value);
-                        jQuery(this).attr("data-cardbrand", flagcard.toString());
+                        jQuery(this).attr("data-flagcard", flagcard.toString());
                         if (jQuery(this).is(".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura")) {
                             if (flagcard) {
                                 results.push(jQuery(this).hasClass(flagcard.toString()));
@@ -425,7 +424,8 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var strenght = valid[i + 1] || "3";
+
+                        var strenght = valids[i + 1] || "3";
 
                         switch (strenght) {
                             case "strong":
@@ -436,7 +436,7 @@ jQuery.fn.isValid = function () {
                                 break;
                         }
 
-                        result.push(_validatePass(this) >= strenght);
+                        results.push(_validatePass(this) >= strenght);
                         break;
 
                     case "after":

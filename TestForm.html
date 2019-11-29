@@ -62,6 +62,13 @@
 
     </label>
     <br />
+
+    <label>
+        URL
+        <input type='text' placeholder="CEP" class='mask url' />
+
+    </label>
+    <br />
     <label>
         Data com Máscara
         <input type='text' placeholder="Data" class='mask date' />
@@ -94,9 +101,19 @@
     <br />
     <label>
         Comparação de Campos
-        <input type='password' id="senha" placeholder="Senha" class='eq #confirmarsenha' />
-        <input type='password' id="confirmarsenha" placeholder="Confirmar Senha" class='eq #senha' />
+        <input type='text' id="c1" placeholder="Senha" class='eq #c1' />
+        <input type='text' id="c2" placeholder="Confirmar Senha" class='eq #c2' />
 
+    </label>
+    <br />
+    <label>
+        Senha Forte (Minimo 8 caracteres)
+        <input type='password' placeholder="Senha" min="8" class='password strong' />
+    </label>
+    <br />
+    <label>
+        Senha Média (Minimo 4 caracteres)
+        <input type='password'  placeholder="Senha"  min="8" class='password medium' />
     </label>
     <br />
     <label>
