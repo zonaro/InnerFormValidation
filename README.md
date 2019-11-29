@@ -39,9 +39,9 @@ Add one or more classes to any `input` element;
 
 - **cep** = Valid  Brazilian PostalCode;
 
-- **eq ** <selector> - Equal selector (eg: `eq #user_email`);
+- **eq ** `selector> - Equal selector (eg: `eq #user_email`);
 
--  **eqv** <value> - Equal value (eg: `eq 20`);
+-  **eqv** `value` - Equal value (eg: `eq 20`);
 
 -  **tel** - Telephone/Mobile number;
 
@@ -51,7 +51,7 @@ Add one or more classes to any `input` element;
 
   - **strong** - Need 4 of 4 criteria;
   - **medium** - Need 3 of 4 criteria;
-  - <numericvalue> - Need <numericavalue> of 4 criteria;
+  - `numericvalue` - Need `numericavalue` of 4 criteria;
 
   > OBS.: Define the attribute `min` to validate minimum password lenght; After validation, this plugin adds a `data-pwstrenght` with the number of matched criterias
 
@@ -69,16 +69,16 @@ Add one or more classes to any `input` element;
   
   > OBS.: Define one or more brand classes to validate allowed flags. Use only  `creditcard ` class to validate any flag. After validation, this plugin adds the flagname on a `data-flagcard` attr
   
-- **after** <numericvalue> - Numbers greater than <numericvalue>;
+- **after** `numericvalue` - Numbers greater than `numericvalue`;
 
-- **before** <numericvalue> - Numbers smaller than <numericvalue>;
+- **before** `numericvalue` - Numbers smaller than `numericvalue`;
 
-- <numericvalue1> **to** <numericvalue2> - Numbers between <numericvalue1> and <numericvalue2>;
+- `numericvalue1` **to** `numericvalue2` - Numbers between `numericvalue1` and `numericvalue2`;
 
-- **after** <date> - Date greater than <date>;
+- **after** `date` - Date greater than `date`;
 
-- **before** <date> - Date smaller than <date>;
+- **before** `date` - Date smaller than `date`;
 
-- <date1> **to** <date2> - Date between <date1> and <date2>;
+- `date1` **to** `date2` - Date between `date1` and `date2`;
 
-  > OBS.: you can also use the class `today` in place of <date>
+  > OBS.: you can also use the class `today` in place of `date`
