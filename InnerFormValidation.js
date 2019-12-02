@@ -219,7 +219,7 @@ String.prototype.replaceAll = function (from, to) {
 
 jQuery.fn.isValid = function () {
     var results = [];
-
+   
     if (jQuery(this).length > 1 || jQuery(this).prop('tagName') == 'FORM') {
         var elements = [];
         var config = Array.prototype.slice.call(arguments)[0];
@@ -236,6 +236,7 @@ jQuery.fn.isValid = function () {
         return true;
     } else {
         //debugger;
+        jQuery(this)[0].setCustomValidity("");
         var valids = [];
         var allargs = Array.prototype.slice.call(arguments);
         for (var vv = 0; vv < allargs.length; vv++) {
@@ -542,21 +543,25 @@ jQuery.fn.isValid = function () {
             if (results[i] === false) {
                 jQuery(this).addClass('error');
                 jQuery(this).closest('.form-group').addClass('has-error');
-                eval(jQuery(this).attr('data-invalidcallback') || "void(0)");
-                jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "Error");
+                jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "error");
+                eval(jQuery(this).attr('data-invalidcallback') || "void(0)");        
                 return false;
             }
         }
+
         jQuery(this).removeClass('error');
-        jQuery(this).closest('.form-group').removeClass('has-error');
+        jQuery(this).closest('.form-group').removeClass('has-error');        
         eval(jQuery(this).attr('data-validcallback') || "void(0)");
-        jQuery(this)[0].setCustomValidity("");
         return true;
     }
 };
 
 jQuery(document).ready(function () {
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').on('submit', function () {
+        return jQuery(this).isValid();
+    });
+
+    jQuery(":input.validate").on('blur', function () {
         return jQuery(this).isValid();
     });
 
@@ -591,4 +596,6 @@ jQuery(document).ready(function () {
     jQuery(".mask.num, .mask.number, .mask.month").on('input', function () {
         _onlyNumbers(this);
     });
+
+   
 });
