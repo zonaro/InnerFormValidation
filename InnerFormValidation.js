@@ -561,7 +561,7 @@ jQuery(document).ready(function () {
         return jQuery(this).isValid();
     });
 
-    jQuery(":input.validate").on('blur', function () {
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').find(":input").on('blur', function () {
         return jQuery(this).isValid();
     });
 
