@@ -162,14 +162,23 @@
 
                     <div class="form-group">
                         <label>Callback de Erro e Sucesso (compara com o texto da div #div_OK)</label>
-                        <input type='text' placeholder="Escreva OK neste campo" class='obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeIn()" data-validcallback="$('#div_OK').fadeOut()" />
+                        <input type='text' placeholder="Escreva OK neste campo" class='form-control obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeIn()" data-validcallback="$('#div_OK').fadeOut()" />
                     </div>
                     <p id="div_OK">OK</p>
 
-
+                    <div class="form-group">
+                        <label>Validação no BLUR do campo</label>
+                        <input type='text' placeholder="Escreva OK neste campo" class='form-control obg validate' />
+                    </div>
                     <button class="btn btn-success">Testar</button>
 
                 </form>
+
+                <style>
+                    .error {
+                        border-color: red !important;
+                    }
+                </style>
             </div>
         </div>
     </div>
