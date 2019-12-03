@@ -543,7 +543,7 @@ jQuery.fn.isValid = function () {
             if (results[i] === false) {
                 jQuery(this).addClass('error');
                 jQuery(this).closest('.form-group').addClass('has-error');
-                jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "error");
+                jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "");
                 eval(jQuery(this).attr('data-invalidcallback') || "void(0)");        
                 return false;
             }
