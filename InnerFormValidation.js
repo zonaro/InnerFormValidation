@@ -1,7 +1,7 @@
-﻿let today = Date.now();
+﻿var today = Date.now();
 
 const _telMask = (input) => {
-    let value = input.value;
+    var value = input.value;
     value = value.replace(/\D/g, '');
     value = value.replace(/^(\d{4})(\d{1,4})$/g, '$1-$2');
     value = value.replace(/^(\d{5})(\d{1,4})$/g, '$1-$2');
@@ -16,7 +16,7 @@ const _telMask = (input) => {
 
 
 const _dateMask = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
     text = text.replace(/^(\d{2}\/\d{2})(\d{1,4})$/g, "$1/$2");
@@ -27,7 +27,7 @@ const _dateMask = (input) => {
 };
 
 const _cpfMask = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{3})(\d+)/g, "$1.$2");
     text = text.replace(/^(\d{3}\.\d{3})(\d+)/g, "$1.$2");
@@ -39,7 +39,7 @@ const _cpfMask = (input) => {
 };
 
 const _cepMask = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
     if (/^[\d]{5}-[\d]{3}$/g.test(text)) {
@@ -49,7 +49,7 @@ const _cepMask = (input) => {
 };
 
 const _cnpjMask = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/, "$1.$2");
     text = text.replace(/^(\d{2}\.\d{3})(\d+)/g, "$1.$2");
@@ -62,7 +62,7 @@ const _cnpjMask = (input) => {
 };
 
 const _cardNumberMaks = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
     text = text.replace(/^(\d{4} \d{4})(\d+)$/g, "$1 $2");
@@ -74,13 +74,13 @@ const _cardNumberMaks = (input) => {
 };
 
 const _onlyNumbers = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     input.value = text;
 };
 
 const _monthYear = (input) => {
-    let text = input.value;
+    var text = input.value;
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
     if (/^[\d]{2}\/[\d]{4}$/g.test(text)) {
