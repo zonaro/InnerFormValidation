@@ -57,7 +57,7 @@ Add one or more classes to any `input` element;
   - **medium** - Need 3 of 4 criteria;
   - `numericvalue` - Need `numericavalue` of 4 criteria;
 
-  > OBS.: Define the attribute `min` to validate minimum password lenght; After validation, this plugin adds a `data-pwstrenght` with the number of matched criterias
+  > OBS.: Define minimum password lenght using **minlen**; After validation, this plugin adds a `data-pwstrenght` with the number of matched criterias
 
 - **creditcard** or **debitcard** - Valid Credit Card Number:
 
