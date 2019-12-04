@@ -28,6 +28,10 @@ Add one or more classes to any `input` element;
 #### Validation/Mask Classes
 
 - **obg** or **req** - Required field;
+  
+- **minlen** `numericvalue` - Minimum `numericvalue` characters;
+
+- **maxlen** `numericvalue` - Maximum `numericvalue` characters;
 
 - **date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 

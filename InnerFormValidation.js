@@ -198,12 +198,7 @@ const _validatePass = (input) => {
         }
     }
 
-    var attr = jQuery(input).attr('min');
-    if (typeof attr !== typeof undefined && attr !== false) {
-        if (input.lenght < attr) {
-            return 0;
-        }
-    }
+    
 
     jQuery(input).attr("data-pwstrength", ctr);
     return ctr;
@@ -219,7 +214,7 @@ String.prototype.replaceAll = function (from, to) {
 
 jQuery.fn.isValid = function () {
     var results = [];
-   
+
     if (jQuery(this).length > 1 || jQuery(this).prop('tagName') == 'FORM') {
         var elements = [];
         var config = Array.prototype.slice.call(arguments)[0];
@@ -512,7 +507,30 @@ jQuery.fn.isValid = function () {
                         var valor1 = jQuery(this).val();
                         results.push(valor1 == valor2);
                         break;
-
+                    case "minlen":
+                      
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        results.push(value.length >= parseInt(valids[i + 1]));
+                        break;
+                    case "maxlen":
+                     
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        results.push(value.length <= parseInt(valids[i + 1]));
+                        break;
                     case "to":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
@@ -544,13 +562,13 @@ jQuery.fn.isValid = function () {
                 jQuery(this).addClass('error');
                 jQuery(this).closest('.form-group').addClass('has-error');
                 jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "");
-                eval(jQuery(this).attr('data-invalidcallback') || "void(0)");        
+                eval(jQuery(this).attr('data-invalidcallback') || "void(0)");
                 return false;
             }
         }
 
         jQuery(this).removeClass('error');
-        jQuery(this).closest('.form-group').removeClass('has-error');        
+        jQuery(this).closest('.form-group').removeClass('has-error');
         eval(jQuery(this).attr('data-validcallback') || "void(0)");
         return true;
     }
@@ -597,5 +615,5 @@ jQuery(document).ready(function () {
         _onlyNumbers(this);
     });
 
-   
+
 });
