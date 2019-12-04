@@ -7,9 +7,7 @@ const _telMask = (input) => {
     value = value.replace(/^(\d{5})(\d{1,4})$/g, '$1-$2');
     value = value.replace(/^(\d{2})(\d{4})(\d{1,4})$/g, '($1) $2-$3');
     value = value.replace(/^(\d{2})(\d{5})(\d{1,4})$/g, '($1) $2-$3');
-    if (/^([\d{2}]) [\d{5}]-[\d{4}]$/g.test(value)) {
-        input.maxLength = text.length;
-    }
+    input.maxLength = 15;
     input.value = value;
 };
 
@@ -198,7 +196,7 @@ const _validatePass = (input) => {
         }
     }
 
-    
+
 
     jQuery(input).attr("data-pwstrength", ctr);
     return ctr;
@@ -508,7 +506,7 @@ jQuery.fn.isValid = function () {
                         results.push(valor1 == valor2);
                         break;
                     case "minlen":
-                      
+
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -520,7 +518,7 @@ jQuery.fn.isValid = function () {
                         results.push(value.length >= parseInt(valids[i + 1]));
                         break;
                     case "maxlen":
-                     
+
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
