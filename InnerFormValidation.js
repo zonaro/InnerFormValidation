@@ -1,5 +1,6 @@
-﻿var today = Date.now();
- 
+﻿var __today = Date.now();
+var __timer;
+
 
 const _telMask = (input) => {
     var value = input.value;
@@ -229,8 +230,12 @@ jQuery.fn.isValid = function () {
         }
         return true;
     } else {
-        //debugger;
-        jQuery(this)[0].setCustomValidity("");
+        //debugger;        
+        this.removeClass('error');
+        this.closest('.form-group').removeClass('has-error');
+        if (this.get(0).setCustomValidity) {
+            this.get(0).setCustomValidity("");
+        }
         var valids = [];
         var allargs = Array.prototype.slice.call(arguments);
         for (var vv = 0; vv < allargs.length; vv++) {
@@ -245,7 +250,7 @@ jQuery.fn.isValid = function () {
             }
         }
         for (var i = 0; i < valids.length; i++) {
-            if (jQuery(this).prop("disabled") == false) {
+            if (this.prop("disabled") == false) {
                 switch (valids[i].toLowerCase()) {
                     case "number":
                     case "num":
@@ -320,7 +325,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push($(this).isValid("num"));
+                        results.push(jQuery(this).isValid("num"));
                         var num = parseInt(value);
                         results.push(num > 0 && num <= 12);
                         break;
@@ -460,7 +465,7 @@ jQuery.fn.isValid = function () {
                             var y = parseInt(comp[2]);
                             value = +new Date(y, m, d);
                             if (num == 'today') {
-                                num = today;
+                                num = __today;
                             } else {
                                 comp = num.split('/');
                                 d = parseInt(comp[0]);
@@ -560,14 +565,13 @@ jQuery.fn.isValid = function () {
             if (results[i] === false) {
                 jQuery(this).addClass('error');
                 jQuery(this).closest('.form-group').addClass('has-error');
-                jQuery(this)[0].setCustomValidity(jQuery(this).attr('data-invalidmessage') || "");
+                jQuery(this).get(0).setCustomValidity(jQuery(this).attr('data-invalidmessage') || "");
                 eval(jQuery(this).attr('data-invalidcallback') || "void(0)");
                 return false;
             }
         }
 
-        jQuery(this).removeClass('error');
-        jQuery(this).closest('.form-group').removeClass('has-error');
+
         eval(jQuery(this).attr('data-validcallback') || "void(0)");
         return true;
     }
@@ -578,8 +582,19 @@ jQuery(document).ready(function () {
         return jQuery(this).isValid();
     });
 
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').find(":input").on('keyup', function () {
+        var p = jQuery(this);
+        p.removeClass('error');
+        p.closest('.form-group').removeClass('has-error');
+        clearTimeout(__timer);
+        __timer = setTimeout(function () {           
+            p.isValid();
+        }, 900);
+    });
+
+
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').find(":input").on('blur', function () {
-        return jQuery(this).isValid();
+        jQuery(this).isValid();
     });
 
     jQuery(".mask.phone, .mask.tel, [type='tel'].mask").on('input', function () {
@@ -616,3 +631,4 @@ jQuery(document).ready(function () {
 
 
 });
+
