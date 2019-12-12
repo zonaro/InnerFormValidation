@@ -587,7 +587,7 @@ jQuery(document).ready(function () {
         p.removeClass('error');
         p.closest('.form-group').removeClass('has-error');
         clearTimeout(__timer);
-        __timer = setTimeout(function () {           
+        __timer = setTimeout(function () {
             p.isValid();
         }, 900);
     });
@@ -629,6 +629,13 @@ jQuery(document).ready(function () {
         _onlyNumbers(this);
     });
 
+    jQuery(".mask.maxlen").on('input', function () {
+        var array = jQuery(this).attr('class').split(' ').filter(function (el) {
+            return el != null && el != "";
+        });       
+        jQuery(this).attr('maxlength', array[array.indexOf('maxlen') + 1]);
 
+    });
+    
 });
 
