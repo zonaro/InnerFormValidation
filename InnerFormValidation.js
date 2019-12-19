@@ -13,7 +13,13 @@ const _telMask = (input) => {
     input.value = value;
 };
 
+const _upperMask = (input) => {
+    input.value = input.value.toUpperCase();
+};
 
+const _lowerMask = (input) => {
+    input.value = input.value.toLowerCase();
+};
 
 const _dateMask = (input) => {
     var text = input.value;
@@ -128,6 +134,8 @@ const _validatecardbrand = (cardnumber) => {
 
     return false;
 };
+
+
 
 const _ValidateCnpj = (cnpj) => {
     cnpj = cnpj.replace(/[^\d]+/g, '');
@@ -259,6 +267,28 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(!isNaN(value.replaceAll(',', '.')));
+                        break;
+                    case "upper":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(!/[a-z]/.test(value));
+                        break;
+                    case "lower":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(!/[A-Z]/.test(value));
+
+                        break;
+                    case "alphanumeric":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(/^[A-Za-z0-9]+$/.test(value));
                         break;
                     case "tel":
                     case "cel":
@@ -601,6 +631,14 @@ jQuery(document).ready(function () {
         _telMask(this);
     });
 
+    jQuery(".mask.upper").on('input', function () {
+        _upperMask(this);
+    });
+
+    jQuery(".mask.lower").on('input', function () {
+        _lowerMask(this);
+    });
+
     jQuery(".mask.cpf").on('input', function () {
         _cpfMask(this);
     });
@@ -632,10 +670,10 @@ jQuery(document).ready(function () {
     jQuery(".mask.maxlen").on('input', function () {
         var array = jQuery(this).attr('class').split(' ').filter(function (el) {
             return el != null && el != "";
-        });       
+        });
         jQuery(this).attr('maxlength', array[array.indexOf('maxlen') + 1]);
 
     });
-    
+
 });
 
