@@ -541,6 +541,17 @@ jQuery.fn.isValid = function () {
                         var valor1 = jQuery(this).val();
                         results.push(valor1 == valor2);
                         break;
+                    case "len":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        results.push(value.length == parseInt(valids[i + 1]));
+                        break;
                     case "minlen":
 
                         if (jQuery.trim(value) === "") {
@@ -667,12 +678,26 @@ jQuery(document).ready(function () {
         _onlyNumbers(this);
     });
 
+    jQuery(".mask.len").on('input', function () {
+        var array = jQuery(this).attr('class').split(' ').filter(function (el) {
+            return el != null && el != "";
+        });
+        var tam = parseInt(array[array.indexOf('len') + 1]);
+        if (!isNaN(tam)) {
+            jQuery(this).attr('maxlength', tam);
+            jQuery(this).val(jQuery(this).val().substring(0, tam));
+        }
+    });
+
     jQuery(".mask.maxlen").on('input', function () {
         var array = jQuery(this).attr('class').split(' ').filter(function (el) {
             return el != null && el != "";
         });
-        jQuery(this).attr('maxlength', array[array.indexOf('maxlen') + 1]);
-
+        var tam = parseInt(array[array.indexOf('len') + 1]);
+        if (!isNaN(tam)) {
+            jQuery(this).attr('maxlength', tam);
+            jQuery(this).val(jQuery(this).val().substring(0, tam+1));
+        }
     });
 
 });
