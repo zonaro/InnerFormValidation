@@ -29,6 +29,12 @@ Add one or more classes to any `input` element;
 
 - **obg** or **req** - Required field;
   
+- **aphanumeric** - Only Aplhanumeric characters (A to Z, 0 to 9);
+  
+- **upper** - Only uppercase characters (allow non alphanumeric);
+  
+- **lower** - Only lowercase characters (allow non alphanumeric);
+  
 - **minlen** `numericvalue` - Minimum `numericvalue` characters;
 
 - **maxlen** `numericvalue` - Maximum `numericvalue` characters;
@@ -45,7 +51,7 @@ Add one or more classes to any `input` element;
 
 - **eq** `selector` - Equal selector (eg: `eq #user_email`);
 
--  **eqv** `value` - Equal value (eg: `eq 20`);
+-  **eqv** `value` - Equal value (eg: `eqv 20`);
 
 -  **tel** - Telephone/Mobile number;
 
