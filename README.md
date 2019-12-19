@@ -39,6 +39,8 @@ Add one or more classes to any `input` element;
 
 - **maxlen** `numericvalue` - Maximum `numericvalue` characters;
 
+- **len** `numericvalue` - Exact `numericvalue` of characters;
+
 - **date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
 - **mail** or **email** - Valid Email;
