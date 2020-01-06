@@ -193,15 +193,15 @@ const _ValidateCnpj = (cnpj) => {
 const _validatePass = (input) => {
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
-    matchedCase.push("[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]"); 
-    matchedCase.push("[A-Z]"); 
-    matchedCase.push("[0-9]"); 
-    matchedCase.push("[a-z]"); 
+    matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g); 
+    matchedCase.push(/[A-Z]/g); 
+    matchedCase.push(/[0-9]/g); 
+    matchedCase.push(/[a-z]/g); 
 
     // Check the conditions
     var ctr = 0;
     for (var i = 0; i < matchedCase.length; i++) {
-        if (new RegExp(matchedCase[i]).test(jQuery(input).val())) {
+        if ( matchedCase[i].test(jQuery(input).val())) {
             ctr++;
         }
     }
