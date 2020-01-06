@@ -541,6 +541,21 @@ jQuery.fn.isValid = function () {
                         var valor1 = jQuery(this).val();
                         results.push(valor1 == valor2);
                         break;
+                    case "contains":
+                    case "cnts":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        if (typeof valids[i + 1] === 'undefined') {
+                            results.push(false);
+                            break;
+                        }
+                        var valor2 = jQuery(this).attr("data-cnts") || jQuery(this).attr("data-contains") || valids[i + 1] || null;
+                        var valor1 = jQuery(this).val();
+                        if ((valor2||"").toLowerCase() == "_space") { valor2 == " "; }
+                        results.push(valor1.includes(valor2 || ""));
+                        break;
                     case "len":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
@@ -696,7 +711,7 @@ jQuery(document).ready(function () {
         var tam = parseInt(array[array.indexOf('len') + 1]);
         if (!isNaN(tam)) {
             jQuery(this).attr('maxlength', tam);
-            jQuery(this).val(jQuery(this).val().substring(0, tam+1));
+            jQuery(this).val(jQuery(this).val().substring(0, tam + 1));
         }
     });
 
