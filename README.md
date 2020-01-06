@@ -55,6 +55,8 @@ Add one or more classes to any `input` element;
 
 -  **eqv** `value` - Equal value (eg: `eqv 20`);
 
+-  **contains** `value` - contains value (eg: `contains test`);
+		
 -  **tel** - Telephone/Mobile number;
 
 -  **link** or **url** - Valid URL;
