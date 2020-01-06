@@ -540,7 +540,7 @@ jQuery.fn.isValid = function () {
                         var valor2 = jQuery(this).attr("data-eq") || jQuery(this).attr("data-equal") || valids[i + 1] || null;
                         var valor1 = jQuery(this).val();
                         results.push(valor1 == valor2);
-                        break;
+                        break;                    
                     case "contains":
                     case "cnts":
                         if (jQuery.trim(value) === "") {
@@ -551,10 +551,11 @@ jQuery.fn.isValid = function () {
                             results.push(false);
                             break;
                         }
-                        var valor2 = jQuery(this).attr("data-cnts") || jQuery(this).attr("data-contains") || valids[i + 1] || null;
+                     
+                        var valor2 = jQuery(this).attr("data-cnts") || jQuery(this).attr("data-contains") || valids[i + 1] || "";
                         var valor1 = jQuery(this).val();
-                        if ((valor2||"").toLowerCase() == "_space") { valor2 == " "; }
-                        results.push(valor1.includes(valor2 || ""));
+                        if (valor2.toLowerCase() == "_space") { valor2 = " "; }
+                        results.push(valor1.includes(valor2));
                         break;
                     case "len":
                         if (jQuery.trim(value) === "") {
