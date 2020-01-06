@@ -193,10 +193,10 @@ const _ValidateCnpj = (cnpj) => {
 const _validatePass = (input) => {
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
-    matchedCase.push("[$@$!%*#?&]"); // Special Charector
-    matchedCase.push("[A-Z]");      // Uppercase Alpabates
-    matchedCase.push("[0-9]");      // Numbers
-    matchedCase.push("[a-z]");     // Lowercase Alphabates
+    matchedCase.push("[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]"); 
+    matchedCase.push("[A-Z]"); 
+    matchedCase.push("[0-9]"); 
+    matchedCase.push("[a-z]"); 
 
     // Check the conditions
     var ctr = 0;
