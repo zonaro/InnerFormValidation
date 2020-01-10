@@ -116,14 +116,24 @@ const _validatecardbrand = (cardnumber) => {
     cardnumber = cardnumber.replace(/[^0-9]+/g, '');
     var cards = {
         visa: /^4[0-9]{12}(?:[0-9]{3})/,
-        mastercard: /^5[1-5][0-9]{14}/,
+        mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/, //2307 4425 8875 4358
         diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
         amex: /^3[47][0-9]{13}/,
         discover: /^6(?:011|5[0-9]{2})[0-9]{12}/,
         hiper: /^(606282\d{10}(\d{3})?)|(3841\d{15})/,
         elo: /^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})/,
         jcb: /^(?:2131|1800|35\d{3})\d{11}/,
-        aura: /^(5078\d{2})(\d{2})(\d{11})$/
+        aura: /^(5078\d{2})(\d{2})(\d{11})$/,
+        maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
+        laser: /^(6304|6706|6709|6771)[0-9]{12,15}$/,
+        blanche: /^389[0-9]{11}$/,
+        switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12}|(4903|4905|4911|4936|6333|6759)[0-9]{14}|(4903|4905|4911|4936|6333|6759)[0-9]{15}|564182[0-9]{10}|564182[0-9]{12}|564182[0-9]{13}|633110[0-9]{10}|633110[0-9]{12}|633110[0-9]{13}$/,
+        korean: /^9[0-9]{15}$/,
+        union: /^(62[0-9]{14,17})$/,
+        solo: /^(6334|6767)[0-9]{12}|(6334|6767)[0-9]{14}|(6334|6767)[0-9]{15}$/,
+        insta: /^63[7-9][0-9]{13}$/,
+        bcglobal: /^(6541|6556)[0-9]{12}$/,
+        rupay: /^6[0-9]{15}$/
     };
 
     for (var flag in cards) {
@@ -193,15 +203,15 @@ const _ValidateCnpj = (cnpj) => {
 const _validatePass = (input) => {
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
-    matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g); 
-    matchedCase.push(/[A-Z]/g); 
-    matchedCase.push(/[0-9]/g); 
-    matchedCase.push(/[a-z]/g); 
+    matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g);
+    matchedCase.push(/[A-Z]/g);
+    matchedCase.push(/[0-9]/g);
+    matchedCase.push(/[a-z]/g);
 
     // Check the conditions
     var ctr = 0;
     for (var i = 0; i < matchedCase.length; i++) {
-        if ( matchedCase[i].test(jQuery(input).val())) {
+        if (matchedCase[i].test(jQuery(input).val())) {
             ctr++;
         }
     }
@@ -540,7 +550,7 @@ jQuery.fn.isValid = function () {
                         var valor2 = jQuery(this).attr("data-eq") || jQuery(this).attr("data-equal") || valids[i + 1] || null;
                         var valor1 = jQuery(this).val();
                         results.push(valor1 == valor2);
-                        break;                    
+                        break;
                     case "contains":
                     case "cnts":
                         if (jQuery.trim(value) === "") {
@@ -551,7 +561,7 @@ jQuery.fn.isValid = function () {
                             results.push(false);
                             break;
                         }
-                     
+
                         var valor2 = jQuery(this).attr("data-cnts") || jQuery(this).attr("data-contains") || valids[i + 1] || "";
                         var valor1 = jQuery(this).val();
                         if (valor2.toLowerCase() == "_space") { valor2 = " "; }
