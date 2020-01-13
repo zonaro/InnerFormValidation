@@ -230,6 +230,65 @@ String.prototype.replaceAll = function (from, to) {
     return array.join(to);
 };
 
+
+function __searchCEP(ceps, num) {
+    ceps = ceps || "";
+    num = num || "";
+    var address = jQuery(".autocomplete.address").prop('disabled');
+    var complement = jQuery(".autocomplete.complement").prop('disabled');
+    var neighborhood = jQuery(".autocomplete.neighborhood").prop('disabled');
+    var city = jQuery(".autocomplete.city").prop('disabled');
+    var state = jQuery(".autocomplete.state").prop('disabled');
+    var fulladdress = jQuery(".autocomplete.fulladdress").prop('disabled');
+    if ((ceps.length == 9 && ceps.includes('-')) || (ceps.length == 8 && ceps.includes('-') == false)) {
+        jQuery.ajax({
+            type: "GET",
+            url: "https://viacep.com.br/ws/" + ceps + "/json/",
+            async: true,
+            crossorigin: true,
+            beforeSend: function () {
+                jQuery(".autocomplete.address").prop('disabled', false);
+                jQuery(".autocomplete.complement").prop('disabled', false);
+                jQuery(".autocomplete.neighborhood").prop('disabled', false);
+                jQuery(".autocomplete.city").prop('disabled', false);
+                jQuery(".autocomplete.state").prop('disabled', false);
+                jQuery(".autocomplete.fulladdress").prop('disabled', false);
+            },
+            success: function (obj) {
+                jQuery(".autocomplete.address:input").val(obj.logradouro);
+                jQuery(".autocomplete.complement:input").val(obj.complemento);
+                jQuery(".autocomplete.neighborhood:input").val(obj.bairro);
+                jQuery(".autocomplete.city:input").val(obj.localidade);
+                jQuery(".autocomplete.state:input").val(obj.uf);
+                jQuery(".autocomplete.fulladdress:input").val(obj.logradouro + ", " + num + " " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
+
+                jQuery(".autocomplete.address").not(':input').text(obj.logradouro);
+                jQuery(".autocomplete.complement").not(':input').text(obj.complemento);
+                jQuery(".autocomplete.neighborhood").not(':input').text(obj.bairro);
+                jQuery(".autocomplete.city").not(':input').text(obj.localidade);
+                jQuery(".autocomplete.state").not(':input').text(obj.uf);
+                jQuery(".autocomplete.fulladdress").not(':input').text(obj.logradouro + ", " + num +  " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
+
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {            //Error event
+                console.log("error");
+            },
+            complete: function () {
+                jQuery(".autocomplete.address").prop('disabled', address);
+                jQuery(".autocomplete.complement").prop('disabled', complement);
+                jQuery(".autocomplete.neighborhood").prop('disabled', neighborhood);
+                jQuery(".autocomplete.city").prop('disabled', city);
+                jQuery(".autocomplete.state").prop('disabled', state);
+                jQuery(".autocomplete.fulladdress").prop('disabled', fulladdress);
+            }
+        });
+    }
+
+
+}
+
+
 jQuery.fn.isValid = function () {
     var results = [];
 
@@ -644,6 +703,9 @@ jQuery.fn.isValid = function () {
     }
 };
 
+
+
+
 jQuery(document).ready(function () {
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').on('submit', function () {
         return jQuery(this).isValid();
@@ -715,6 +777,10 @@ jQuery(document).ready(function () {
         }
     });
 
+    jQuery(".autocomplete.cep").on('input', function () {
+        __searchCEP(jQuery(this).val(), jQuery(".autocomplete.number").val());
+    });
+
     jQuery(".mask.maxlen").on('input', function () {
         var array = jQuery(this).attr('class').split(' ').filter(function (el) {
             return el != null && el != "";
@@ -727,4 +793,50 @@ jQuery(document).ready(function () {
     });
 
 });
+
+function buscaCEP(ceps) {
+    console.log(ceps);
+    var address = jQuery(".autocomplete.address").prop('disabled');
+    var complement = jQuery(".autocomplete.complement").prop('disabled');
+    var neighborhood = jQuery(".autocomplete.neighborhood").prop('disabled');
+    var city = jQuery(".autocomplete.city").prop('disabled');
+    var state = jQuery(".autocomplete.state").prop('disabled');
+    var fulladdress = jQuery(".autocomplete.fulladdress").prop('disabled');
+
+    jQuery.ajax({
+        type: "GET",
+        url: "https://viacep.com.br/ws/" + ceps + "/json/",
+        async: true,
+        crossorigin: true,
+        beforeSend: function () {
+            jQuery(".autocomplete.address").prop('disabled', false);
+            jQuery(".autocomplete.complement").prop('disabled', false);
+            jQuery(".autocomplete.neighborhood").prop('disabled', false);
+            jQuery(".autocomplete.city").prop('disabled', false);
+            jQuery(".autocomplete.state").prop('disabled', false);
+            jQuery(".autocomplete.fulladdress").prop('disabled', false);
+        },
+        success: function (obj) {
+            jQuery(".autocomplete.address").val(obj.logradouro);
+            jQuery(".autocomplete.complement").val(obj.complemento);
+            jQuery(".autocomplete.neighborhood").val(obj.bairro);
+            jQuery(".autocomplete.city").val(obj.localidade);
+            jQuery(".autocomplete.state").val(obj.uf);
+            jQuery(".autocomplete.fulladdress").val(obj.logradouro + ", " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
+
+        },
+        error: function (xhr, ajaxOptions, thrownError) {            //Error event
+            console.log("error");
+        },
+        complete: function () {
+            jQuery(".autocomplete.address").prop('disabled', address);
+            jQuery(".autocomplete.complement").prop('disabled', complement);
+            jQuery(".autocomplete.neighborhood").prop('disabled', neighborhood);
+            jQuery(".autocomplete.city").prop('disabled', city);
+            jQuery(".autocomplete.state").prop('disabled', state);
+            jQuery(".autocomplete.fulladdress").prop('disabled', fulladdress);
+        }
+    });
+
+}
 
