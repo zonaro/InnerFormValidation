@@ -17,7 +17,7 @@ Mask and Validate Forms with jQuery and CSS classes
 
 ### How to:
 
-
+#### Mask and Validation Classes
 
 Add  `validate` class on`form` tag
 
@@ -96,3 +96,18 @@ Add one or more classes to any `input` element;
 - `date1` **to** `date2` - Date between `date1` and `date2`;
 
   > OBS.: you can also use the class `today` in place of `date`
+
+
+### Address Autocomplete Classes
+
+Add the  `autocomplete` class followed by:
+
+ - **cep** - to use this input to find a address using a valid Postal Code;
+ - **fulladdress** - to print the full address on input or element;
+ - **address** - to print the address on input or element;
+ - **neighborhood** - to print the neighborhood on input or element;
+ - **city** - to print the city on input or element;
+ - **state** - to print the state on input or element;
+ - **num** or **number** - to add the address number. It is focused after a successfully address search;
+   
+
