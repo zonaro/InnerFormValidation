@@ -240,6 +240,7 @@ function __searchCEP(ceps, num) {
     var city = jQuery(".autocomplete.city").prop('disabled');
     var state = jQuery(".autocomplete.state").prop('disabled');
     var fulladdress = jQuery(".autocomplete.fulladdress").prop('disabled');
+
     if ((ceps.length == 9 && ceps.includes('-')) || (ceps.length == 8 && ceps.includes('-') == false)) {
         jQuery.ajax({
             type: "GET",
@@ -247,12 +248,12 @@ function __searchCEP(ceps, num) {
             async: true,
             crossorigin: true,
             beforeSend: function () {
-                jQuery(".autocomplete.address").prop('disabled', false);
-                jQuery(".autocomplete.complement").prop('disabled', false);
-                jQuery(".autocomplete.neighborhood").prop('disabled', false);
-                jQuery(".autocomplete.city").prop('disabled', false);
-                jQuery(".autocomplete.state").prop('disabled', false);
-                jQuery(".autocomplete.fulladdress").prop('disabled', false);
+                jQuery(".autocomplete.address").prop('disabled', true);
+                jQuery(".autocomplete.complement").prop('disabled', true);
+                jQuery(".autocomplete.neighborhood").prop('disabled', true);
+                jQuery(".autocomplete.city").prop('disabled', true);
+                jQuery(".autocomplete.state").prop('disabled', true);
+                jQuery(".autocomplete.fulladdress").prop('disabled', true);
             },
             success: function (obj) {
                 jQuery(".autocomplete.address:input").val(obj.logradouro);
@@ -262,13 +263,14 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.state:input").val(obj.uf);
                 jQuery(".autocomplete.fulladdress:input").val(obj.logradouro + ", " + num + " " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
 
+                jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
+
                 jQuery(".autocomplete.address").not(':input').text(obj.logradouro);
                 jQuery(".autocomplete.complement").not(':input').text(obj.complemento);
                 jQuery(".autocomplete.neighborhood").not(':input').text(obj.bairro);
                 jQuery(".autocomplete.city").not(':input').text(obj.localidade);
                 jQuery(".autocomplete.state").not(':input').text(obj.uf);
-                jQuery(".autocomplete.fulladdress").not(':input').text(obj.logradouro + ", " + num +  " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
-
+                jQuery(".autocomplete.fulladdress").not(':input').text(obj.logradouro + ", " + num + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
 
             },
             error: function (xhr, ajaxOptions, thrownError) {            //Error event
@@ -778,7 +780,10 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".autocomplete.cep").on('input', function () {
-        __searchCEP(jQuery(this).val(), jQuery(".autocomplete.number").val());
+
+
+
+        __searchCEP(jQuery(this).val(), jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val());
     });
 
     jQuery(".mask.maxlen").on('input', function () {
@@ -794,49 +799,5 @@ jQuery(document).ready(function () {
 
 });
 
-function buscaCEP(ceps) {
-    console.log(ceps);
-    var address = jQuery(".autocomplete.address").prop('disabled');
-    var complement = jQuery(".autocomplete.complement").prop('disabled');
-    var neighborhood = jQuery(".autocomplete.neighborhood").prop('disabled');
-    var city = jQuery(".autocomplete.city").prop('disabled');
-    var state = jQuery(".autocomplete.state").prop('disabled');
-    var fulladdress = jQuery(".autocomplete.fulladdress").prop('disabled');
 
-    jQuery.ajax({
-        type: "GET",
-        url: "https://viacep.com.br/ws/" + ceps + "/json/",
-        async: true,
-        crossorigin: true,
-        beforeSend: function () {
-            jQuery(".autocomplete.address").prop('disabled', false);
-            jQuery(".autocomplete.complement").prop('disabled', false);
-            jQuery(".autocomplete.neighborhood").prop('disabled', false);
-            jQuery(".autocomplete.city").prop('disabled', false);
-            jQuery(".autocomplete.state").prop('disabled', false);
-            jQuery(".autocomplete.fulladdress").prop('disabled', false);
-        },
-        success: function (obj) {
-            jQuery(".autocomplete.address").val(obj.logradouro);
-            jQuery(".autocomplete.complement").val(obj.complemento);
-            jQuery(".autocomplete.neighborhood").val(obj.bairro);
-            jQuery(".autocomplete.city").val(obj.localidade);
-            jQuery(".autocomplete.state").val(obj.uf);
-            jQuery(".autocomplete.fulladdress").val(obj.logradouro + ", " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
-
-        },
-        error: function (xhr, ajaxOptions, thrownError) {            //Error event
-            console.log("error");
-        },
-        complete: function () {
-            jQuery(".autocomplete.address").prop('disabled', address);
-            jQuery(".autocomplete.complement").prop('disabled', complement);
-            jQuery(".autocomplete.neighborhood").prop('disabled', neighborhood);
-            jQuery(".autocomplete.city").prop('disabled', city);
-            jQuery(".autocomplete.state").prop('disabled', state);
-            jQuery(".autocomplete.fulladdress").prop('disabled', fulladdress);
-        }
-    });
-
-}
 
