@@ -508,7 +508,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         var vlu = _checkLuhn(value);
-                        results.push(vlu);
+
                         if (vlu) {
                             var flagcard = _validatecardbrand(value);
                             jQuery(this).attr("data-flagcard", flagcard.toString());
@@ -521,6 +521,9 @@ jQuery.fn.isValid = function () {
                             } else {
                                 results.push(flagcard !== false);
                             }
+                        } else {
+                            jQuery(this).attr("data-flagcard", false);
+                            results.push(false);
                         }
                         break;
                     case "password":
