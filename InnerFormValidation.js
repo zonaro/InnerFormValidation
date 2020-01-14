@@ -256,12 +256,12 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.fulladdress").prop('disabled', true);
             },
             success: function (obj) {
-                jQuery(".autocomplete.address:input").val(obj.logradouro);
-                jQuery(".autocomplete.complement:input").val(obj.complemento);
-                jQuery(".autocomplete.neighborhood:input").val(obj.bairro);
-                jQuery(".autocomplete.city:input").val(obj.localidade);
-                jQuery(".autocomplete.state:input").val(obj.uf);
-                jQuery(".autocomplete.fulladdress:input").val(obj.logradouro + ", " + num + " " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
+                jQuery(".autocomplete.address:input").val(obj.logradouro).focus();
+                jQuery(".autocomplete.complement:input").val(obj.complemento).focus();
+                jQuery(".autocomplete.neighborhood:input").val(obj.bairro).focus();
+                jQuery(".autocomplete.city:input").val(obj.localidade).focus();
+                jQuery(".autocomplete.state:input").val(obj.uf).focus();
+                jQuery(".autocomplete.fulladdress:input").val(obj.logradouro + ", " + num + " " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf).focus();
 
                 jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
 
@@ -507,17 +507,20 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(_checkLuhn(value));
-                        var flagcard = _validatecardbrand(value);
-                        jQuery(this).attr("data-flagcard", flagcard.toString());
-                        if (jQuery(this).is(".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura")) {
-                            if (flagcard) {
-                                results.push(jQuery(this).hasClass(flagcard.toString()));
+                        var vlu = _checkLuhn(value);
+                        results.push(vlu);
+                        if (vlu) {
+                            var flagcard = _validatecardbrand(value);
+                            jQuery(this).attr("data-flagcard", flagcard.toString());
+                            if (jQuery(this).is(".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura, .maestro, .laser, .blanche, .switch, .korean, .union, .solo, .insta, .bcglobal, .rupay")) {
+                                if (flagcard) {
+                                    results.push(jQuery(this).hasClass(flagcard.toString()));
+                                } else {
+                                    results.push(false);
+                                }
                             } else {
-                                results.push(false);
+                                results.push(flagcard !== false);
                             }
-                        } else {
-                            results.push(flagcard !== false);
                         }
                         break;
                     case "password":
