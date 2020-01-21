@@ -742,7 +742,7 @@ jQuery(document).ready(function () {
         _upperMask(this);
     });
 
-    jQuery(".mask.lower").on('input', function () {
+    jQuery(".mask.lower, .mask.email, .mask.mail").on('input', function () {
         _lowerMask(this);
     });
 
