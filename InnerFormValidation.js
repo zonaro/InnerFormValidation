@@ -58,10 +58,10 @@ const _dateMask = (input) => {
     }
     input.value = text;
 };
-
+ 
 const _dateTimeMask = (input) => {
     var value = input.value.replace(/\D/g, "");
-    input.value = value.replace(/^(\d{2})(\d{2})(\d{4})(\d{2})(\d{2})$/g, "$1/$2/$3 $4:$5");
+    input.value = value.replace(/^(\d{2})(\d{2})(\d{4})(\d{2})(\d{2})(\d{2})$/g, "$1/$2/$3 $4:$5:$6");
     input.maxLength = 14;
 };
 
@@ -72,7 +72,7 @@ const _dateShortTimeMask = (input) => {
 };
 
 const _timeMask = (input) => {
-    var value = input.value.replace(/\D/g, "")
+    var value = input.value.replace(/\D/g, "");
     input.value = value.replace(/^(\d{2})(\d{2})(\d{2})$/g, "$1:$2:$3");
     input.maxLength = 8;
 };
@@ -462,6 +462,7 @@ jQuery.fn.isValid = function () {
                         break;
                     case "datetime":
                     case "dateshorttime":
+                    case "datetimeshort":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -475,6 +476,7 @@ jQuery.fn.isValid = function () {
                         break; 
                     case "time":
                     case "shorttime":                 
+                    case "timeshort":                 
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -852,11 +854,11 @@ jQuery(document).ready(function () {
         _timeMask(this);
     });
 
-    jQuery(".mask.shorttime").on('input', function () {
+    jQuery(".mask.shorttime,  .mask.timeshort").on('input', function () {
         _shortTimeMask(this);
     });
 
-    jQuery(".mask.dateshorttime").on('input', function () {
+    jQuery(".mask.dateshorttime, .mask.datetimeshort").on('input', function () {
         _dateShortTimeMask(this);
     });
 
