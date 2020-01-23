@@ -1,6 +1,33 @@
 ﻿var __today = Date.now();
 var __timer;
 
+function _valid_time(value) {
+    var comp = value.split(':');
+    if (comp.length == 3) {
+        var h = parseInt(comp[0], 10);
+        var m = parseInt(comp[1], 10);
+        var s = parseInt(comp[2], 10);
+        return (h <= 23 && h >= 0) && (m <= 59 && m >= 0) && (s <= 59 && s >= 0);
+    }
+    if (comp.length == 2) {
+        var h = parseInt(comp[0], 10);
+        var m = parseInt(comp[1], 10);
+        return (h <= 23 && h >= 0) && (m <= 59 && m >= 0);
+    }
+    return false;
+}
+
+function _valid_date(value) {
+    var comp = value.split(' ')[0].split('/');
+    if (comp.length == 3) {
+        var d = parseInt(comp[0], 10);
+        var m = parseInt(comp[1], 10) - 1;
+        var y = parseInt(comp[2], 10);
+        var date = new Date(y, m, d);
+        return date.getFullYear() == y && date.getMonth() == m && date.getDate() == d
+    }
+    return false;
+}
 
 const _telMask = (input) => {
     var value = input.value;
@@ -31,6 +58,25 @@ const _dateMask = (input) => {
     }
     input.value = text;
 };
+
+const _dateTimeMask = (input) => {
+    var value = input.value.replace(/\D/g, "");
+    input.value = value.replace(/^(\d{2})(\d{2})(\d{4})(\d{2})(\d{2})$/g, "$1/$2/$3 $4:$5");
+    input.maxLength = 14;
+};
+
+const _timeMask = (input) => {
+    var value = input.value.replace(/\D/g, "");
+    input.value = value.replace(/^(\d{2})(\d{2})$/g, "$1:$2");
+    input.maxLength = 4;
+};
+
+const _shortTimeMask = (input) => {
+    var value = input.value.replace(/\D/g, "");
+    input.value = value.replace(/^(\d{2})(\d{2})$/g, "$1:$2");
+    input.maxLength = 4;
+};
+
 
 const _cpfMask = (input) => {
     var text = input.value;
@@ -406,20 +452,27 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        if (type == 'text') {
-                            var comp = value.split(' ')[0].split('/');
-                            if (comp.length == 3) {
-                                var d = parseInt(comp[0], 10);
-                                var m = parseInt(comp[1], 10) - 1;
-                                var y = parseInt(comp[2], 10);
-                                var date = new Date(y, m, d);
-                                results.push(date.getFullYear() == y && date.getMonth() == m && date.getDate() == d);
-                            } else {
-                                results.push(false);
-                            }
-                        } else {
+                        results.push(_valid_date(value)); 
+                        break;
+                    case "datetime":
+                        if (jQuery.trim(value) === "") {
                             results.push(true);
+                            break;
                         }
+                        var comp = value.split(" ");
+                        if (comp.length == 2) {
+                            results.push(_valid_date(comp[0]) && _valid_time(comp[1]));
+                            break;
+                        }
+                        results.push(false);
+                        break;
+                    case "time":
+                    case "shorttime":                 
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(_valid_time(value));                 
                         break;
                     case "month":
                         if (jQuery.trim(value) === "") {
@@ -436,7 +489,6 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         var mesano = value.split("/");
-
                         if (mesano.length == 2) {
                             results.push(mesano[0] > 0 && mesano[0] <= 12);
                             results.push(!isNaN(mesano[1]));
@@ -786,10 +838,21 @@ jQuery(document).ready(function () {
     });
 
     jQuery(".autocomplete.cep").on('input', function () {
-
-
-
         __searchCEP(jQuery(this).val(), jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val());
+    });
+
+    jQuery(".mask.time").on('input', function () {
+        _timeMask(this);
+    });
+
+    jQuery(".mask.shorttime").on('input', function () {
+        _shortTimeMask(this);
+    });
+
+ 
+
+    jQuery(".mask.datetime").on('input', function () {
+        _dateTimeMask(this);
     });
 
     jQuery(".mask.maxlen").on('input', function () {
