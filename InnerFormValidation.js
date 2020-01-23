@@ -65,16 +65,22 @@ const _dateTimeMask = (input) => {
     input.maxLength = 14;
 };
 
-const _timeMask = (input) => {
+const _dateShortTimeMask = (input) => {
     var value = input.value.replace(/\D/g, "");
-    input.value = value.replace(/^(\d{2})(\d{2})$/g, "$1:$2");
-    input.maxLength = 4;
+    input.value = value.replace(/^(\d{2})(\d{2})(\d{4})(\d{2})(\d{2})$/g, "$1/$2/$3 $4:$5");
+    input.maxLength = 11;
+};
+
+const _timeMask = (input) => {
+    var value = input.value.replace(/\D/g, "")
+    input.value = value.replace(/^(\d{2})(\d{2})(\d{2})$/g, "$1:$2:$3");
+    input.maxLength = 8;
 };
 
 const _shortTimeMask = (input) => {
     var value = input.value.replace(/\D/g, "");
     input.value = value.replace(/^(\d{2})(\d{2})$/g, "$1:$2");
-    input.maxLength = 4;
+    input.maxLength = 5;
 };
 
 
@@ -455,6 +461,7 @@ jQuery.fn.isValid = function () {
                         results.push(_valid_date(value)); 
                         break;
                     case "datetime":
+                    case "dateshorttime":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -465,7 +472,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(false);
-                        break;
+                        break; 
                     case "time":
                     case "shorttime":                 
                         if (jQuery.trim(value) === "") {
@@ -849,7 +856,9 @@ jQuery(document).ready(function () {
         _shortTimeMask(this);
     });
 
- 
+    jQuery(".mask.dateshorttime").on('input', function () {
+        _dateShortTimeMask(this);
+    });
 
     jQuery(".mask.datetime").on('input', function () {
         _dateTimeMask(this);
