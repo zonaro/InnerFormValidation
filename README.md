@@ -43,6 +43,14 @@ Add one or more classes to any `input` element;
 
 - **date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
+- **datetime** - Valid Date and Time (in dd/MM/yyyy hh:mm:ss format);
+
+- **datetimeshort** - Valid Date and Time (in dd/MM/yyyy hh:mm format);
+
+- **time** - Valid Time (in hh:mm:ss format);
+
+- **timeshort** - Valid Time (in hh:mm format);
+
 - **mail** or **email** - Valid Email;
 
 - **cpf** - Valid  Brazilian CPF;
@@ -56,7 +64,7 @@ Add one or more classes to any `input` element;
 -  **eqv** `value` - Equal value (eg: `eqv 20`);
 
 -  **contains** `value` - contains value (eg: `contains test`);
-		
+	
 -  **tel** - Telephone/Mobile number;
 
 -  **link** or **url** - Valid URL;
@@ -80,6 +88,16 @@ Add one or more classes to any `input` element;
   - **elo**
   - **jcb**
   - **aura**
+  - **maestro**
+  - **laser**
+  - **blanche**
+  - **switch**
+  - **korean**
+  - **union**
+  - **solo**
+  - **insta**
+  - **bcglobal**
+  - **rupay**
   
   > OBS.: Define one or more brand classes to validate allowed flags. Use only  `creditcard ` class to validate any flag. After validation, this plugin adds the flagname on a `data-flagcard` attr
   
