@@ -130,7 +130,7 @@ const _cnpjMask = input => {
   input.value = text;
 };
 
-const _cardNumberMaks = input => {
+const _cardnumbermask = input => {
   var text = input.value;
   text = text.replace(/\D/g, "");
   text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
@@ -912,7 +912,7 @@ jQuery(document).ready(function() {
   });
 
   jQuery(".mask.creditcard, .mask.debitcard").on("input", function() {
-    _cardNumberMaks(this);
+    _cardnumbermask(this);
   });
 
   jQuery(".mask.date, .mask.data").on("input", function() {
