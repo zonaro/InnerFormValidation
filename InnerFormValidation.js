@@ -99,7 +99,6 @@ const _cpfCnpjMask = (input) => {
     var value = input.value;
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
-
         console.log(value.length);
         value = value.replace(/^(\d{3})(\d+)$/g, "$1.$2");
         value = value.replace(/^(\d{3}\.\d{3})(\d+)$/g, "$1.$2");
@@ -177,7 +176,6 @@ const _monthYear = input => {
     input.value = text;
 };
 
-
 const _checkLuhn = cardNo => {
     var s = 0;
     var doubleDigit = false;
@@ -228,7 +226,7 @@ const _validatecardbrand = cardnumber => {
 };
 
 const _ValidateCnpj = cnpj => {
-    cnpj = cnpj.replace(/\D/g, "");   
+    cnpj = cnpj.replace(/\D/g, "");
 
     if (cnpj == '') return false;
 
@@ -365,9 +363,6 @@ function __searchCEP(ceps, num) {
                         obj.uf
                     )
                     .change().focus();
-
-                jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
-
                 jQuery(".autocomplete.address")
                     .not(":input")
                     .text(obj.logradouro);
@@ -396,10 +391,24 @@ function __searchCEP(ceps, num) {
                         " - " +
                         obj.uf
                     );
+
+                if (obj.logradouro) {
+                    setTimeout(function () {
+                        jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
+                    });
+                } else {
+                    console.log('Address not found');
+                    setTimeout(function () {
+                        jQuery(".autocomplete.address:input").focus();
+                    });
+                }
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
                 console.log("error");
+                setTimeout(function () {
+                    jQuery(".autocomplete.address:input").focus();
+                });
             },
             complete: function () {
                 jQuery(".autocomplete.address").prop("disabled", address);
