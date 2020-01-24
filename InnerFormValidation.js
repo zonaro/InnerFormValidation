@@ -99,7 +99,7 @@ const _cpfCnpjMask = (input) => {
     var value = input.value;
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
-       
+
         console.log(value.length);
         value = value.replace(/^(\d{3})(\d+)$/g, "$1.$2");
         value = value.replace(/^(\d{3}\.\d{3})(\d+)$/g, "$1.$2");
@@ -176,7 +176,7 @@ const _monthYear = input => {
     }
     input.value = text;
 };
- 
+
 
 const _checkLuhn = cardNo => {
     var s = 0;
@@ -245,7 +245,8 @@ const _ValidateCnpj = cnpj => {
         cnpj == "66666666666666" ||
         cnpj == "77777777777777" ||
         cnpj == "88888888888888" ||
-        cnpj == "99999999999999"
+        cnpj == "99999999999999" ||
+        cnpj.length !== 14
     )
         return false;
 
@@ -334,7 +335,7 @@ function __searchCEP(ceps, num) {
             success: function (obj) {
                 jQuery(".autocomplete.address:input")
                     .val(obj.logradouro)
-                   .change().focus();
+                    .change().focus();
                 jQuery(".autocomplete.complement:input")
                     .val(obj.complemento)
                     .change().focus();
@@ -346,7 +347,7 @@ function __searchCEP(ceps, num) {
                     .change().focus();
                 jQuery(".autocomplete.state:input")
                     .val(obj.uf)
-                    .change() .focus();
+                    .change().focus();
                 jQuery(".autocomplete.fulladdress:input")
                     .val(
                         obj.logradouro +
@@ -361,7 +362,7 @@ function __searchCEP(ceps, num) {
                         " - " +
                         obj.uf
                     )
-                    .change() .focus();
+                    .change().focus();
 
                 jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
 
@@ -612,7 +613,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        value = value.replace(/[^\d]+/g, "");
+                        value = value.replace(/\D/g, "");
 
                         // Elimina CPFS invalidos conhecidos
                         if (
@@ -625,7 +626,8 @@ jQuery.fn.isValid = function () {
                             value == "66666666666" ||
                             value == "77777777777" ||
                             value == "88888888888" ||
-                            value == "99999999999"
+                            value == "99999999999" ||
+                            value.length !== 11
                         ) {
                             results.push(false);
                             break;
