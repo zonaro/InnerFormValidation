@@ -592,6 +592,14 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(value.replace("-", "").length == 8);
                         break;
+                    case "cpfcnpj":
+                    case "cnpjcpf":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));)
+                        break;
                     case "cnpj":
                         if (jQuery.trim(value) === "") {
                             results.push(true);

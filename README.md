@@ -57,6 +57,8 @@ Add one or more classes to any `input` element;
 
 - **cnpj** - Valid Brazilian CNPJ;
 
+- **cpfcnpj** - Valid Brazilian CPF or CNPJ;
+
 - **cep** - Valid  Brazilian PostalCode;
 
 - **eq** `selector` - Equal selector (eg: `eq #user_email`);
