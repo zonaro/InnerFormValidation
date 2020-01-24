@@ -598,7 +598,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));)
+                        results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));
                         break;
                     case "cnpj":
                         if (jQuery.trim(value) === "") {
@@ -938,7 +938,7 @@ jQuery(document).ready(function () {
     jQuery(".mask.cnpj").on("input", function () {
         _cnpjMask(this);
     });
-    jQuery(".mask.cpfcnpj").on('input', function () {
+    jQuery(".mask.cpfcnpj, .mask.cnpjcpf").on('input', function () {
         _cpfCnpjMask(this);
     });
 
