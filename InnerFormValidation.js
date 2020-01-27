@@ -31,6 +31,18 @@ function _valid_date(value) {
     return false;
 }
 
+const _alphamask = (input) => {
+    input.value = input.value
+        .replace(/[!@#$ %¨&* ()_ +\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
+        .replace(/[ ]+/g, ' ');
+};
+
+const _alphanumericmask = (input) => {
+    input.value = input.value
+        .replace(/[!@#$ %¨&* ()_ +\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
+        .replace(/[ ]+/g, ' ');
+};
+
 const _telMask = input => {
     var value = input.value;
     value = value.replace(/\D/g, "");
@@ -488,14 +500,21 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(!/[A-Z]/.test(value));
 
-                        break;
+                        break;                   
                     case "alphanumeric":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
                         results.push(/^[A-Za-z0-9]+$/.test(value));
-                        break;
+                        break;   
+                    case "alpha":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(/^[A-Za-z]+$/.test(value));
+                        break;  
                     case "tel":
                     case "cel":
                     case "telephone":
@@ -1000,7 +1019,7 @@ jQuery(document).ready(function () {
         _timeMask(this);
     });
 
-    jQuery(".mask.shorttime,  .mask.timeshort").on("input", function () {
+    jQuery(".mask.shorttime, .mask.timeshort").on("input", function () {
         _shortTimeMask(this);
     });
 
@@ -1010,6 +1029,14 @@ jQuery(document).ready(function () {
 
     jQuery(".mask.datetime").on("input", function () {
         _dateTimeMask(this);
+    });
+
+    jQuery(".mask.alpha").on("input", function () {
+        _alphamask(this);
+    });
+
+    jQuery(".mask.alphanumeric").on("input", function () {
+        _alphanumericmask(this);
     });
 
     jQuery(".mask.maxlen").on("input", function () {
