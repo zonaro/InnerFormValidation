@@ -29,7 +29,9 @@ Add one or more classes to any `input` element;
 
 - **obg** or **req** - Required field;
   
-- **aphanumeric** - Only Aplhanumeric characters (A to Z, 0 to 9);
+- **alphanumeric** or **alphanum** - Only Aplhanumeric characters (A to Z, 0 to 9);
+  
+- **apha** - Only Alphabetical characters (A to 9);
   
 - **upper** - Only uppercase characters (allow non alphanumeric);
   
