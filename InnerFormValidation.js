@@ -31,15 +31,20 @@ function _valid_date(value) {
     return false;
 }
 
+const _nospacemask = input => {
+    input.value = input.value
+        .replace(/[ ]+/g, '');
+};
+
 const _alphamask = (input) => {
     input.value = input.value
-        .replace(/[!@#$ %¨&* ()_ +\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
+        .replace(/[!@#$ %¨&* ()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
 const _alphanumericmask = (input) => {
     input.value = input.value
-        .replace(/[!@#$ %¨&* ()_ +\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
+        .replace(/[!@#$ %¨&* ()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
@@ -456,6 +461,7 @@ jQuery.fn.isValid = function () {
     } else {
         //debugger;
         this.removeClass("error");
+        this.removeClass("success");
         this.closest(".form-group").removeClass("has-error");
         if (this.get(0).setCustomValidity) {
             this.get(0).setCustomValidity("");
@@ -500,21 +506,22 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(!/[A-Z]/.test(value));
 
-                        break;                   
+                        break;
                     case "alphanumeric":
+                    case "alphanum":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
                         results.push(/^[A-Za-z0-9]+$/.test(value));
-                        break;   
+                        break;
                     case "alpha":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
                         results.push(/^[A-Za-z]+$/.test(value));
-                        break;  
+                        break;
                     case "tel":
                     case "cel":
                     case "telephone":
@@ -913,6 +920,10 @@ jQuery.fn.isValid = function () {
             }
         }
 
+        if (jQuery.trim(value) !== "") {
+            jQuery(this).addClass("success");
+        }
+        jQuery(this).removeClass("error");
         eval(jQuery(this).attr("data-validcallback") || "void(0)");
         return true;
     }
@@ -1035,8 +1046,12 @@ jQuery(document).ready(function () {
         _alphamask(this);
     });
 
-    jQuery(".mask.alphanumeric").on("input", function () {
+    jQuery(".mask.alphanumeric, .mask.alphanum").on("input", function () {
         _alphanumericmask(this);
+    });
+
+    jQuery(".mask.nospace").on("input", function () {
+        _nospacemask(this);
     });
 
     jQuery(".mask.maxlen").on("input", function () {
