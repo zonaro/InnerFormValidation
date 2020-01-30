@@ -38,13 +38,13 @@ const _nospacemask = input => {
 
 const _alphamask = (input) => {
     input.value = input.value
-        .replace(/[!@#$ %¨&* ()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
+        .replace(/[!@#$%¨&*()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
 const _alphanumericmask = (input) => {
     input.value = input.value
-        .replace(/[!@#$ %¨&* ()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
+        .replace(/[!@#$%¨&*()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
