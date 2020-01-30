@@ -484,6 +484,13 @@ jQuery.fn.isValid = function () {
         for (var i = 0; i < valids.length; i++) {
             if (this.prop("disabled") == false) {
                 switch (valids[i].toLowerCase()) {
+                    case "nospace":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(value.indexOf(" ") < 0);
+                        break;
                     case "number":
                     case "num":
                         if (jQuery.trim(value) === "") {
@@ -513,14 +520,14 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(/^[A-Za-z0-9]+$/.test(value));
+                        results.push(/^[A-Za-z0-9 ]+$/.test(value));
                         break;
                     case "alpha":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
-                        results.push(/^[A-Za-z]+$/.test(value));
+                        results.push(/^[A-Za-z ]+$/.test(value));
                         break;
                     case "tel":
                     case "cel":
