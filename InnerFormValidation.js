@@ -1,4 +1,4 @@
-﻿var __today = Date.now();
+﻿
 var __timer;
 
 function _valid_time(value) {
@@ -17,18 +17,29 @@ function _valid_time(value) {
     return false;
 }
 
-function _valid_date(value) {
+
+function _validDate(value) {
+    return !isNaN(_parseDate(value));
+}
+
+function _parseDate(value) {
+    var dt = 0;
     var comp = value.split(" ")[0].split("/");
     if (comp.length == 3) {
+        comp[2] = comp[2].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[2] : comp[2];
         var d = parseInt(comp[0], 10);
         var m = parseInt(comp[1], 10) - 1;
         var y = parseInt(comp[2], 10);
-        var date = new Date(y, m, d);
-        return (
-            date.getFullYear() == y && date.getMonth() == m && date.getDate() == d
-        );
+        dt = new Date(y, m, d);
     }
-    return false;
+    if (comp.length == 2) {
+        comp[1] = comp[1].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[1] : comp[1];
+        var m = parseInt(comp[0], 10) - 1;
+        var y = parseInt(comp[1], 10);
+        dt = new Date(y, m, 1);
+    }
+    if (dt > 0) { return dt * 1 };
+    return null;
 }
 
 const _nospacemask = input => {
@@ -578,7 +589,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(_valid_date(value));
+                        results.push(_validDate(value));
                         break;
                     case "datetime":
                     case "dateshorttime":
@@ -589,7 +600,7 @@ jQuery.fn.isValid = function () {
                         }
                         var comp = value.split(" ");
                         if (comp.length == 2) {
-                            results.push(_valid_date(comp[0]) && _valid_time(comp[1]));
+                            results.push(_validDate(comp[0]) && _valid_time(comp[1]));
                             break;
                         }
                         results.push(false);
@@ -768,29 +779,18 @@ jQuery.fn.isValid = function () {
                         }
 
                         var num = valids[i + 1] || "0";
-                        if (
-                            (num.indexOf("today") || num.indexOf("/")) &&
-                            jQuery(this).isValid("date")
-                        ) {
-                            var comp = value.split("/");
-                            var d = parseInt(comp[0]);
-                            var m = parseInt(comp[1]) - 1;
-                            var y = parseInt(comp[2]);
-                            value = +new Date(y, m, d);
+                        if ((num.indexOf("today") || num.indexOf("/")) && _validDate(value)) {
+                            value = _parseDate(value);
                             if (num == "today") {
-                                num = __today;
+                                num = Date.now();
                             } else {
-                                comp = num.split("/");
-                                d = parseInt(comp[0]);
-                                m = parseInt(comp[1]) - 1;
-                                y = parseInt(comp[2]);
-                                num = +new Date(y, m, d);
+                                num = _parseDate(num);
                             }
                         }
                         if (valids[i] == "after") {
-                            results.push(parseFloat(value) >= parseFloat(num));
+                            results.push(value >= num);
                         } else {
-                            results.push(parseFloat(value) <= parseFloat(num));
+                            results.push(value <= num);
                         }
                         break;
                     case "eq":
