@@ -1,4 +1,4 @@
-﻿
+
 var __timer;
 
 function _valid_time(value) {
@@ -260,6 +260,8 @@ const _ValidateCnpj = cnpj => {
 
     if (cnpj.length != 14)
         return false;
+
+      
 
     // Elimina CNPJs invalidos conhecidos
     if (cnpj == "00000000000000" ||
