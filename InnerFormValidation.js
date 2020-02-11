@@ -18,6 +18,37 @@ function _valid_time(value) {
 }
 
 
+const _validateNotChar = (value, chars) => {
+    chars = chars.split("");
+    for (var i = 0; i < chars.length; i++) {
+        if (value.indexOf(chars[i]) >= 0) {
+            return false;
+        }
+    }
+    return true;
+};
+const _validateAnyChar = (value, chars) => {    
+    chars = chars.split("");
+    var v = [];
+    for (var i = 0; i < chars.length; i++) {
+        if (value.indexOf(chars[i]) >= 0) {
+            v.push(true);
+        }
+    }
+    return v.indexOf(true) >= 0;
+};
+
+const _validateAllChar = (value, chars) => {
+    chars = chars.split("");
+    var v = [];
+    for (var i = 0; i < chars.length; i++) {
+        if (value.indexOf(chars[i]) >= 0) {
+            v.push(true);
+        } else { v.push(false); }
+    }
+    return v.indexOf(false) < 0;
+};
+
 function _validDate(value) {
     return !isNaN(_parseDate(value));
 }
@@ -261,7 +292,7 @@ const _ValidateCnpj = cnpj => {
     if (cnpj.length != 14)
         return false;
 
-      
+
 
     // Elimina CNPJs invalidos conhecidos
     if (cnpj == "00000000000000" ||
@@ -814,48 +845,78 @@ jQuery.fn.isValid = function () {
                         var valor2 = jQuery(selector).val() || jQuery(selector).text();
                         results.push(valor1 == valor2);
                         break;
+                    case "notchars":
+                    case "notchar":
+                    case "containsnotchar":
+                    case "containsnotchars":
+                    case "notcontainschars":                        
+                    case "notcontainschar":                        
                     case "eqv":
                     case "equalvalue":
                     case "equal-value":
                     case "eq-v":
+                    case "contains":
+                    case "cnts":
+                    case "containsstring":
+                    case "containsanychar":
+                    case "containschar":
+                    case "containsanychars":
+                    case "containsallchar":
+                    case "containsallchars":
+
                         if (jQuery.trim(value) === "") {
                             results.push(true);
-                            break;
-                        }
-                        if (typeof valids[i + 1] === "undefined") {
-                            results.push(false);
                             break;
                         }
                         var valor2 =
-                            jQuery(this).attr("data-eq") ||
-                            jQuery(this).attr("data-equal") ||
+                            jQuery(this).attr("data-cnts") ||
+                            jQuery(this).attr("data-contains") ||
+                            jQuery(this).attr("data-string") ||
+                            jQuery(this).attr("data-value") ||
                             valids[i + 1] ||
-                            null;
-                        var valor1 = jQuery(this).val();
-                        results.push(valor1 == valor2);
-                        break;
-                    case "contains":
-                    case "cnts":
-                        if (jQuery.trim(value) === "") {
-                            results.push(true);
-                            break;
-                        }
-                        if (typeof valids[i + 1] === "undefined") {
+                            "";
+
+                        if (valor2 === "") {
                             results.push(false);
                             break;
                         }
 
-                        var valor2 =
-                            jQuery(this).attr("data-cnts") ||
-                            jQuery(this).attr("data-contains") ||
-                            valids[i + 1] ||
-                            "";
+
                         var valor1 = jQuery(this).val();
                         if (valor2.toLowerCase() == "_space") {
                             valor2 = " ";
                         }
-                        results.push(valor1.includes(valor2));
+
+                        switch (valids[i].toLowerCase()) {
+                            case "containsanychar":
+                            case "containsanychars":
+                                results.push(_validateAnyChar(valor1, valor2));
+                                break;
+                            case "containschar":
+                            case "containsallchar":
+                            case "containsallchars":
+                                results.push(_validateAllChar(valor1, valor2));
+                                break;
+                            case "eqv":
+                            case "equalvalue":
+                            case "equal-value":
+                            case "eq-v":
+                                results.push(valor1 == valor2);
+                                break;
+                            case "notchars":
+                            case "notchar":
+                            case "containsnotchar":
+                            case "containsnotchars":
+                            case "notcontainschars":
+                            case "notcontainschar":
+                                results.push(_validateNotChar(valor1, valor2));
+                                break;
+                            default:
+                                results.push(valor1.includes(valor2));
+                                break;
+                        }
                         break;
+
                     case "len":
                         if (jQuery.trim(value) === "") {
                             results.push(true);

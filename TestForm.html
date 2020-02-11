@@ -19,300 +19,356 @@
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Testar Validação</h1>
-                <form action="javascript:void(0)" class="validate">
+        <form action="javascript:void(0)" class="validate">
 
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>Testar Validação</h1>
+                </div>
+
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Sem espaços (com mascara)</label>
                         <input type='text' placeholder="Texto" class='form-control mask nospace' />
-
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Alfanumerico (A-Z, 0-9)</label>
                         <input type='text' placeholder="Texto" class='form-control alphanumeric' />
 
                     </div>
-                     
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Alfabetico (A-Z)</label>
                         <input type='text' placeholder="Texto" class='form-control alpha' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Apenas minusculas</label>
                         <input type='text' placeholder="Texto" class='form-control lower' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Apenas minusculas (com mascara)</label>
                         <input type='text' placeholder="Texto" class='form-control mask lower' />
 
                     </div>
-
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Apenas maiusculas</label>
                         <input type='text' placeholder="Texto" class='form-control upper' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Apenas maiusculas (com mascara)</label>
                         <input type='text' placeholder="Texto" class='form-control mask upper' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo obrigatorio</label>
                         <input type='text' placeholder="Preencha esse campo" class='form-control obg' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo com no minimo 4 caracteres</label>
                         <input type='text' placeholder="" class='form-control minlen 4' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo com no maximo 4 caracteres</label>
                         <input type='text' placeholder="" class='form-control maxlen 4' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo com no maximo 4 caracteres (Mascara de limite)</label>
                         <input type='text' placeholder="" class='form-control mask len 4' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo com exatos 4 caracteres</label>
                         <input type='text' placeholder="" class='form-control len 4' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo com exatos 4 caracteres (mascara de limite)</label>
                         <input type='text' placeholder="" class='form-control mask len 4' />
                     </div>
 
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo Contendo espaço</label>
                         <input type='text' placeholder="Nome e Sobrenome" class='form-control contains _space' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
-                        <label>Campo Contendo o caractere {</label>
-                        <input type='text' placeholder="Digite o Caractere {" class='form-control contains {' />
+                        <label>Campo Contendo algum dos caracteres {}()</label>
+                        <input type='text' placeholder="Digite alguns caracteres" class='form-control containsanychar {}()' />
 
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Campo Contendo nenhum dos caracteres ABCD</label>
+                        <input type='text' placeholder="Digite alguns caracteres" class='form-control notcontainschar ABCD' />
 
+                    </div>
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Campo obrigatorio com mensagem</label>
                         <input type='text' placeholder="Preencha esse campo" class='form-control obg' data-invalidmessage="Este campo precisa muito ser preenchido! 🙄" />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Email</label>
                         <input type='text' placeholder="Email" class='form-control email' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>  Campo numerico</label>
                         <input type='text' placeholder="Apenas Numeros" class='form-control num' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Campo numerico com Mascara</label>
                         <input type='text' placeholder="Apenas Numeros" class='form-control mask num' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>  Telefone com Mascara</label>
                         <input type='text' placeholder="Telefone" class='form-control mask tel' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>   Telefone sem Mascara</label>
                         <input type='text' placeholder="Telefone" class='form-control tel' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>  CPF com Mascara</label>
                         <input type='text' placeholder="CPF" class='form-control mask cpf' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <div>   CNPJ com Mascara</div>
                         <input type='text' placeholder="CNPJ" class='form-control mask cnpj' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <div>   CPF ou CNPJ com Mascara</div>
                         <input type='text' placeholder="CPF ou CNPJ" class='form-control mask cpfcnpj' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>   CEP com Mascara</label>
                         <input type='text' placeholder="CEP" class='form-control mask cep' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
 
                     <div class="form-group">
                         <label>URL</label>
                         <input type='text' placeholder="CEP" class='form-control mask url' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Data com Mascara</label>
                         <input type='text' placeholder="Data" class='form-control mask date' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Hora com Mascara</label>
                         <input type='text' placeholder="hh:mm:ss" class='form-control mask time' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Data e Hora com Mascara</label>
                         <input type='text' placeholder="dd/MM/yyyy hh:mm:ss" class='form-control mask datetime' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Data e Hora com Mascara (curto)</label>
                         <input type='text' placeholder="dd/MM/yyyy hh:mm" class='form-control mask datetimeshort' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Hora com Mascara (curto)</label>
                         <input type='text' placeholder="hh:mm" class='form-control mask timeshort' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Numero maior que 10</label>
                         <input type='text' placeholder="Numero" class='form-control mask num after 10' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Numero menor que 10</label>
                         <input type='text' placeholder="Numero" class='form-control mask num before 10' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Data Anterior a Hoje</label>
                         <input type='text' placeholder="Data" class='form-control mask date before today' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Data Posterior a Hoje</label>
                         <input type='text' placeholder="Data" class='form-control mask date after today' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Comparacao de Campos</label>
                         <input type='text' id="c1" placeholder="Senha" class='form-control eq #c2' />
                         <input type='text' id="c2" placeholder="Confirmar Senha" class='form-control eq #c1' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Senha Forte (Minimo 8 caracteres e 4 critérios)</label>
                         <input type='password' placeholder="Senha" class='form-control password strong minlen 8' />
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>  Senha Media (Minimo 4 caracteres e 3 critérios)</label>
                         <input type='password' placeholder="Senha" class='form-control password medium minlen 4' />
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Cartao de Credito com Mascara</label>
                         <input type='text' id="senha" placeholder="Qualquer Cartao" class='form-control mask creditcard' />
 
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Cartao de Credito Visa com Mascara</label>
                         <input type='text' placeholder="Visa" class='form-control mask creditcard visa' />
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Cartao de Credito Mastercard com Mascara</label>
                         <input type='text' placeholder="Mastercard" class='form-control mask creditcard mastercard' />
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Range de Numeros</label>
                         <input type='text' placeholder="(entre 1 e 10)" class='form-control mask num 1 to 10' />
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Range de Datas</label>
                         <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange" class='form-control mask date 01/01/2019 to 31/12/2019' />
                     </div>
-
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>Callback de Erro e Sucesso (compara com o texto da div #div_OK)</label>
                         <input type='text' placeholder="Escreva OK neste campo" class='form-control obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeIn()" data-validcallback="$('#div_OK').fadeOut()" />
                     </div>
                     <p id="div_OK">OK</p>
 
-
+                </div>
+                <div class="col-md-6">
 
                     <div class="form-group">
                         <label>Numero do Autocomplete</label>
                         <input type='text' placeholder="Digite o Numero" class='form-control mask num autocomplete' />
                     </div>
+                </div>
+                <div class="col-md-6">
                     <div class="form-group">
                         <label>CEP com Autocomplete de Endereco</label>
                         <input type='text' placeholder="Digite o CEP" class='form-control mask cep autocomplete' />
                     </div>
-
                     <p class="autocomplete fulladdress"></p>
-
-                    <button class="btn btn-success">Testar</button>
-
-                </form>
-
-                <style>
-                    .error {
-                        border-color: red !important;
-                    }
-
-                    .success {
-                        border-color: green !important;
-                    }
-                </style>
+                </div>
             </div>
-        </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-success">Testar</button>
+                </div>
+            </div>
+
+            <style>
+                .error {
+                    border-color: red !important;
+                }
+
+                .success {
+                    border-color: green !important;
+                }
+            </style>
+
+        </form>
     </div>
 
 </body>
