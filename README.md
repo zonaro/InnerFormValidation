@@ -120,6 +120,19 @@ Add one or more classes to any `input` element;
   > OBS.: you can also use the class `today` in place of `date`
 
 
+- **contains** `string` - value contains string;
+
+- **containschar** `string` - value contains all chars of string (in any order);
+
+- **containsanychar** `string` - value contains any chars of string (in any order);
+
+- **notcontainschar** `string` - value contains none of chars of string (in any order);
+
+
+
+
+
+
 ### Address Autocomplete Classes
 
 Add the  `autocomplete` class followed by:
