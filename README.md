@@ -49,6 +49,8 @@ Add one or more classes to any `input` element;
 
 - **datetimeshort** - Valid Date and Time (in dd/MM/yyyy hh:mm format);
 
+- **monthyear** - Valid Date (in MM/yy format);
+
 - **time** - Valid Time (in hh:mm:ss format);
 
 - **timeshort** - Valid Time (in hh:mm format);
@@ -128,12 +130,14 @@ Add one or more classes to any `input` element;
 
 - **notcontainschar** `string` - value contains none of chars of string (in any order);
 
+  >  OBS.: you can also use the class `_space` to validate blank spaces in string
 
 
 
 
 
-### Address Autocomplete Classes
+
+### Brazilian Address Autocomplete Classes
 
 Add the  `autocomplete` class followed by:
 
