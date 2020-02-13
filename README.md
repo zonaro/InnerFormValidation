@@ -148,5 +148,22 @@ Add the  `autocomplete` class followed by:
  - **city** - to print the city on input or element;
  - **state** - to print the state on input or element;
  - **num** or **number** - to add the address number. It is focused after a successfully address search;
-   
+
+### Validation Styles
+
+After validation the inputs receive a class indicating **success** or **error**:
+
+```css
+.error{
+    border-color:red;
+}
+
+.success{
+    border-color:green;
+}
+```
+
+> OBS.: success apply only on non-blank values
+
+
 
