@@ -23,47 +23,47 @@ Add  `validate` class on`form` tag
 
 Add one or more classes to any `input` element;
 
-> Optional: Add `mask` class combined with any class below to use the respective mask
+> Optional: Add `mask` class combined with any class below to use the respective mask. The compatible classes are marked with 🎭
 
 #### Validation/Mask Classes
 
 - **obg** or **req** - Required field;
   
-- **alphanumeric** or **alphanum** - Only Aplhanumeric characters (Aa to Zz, 0 to 9);
+- 🎭**alphanumeric** or **alphanum** - Only Aplhanumeric characters (Aa to Zz, 0 to 9);
   
-- **apha** - Only Alphabetical characters (Aa to Zz);
+- 🎭**apha** - Only Alphabetical characters (Aa to Zz);
   
-- **upper** - Only uppercase characters (allow non alphanumeric);
+- 🎭**upper** - Only uppercase characters (allow non alphanumeric);
   
-- **lower** - Only lowercase characters (allow non alphanumeric);
+- 🎭**lower** - Only lowercase characters (allow non alphanumeric);
   
-- **minlen** `numericvalue` - Minimum `numericvalue` characters;
+- 🎭**minlen** `numericvalue` - Minimum `numericvalue` characters;
 
-- **maxlen** `numericvalue` - Maximum `numericvalue` characters;
+- 🎭**maxlen** `numericvalue` - Maximum `numericvalue` characters;
 
 - **len** `numericvalue` - Exact `numericvalue` of characters;
 
-- **date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
+- 🎭**date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
-- **datetime** - Valid Date and Time (in dd/MM/yyyy hh:mm:ss format);
+- 🎭**datetime** - Valid Date and Time (in dd/MM/yyyy hh:mm:ss format);
 
-- **datetimeshort** - Valid Date and Time (in dd/MM/yyyy hh:mm format);
+- 🎭**datetimeshort** - Valid Date and Time (in dd/MM/yyyy hh:mm format);
 
-- **monthyear** - Valid Date (in MM/yy format);
+- 🎭**monthyear** - Valid Date (in MM/yy format);
 
-- **time** - Valid Time (in hh:mm:ss format);
+- 🎭**time** - Valid Time (in hh:mm:ss format);
 
-- **timeshort** - Valid Time (in hh:mm format);
+- 🎭**timeshort** - Valid Time (in hh:mm format);
 
 - **mail** or **email** - Valid Email;
 
-- **cpf** - Valid  Brazilian CPF;
+- 🎭**cpf** - Valid  Brazilian CPF;
 
-- **cnpj** - Valid Brazilian CNPJ;
+- 🎭**cnpj** - Valid Brazilian CNPJ;
 
-- **cpfcnpj** - Valid Brazilian CPF or CNPJ;
+- 🎭**cpfcnpj** - Valid Brazilian CPF or CNPJ;
 
-- **cep** - Valid  Brazilian PostalCode;
+- 🎭**cep** - Valid  Brazilian PostalCode;
 
 - **eq** `selector` - Equal selector (eg: `eq #user_email`);
 
@@ -71,7 +71,7 @@ Add one or more classes to any `input` element;
 
 -  **contains** `value` - contains value (eg: `contains test`);
 	
--  **tel** - Telephone/Mobile number;
+-  🎭**tel** - Telephone/Mobile number;
 
 -  **link** or **url** - Valid URL;
 
@@ -83,7 +83,7 @@ Add one or more classes to any `input` element;
 
   > OBS.: Define minimum password lenght using **minlen**; After validation, this plugin adds a `data-pwstrenght` with the number of matched criterias
 
-- **creditcard** or **debitcard** - Valid Credit Card Number:
+- 🎭**creditcard** or **debitcard** - Valid Credit Card Number:
 
   - **visa** 
   - **mastercard**
