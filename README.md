@@ -167,3 +167,10 @@ After validation the inputs receive a class indicating **success** or **error**:
 
 
 
+### Validation Attributes
+
+You can add the following attributes in the inputs:
+
+- **data-invalidmessage** - to show a error message using the default HTML5 bubble;
+- **data-invalidcallback** - to execute a function or script after a validation error;
+- **data-validcallback** - to execute a function or script after a validation success;
