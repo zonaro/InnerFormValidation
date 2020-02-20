@@ -37,7 +37,7 @@ Add one or more classes to any `input` element;
   
 - 🎭**lower** - Only lowercase characters (allow non alphanumeric);
   
-- 🎭**minlen** `numericvalue` - Minimum `numericvalue` characters;
+- **minlen** `numericvalue` - Minimum `numericvalue` characters;
 
 - 🎭**maxlen** `numericvalue` - Maximum `numericvalue` characters;
 
