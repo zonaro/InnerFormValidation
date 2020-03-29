@@ -5,12 +5,12 @@ Mask and Validate Forms with jQuery and CSS classes
 
 ### Examples
 
-[Formulário de teste]( https://innercodebr.github.io/InnerFormValidation/TestForm )
+[Formulário de teste]( https://innercodetech.github.io/InnerFormValidation/TestForm )
 
 ### CDN
 
 ```html
-<script src="https://gitcdn.xyz/repo/Innercodebr/InnerFormValidation/master/InnerFormValidation.js"></script>
+<script src="https://gitcdn.xyz/repo/innercodetech/InnerFormValidation/master/InnerFormValidation.js"></script>
 ```
 
 
