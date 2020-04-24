@@ -31,7 +31,7 @@ Add one or more classes to any `input` element;
   
 - 🎭**alphanumeric** or **alphanum** - Only Aplhanumeric characters (Aa to Zz, 0 to 9);
 
-- - 🎭**num** or **number** - Only number characters (0 to 9);
+- 🎭**num** or **number** - Only number characters (0 to 9);
   
 - 🎭**apha** - Only Alphabetical characters (Aa to Zz);
   
