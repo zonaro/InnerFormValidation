@@ -49,7 +49,7 @@ const _validateAllChar = (value, chars) => {
 
 function _validDate(value) {
     var datenumber = _parseDate(value);
-    return !isNaN(datenumber);
+    return datenumber != null && !isNaN(datenumber);
 }
 
 function _parseDate(value) {
@@ -69,12 +69,11 @@ function _parseDate(value) {
         d = 1
         m = parseInt(comp[0], 10) - 1;
         y = parseInt(comp[1], 10);
-    }
-    debugger;
+    }    
     dt = new Date(y, m, d);
-    var lastday = new Date(y, m + 1, 0).getDate();
+    var lastday = new Date(y, m + 1, 0);
     if (m > 11 || m < 1) { return null }
-    if (d > lastday || d < 1) { return null }
+    if (d > lastday.getDate() || d < 1) { return null }
     if (dt > 0) { return dt * 1 };
     return null;
 }
