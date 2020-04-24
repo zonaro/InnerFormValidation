@@ -73,9 +73,10 @@ function _parseDate(value) {
     }
 
     dt = new Date(y, m, d);
-
+    var lastday = new Date(y, m + 1, 0).getDate();
+    debugger;
     if (m > 12 || m < 1) {return null}
-    if (d > 31 || d < 1) { return null }
+    if (d > lastday || d < 1) { return null }
     if (dt > 0) { return dt * 1 };
     return null;
 }
@@ -629,6 +630,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
+                        results.push(value.split("/").length == 2)
                         results.push(_validDate(value));
                         break;
                     case "datetime":
