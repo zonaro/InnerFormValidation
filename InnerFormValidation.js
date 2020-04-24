@@ -1,4 +1,3 @@
-
 var __timer;
 
 function _valid_time(value) {
@@ -17,7 +16,6 @@ function _valid_time(value) {
     return false;
 }
 
-
 const _validateNotChar = (value, chars) => {
     chars = chars.split("");
     for (var i = 0; i < chars.length; i++) {
@@ -27,7 +25,7 @@ const _validateNotChar = (value, chars) => {
     }
     return true;
 };
-const _validateAnyChar = (value, chars) => {    
+const _validateAnyChar = (value, chars) => {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -61,21 +59,20 @@ function _parseDate(value) {
     var comp = value.split(" ")[0].split("/");
     if (comp.length == 3) {
         comp[2] = comp[2].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[2] : comp[2];
-         d = parseInt(comp[0], 10);
-         m = parseInt(comp[1], 10) - 1;
-         y = parseInt(comp[2], 10);
+        d = parseInt(comp[0], 10);
+        m = parseInt(comp[1], 10) - 1;
+        y = parseInt(comp[2], 10);
     }
     if (comp.length == 2) {
         comp[1] = comp[1].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[1] : comp[1];
-         d = 1
-         m = parseInt(comp[0], 10) - 1;
-         y = parseInt(comp[1], 10);        
+        d = 1
+        m = parseInt(comp[0], 10) - 1;
+        y = parseInt(comp[1], 10);
     }
 
     dt = new Date(y, m, d);
-    var lastday = new Date(y, m + 1, 0).getDate();
-    debugger;
-    if (m > 12 || m < 1) {return null}
+    var lastday = new Date(y, m + 1, 0).getDate(); 
+    if (m > 12 || m < 1) { return null }
     if (d > lastday || d < 1) { return null }
     if (dt > 0) { return dt * 1 };
     return null;
@@ -299,8 +296,6 @@ const _ValidateCnpj = cnpj => {
 
     if (cnpj.length != 14)
         return false;
-
-
 
     // Elimina CNPJs invalidos conhecidos
     if (cnpj == "00000000000000" ||
@@ -858,8 +853,8 @@ jQuery.fn.isValid = function () {
                     case "notchar":
                     case "containsnotchar":
                     case "containsnotchars":
-                    case "notcontainschars":                        
-                    case "notcontainschar":                        
+                    case "notcontainschars":
+                    case "notcontainschar":
                     case "eqv":
                     case "equalvalue":
                     case "equal-value":
@@ -889,7 +884,6 @@ jQuery.fn.isValid = function () {
                             results.push(false);
                             break;
                         }
-
 
                         var valor1 = jQuery(this).val();
                         if (valor2.toLowerCase() == "_space") {
@@ -1015,10 +1009,8 @@ jQuery(document).ready(function () {
         return jQuery(this).isValid();
     });
 
-    jQuery(
-        'form.validate, form[data-validate="true"], form[data-validation="true"]'
-    )
-        .find(":input")
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]')
+        .find("onkeyup")
         .on("keyup", function () {
             var p = jQuery(this);
             p.removeClass("error");
@@ -1029,9 +1021,7 @@ jQuery(document).ready(function () {
             }, 900);
         });
 
-    jQuery(
-        'form.validate, form[data-validate="true"], form[data-validation="true"]'
-    )
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]')
         .find(":input")
         .on("blur", function () {
             jQuery(this).isValid();
