@@ -55,20 +55,27 @@ function _validDate(value) {
 
 function _parseDate(value) {
     var dt = 0;
+    var d = 0;
+    var m = 0;
+    var y = 0;
     var comp = value.split(" ")[0].split("/");
     if (comp.length == 3) {
         comp[2] = comp[2].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[2] : comp[2];
-        var d = parseInt(comp[0], 10);
-        var m = parseInt(comp[1], 10) - 1;
-        var y = parseInt(comp[2], 10);
-        dt = new Date(y, m, d);
+         d = parseInt(comp[0], 10);
+         m = parseInt(comp[1], 10) - 1;
+         y = parseInt(comp[2], 10);
     }
     if (comp.length == 2) {
         comp[1] = comp[1].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[1] : comp[1];
-        var m = parseInt(comp[0], 10) - 1;
-        var y = parseInt(comp[1], 10);
-        dt = new Date(y, m, 1);
+         d = 1
+         m = parseInt(comp[0], 10) - 1;
+         y = parseInt(comp[1], 10);        
     }
+
+    dt = new Date(y, m, d);
+
+    if (m > 12 || m < 1) {return null}
+    if (d > 31 || d < 1) { return null }
     if (dt > 0) { return dt * 1 };
     return null;
 }
