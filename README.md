@@ -1,5 +1,5 @@
 # InnerFormValidation
-Mask and Validate Forms with jQuery and CSS classes
+Mask and Validate Forms with jQuery and CSS classes.
 
 
 
@@ -25,6 +25,8 @@ Add one or more classes to any `input` element;
 
 > Optional: Add `mask` class combined with any class below to use the respective mask. The compatible classes are marked with 🎭
 
+>Optional: Add `onkeyup` class to validate as soon as the user stops typing
+>
 #### Validation/Mask Classes
 
 - **obg** or **req** - Required field;
@@ -149,7 +151,7 @@ Add the  `autocomplete` class followed by:
  - **neighborhood** - to print the neighborhood on input or element;
  - **city** - to print the city on input or element;
  - **state** - to print the state on input or element;
- - **num** or **number** - to add the address number. It is focused after a successfully address search;
+ - **num** or **number** or **homenum** or **homenumber** - to add the address number. It is focused after a successfully address search. the **homenum** and **homenumber** classes skips the *only numbers* validation;
 
 ### Validation Styles
 

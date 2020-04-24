@@ -458,7 +458,7 @@ function __searchCEP(ceps, num) {
 
                 if (obj.logradouro) {
                     setTimeout(function () {
-                        jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
+                        jQuery(".autocomplete.num:input, .autocomplete.number:input, .autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
                     });
                 } else {
                     console.log('Address not found');
@@ -1091,7 +1091,7 @@ jQuery(document).ready(function () {
     jQuery(".autocomplete.cep").on("input", function () {
         __searchCEP(
             jQuery(this).val(),
-            jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val()
+            jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val() || jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val()
         );
     });
 
