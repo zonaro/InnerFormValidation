@@ -625,7 +625,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(value.split("/").length == 2)
+                        results.push(value.split("/").length == 3)
                         results.push(_validDate(value));
                         break;
                     case "datetime":
