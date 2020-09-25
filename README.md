@@ -183,14 +183,14 @@ You can add the following attributeson forms and inputs:
 
 #### HTML5 Default Validation
 
-- **data-invalidmessage** - to show a *error* message using the default HTML5 bubble;
+- **data-invalidmessage** - to show a *error* message using the default HTML5 bubble (only inputs);
 
 #### Javascript Callbacks
 
-- **data-beforevalidatecallback** - to execute a function or script before a validation *success* or *error*;
-- **data-invalidcallback** - to execute a function or script after a validation *error*;
-- **data-validcallback** - to execute a function or script after a validation *success*;
-- **data-aftervalidatecallback** - to execute a function or script after a validation *success* or *error*;
+- **data-beforevalidatecallback** - to execute a function before a validation *success* or *error*;
+- **data-invalidcallback** - to execute a function  after a validation *error*;
+- **data-validcallback** - to execute a function  after a validation *success*;
+- **data-aftervalidatecallback** - to execute a function  after a validation *success* or *error*;
 
  
 
