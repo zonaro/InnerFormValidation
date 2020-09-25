@@ -16,6 +16,10 @@ function _valid_time(value) {
     return false;
 }
 
+const _getAge = birthDate => Math.floor((new Date() - _parseDate(birthDate)) / 3.15576e+10);
+
+
+
 const _validateNotChar = (value, chars) => {
     chars = chars.split("");
     for (var i = 0; i < chars.length; i++) {
@@ -969,6 +973,18 @@ jQuery.fn.isValid = function () {
                         var v1 = jQuery(this).isValid("after " + valids[i - 1]);
                         var v2 = jQuery(this).isValid("before " + valids[i + 1]);
                         results.push(v1 && v2);
+                        break;
+                    case "minage":                            
+                        var idade = _getAge(value);
+                        results.push(idade >= parseInt(valids[i + 1]));                          
+                        break;
+                    case "maxage":
+                        var idade = _getAge(value);
+                        results.push(idade <= parseInt(valids[i + 1]));                          
+                        break;
+                    case "age":
+                        var idade = _getAge(value);
+                        results.push(idade == parseInt(valids[i + 1]));                          
                         break;
                     default:
                         results.push(true);
