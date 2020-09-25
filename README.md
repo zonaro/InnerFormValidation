@@ -63,7 +63,7 @@ Add one or more classes to any `input` element;
 
 - **maxage** `numericvalue` - Age smaller than `numericvalue`  from date (in *dd/MM/yyyy* format);
 
-- **maxage** `numericvalue` - Exact age `numericvalue`  from date (in *dd/MM/yyyy* format);
+- **age** `numericvalue` - Exact age `numericvalue`  from date (in *dd/MM/yyyy* format);
 
 - **mail** or **email** - Valid Email;
 
