@@ -140,7 +140,7 @@ const _dateTimeMask = (input = new HTMLInputElement()) => {
     input.maxLength = 19;
 };
 
-const _dateShortTimeMask = input => {
+const _dateShortTimeMask = input => {    
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -492,8 +492,9 @@ function __searchCEP(ceps, num) {
 
 jQuery.fn.isValid = function () {
     var results = [];
-
+ 
     if (jQuery(this).length > 1 || jQuery(this).prop("tagName") == "FORM") {
+        eval(jQuery(this).attr("data-beforevalidatecallback") || "void(0)");
         var elements = [];
         var config = Array.prototype.slice.call(arguments)[0];
         jQuery(this)
@@ -505,9 +506,13 @@ jQuery.fn.isValid = function () {
 
         for (var mm = 0; mm < results.length; mm++) {
             if (results[mm] === false) {
+                eval(jQuery(this).attr("data-invalidcallback") || "void(0)");
+                eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
                 return false;
             }
         }
+        eval(jQuery(this).attr("data-validcallback") || "void(0)");
+        eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
         return true;
     } else {
         //debugger;
@@ -974,15 +979,27 @@ jQuery.fn.isValid = function () {
                         var v2 = jQuery(this).isValid("before " + valids[i + 1]);
                         results.push(v1 && v2);
                         break;
-                    case "minage":                            
+                    case "minage":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }                            
                         var idade = _getAge(value);
                         results.push(idade >= parseInt(valids[i + 1]));                          
                         break;
                     case "maxage":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
                         var idade = _getAge(value);
                         results.push(idade <= parseInt(valids[i + 1]));                          
                         break;
                     case "age":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
                         var idade = _getAge(value);
                         results.push(idade == parseInt(valids[i + 1]));                          
                         break;
@@ -1005,6 +1022,7 @@ jQuery.fn.isValid = function () {
                     .get(0)
                     .setCustomValidity(jQuery(this).attr("data-invalidmessage") || "");
                 eval(jQuery(this).attr("data-invalidcallback") || "void(0)");
+                eval(jQuery(this).attr("data-aftervalidate") || "void(0)");
                 return false;
             }
         }
@@ -1014,6 +1032,7 @@ jQuery.fn.isValid = function () {
         }
         jQuery(this).removeClass("error");
         eval(jQuery(this).attr("data-validcallback") || "void(0)");
+        eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
         return true;
     }
 };

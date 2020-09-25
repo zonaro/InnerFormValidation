@@ -177,10 +177,20 @@ After validation the inputs receive a class indicating **success** or **error**:
 
 
 
-### Validation Attributes
+### Data Attributes
 
-You can add the following attributes in the inputs:
+You can add the following attributeson forms and inputs:
 
-- **data-invalidmessage** - to show a error message using the default HTML5 bubble;
-- **data-invalidcallback** - to execute a function or script after a validation error;
-- **data-validcallback** - to execute a function or script after a validation success;
+#### HTML5 Default Validation
+
+- **data-invalidmessage** - to show a *error* message using the default HTML5 bubble;
+
+#### Javascript Callbacks
+
+- **data-beforevalidatecallback** - to execute a function or script before a validation *success* or *error*;
+- **data-invalidcallback** - to execute a function or script after a validation *error*;
+- **data-validcallback** - to execute a function or script after a validation *success*;
+- **data-aftervalidatecallback** - to execute a function or script after a validation *success* or *error*;
+
+ 
+
