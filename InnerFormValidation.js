@@ -119,7 +119,7 @@ const _lowerMask = input => {
 };
 
 const _dateMask = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
     text = text.replace(/^(\d{2}\/\d{2})(\d{1,4})$/g, "$1/$2");
@@ -182,7 +182,7 @@ const _cpfCnpjMask = (input) => {
 };
 
 const _cpfMask = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{3})(\d+)/g, "$1.$2");
     text = text.replace(/^(\d{3}\.\d{3})(\d+)/g, "$1.$2");
@@ -194,7 +194,7 @@ const _cpfMask = input => {
 };
 
 const _cepMask = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
     if (/^[\d]{5}-[\d]{3}$/g.test(text)) {
@@ -204,7 +204,7 @@ const _cepMask = input => {
 };
 
 const _cnpjMask = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/, "$1.$2");
     text = text.replace(/^(\d{2}\.\d{3})(\d+)/g, "$1.$2");
@@ -217,7 +217,7 @@ const _cnpjMask = input => {
 };
 
 const _cardnumbermask = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
     text = text.replace(/^(\d{4} \d{4})(\d+)$/g, "$1 $2");
@@ -229,13 +229,13 @@ const _cardnumbermask = input => {
 };
 
 const _onlyNumbers = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     input.value = text;
 };
 
 const _monthYear = input => {
-    var text = input.value;
+    var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
     if (/^[\d]{2}\/[\d]{4}$/g.test(text)) {
