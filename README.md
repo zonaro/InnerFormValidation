@@ -59,6 +59,12 @@ Add one or more classes to any `input` element;
 
 - 🎭**timeshort** - Valid Time (in hh:mm format);
 
+- **minage** `numericvalue` - Age greater than `numericvalue`  from date (in *dd/MM/yyyy* format);
+
+- **maxage** `numericvalue` - Age smaller than `numericvalue`  from date (in *dd/MM/yyyy* format);
+
+- **maxage** `numericvalue` - Exact age `numericvalue`  from date (in *dd/MM/yyyy* format);
+
 - **mail** or **email** - Valid Email;
 
 - 🎭**cpf** - Valid  Brazilian CPF;
