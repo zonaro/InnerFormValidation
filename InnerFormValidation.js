@@ -1045,7 +1045,7 @@ jQuery(document).ready(function () {
     });
 
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]')
-        .find("onkeyup")
+        .find(".onkeyup")
         .on("keyup", function () {
             var p = jQuery(this);
             p.removeClass("error");
@@ -1062,7 +1062,7 @@ jQuery(document).ready(function () {
             jQuery(this).isValid();
         });
 
-    jQuery(".mask.phone, .mask.tel, [type='tel'].mask").on("input", function () {
+    jQuery(".mask.phone, .mask.tel, .mask.cel").on("input", function () {
         _telMask(this);
     });
 
