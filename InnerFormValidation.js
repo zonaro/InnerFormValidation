@@ -57,6 +57,7 @@ function _validDate(value) {
 }
 
 function _parseDate(value) {
+    debugger;
     var dt = 0;
     var d = 0;
     var m = 0;
@@ -76,7 +77,7 @@ function _parseDate(value) {
     }    
     dt = new Date(y, m, d);
     var lastday = new Date(y, m + 1, 0);
-    if (m > 11 || m < 1) { return null }
+    if (m > 11 || m < 0) { return null }
     if (d > lastday.getDate() || d < 1) { return null }
     if (dt > 0) { return dt * 1 };
     return null;
