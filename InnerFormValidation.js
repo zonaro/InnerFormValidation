@@ -815,6 +815,7 @@ jQuery.fn.isValid = function () {
 
                     case "after":
                     case "before":
+                      
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -834,9 +835,10 @@ jQuery.fn.isValid = function () {
                             }
                         }
                         if (valids[i] == "after") {
-                            results.push(value >= num);
+                            results.push(parseFloat(value) >= parseFloat(num));
                         } else {
-                            results.push(value <= num);
+                            results.push(parseFloat(value) <= parseFloat(num));
+                           
                         }
                         break;
                     case "eq":
