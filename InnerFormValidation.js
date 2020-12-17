@@ -468,6 +468,7 @@ function __searchCEP(ceps, num) {
                     });
                 } else {
                     console.log('Address not found');
+                    eval(jQuery(this).attr("data-addressnotfound") || "void(0)");
                     setTimeout(function () {
                         jQuery(".autocomplete.address:input").focus();
                     });
