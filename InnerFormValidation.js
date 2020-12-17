@@ -401,6 +401,9 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.fulladdress").prop("disabled", true);
             },
             success: function (obj) {
+                if (num  != "") {
+                    num = ", " + num;
+                }
                 jQuery(".autocomplete.address:input")
                     .val(obj.logradouro)
                     .change().focus();
@@ -416,10 +419,10 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.state:input")
                     .val(obj.uf)
                     .change().focus();
+
                 jQuery(".autocomplete.fulladdress:input")
                     .val(
-                        obj.logradouro +
-                        ", " +
+                        obj.logradouro +                       
                         num +
                         " " +
                         obj.complemento +
@@ -449,8 +452,7 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.fulladdress")
                     .not(":input")
                     .text(
-                        obj.logradouro +
-                        ", " +
+                        obj.logradouro +                        
                         num +
                         " - " +
                         obj.bairro +
