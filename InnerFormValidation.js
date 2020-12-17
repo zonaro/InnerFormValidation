@@ -56,7 +56,7 @@ function _validDate(value) {
     return datenumber != null && !isNaN(datenumber);
 }
 
-function _parseDate(value) {    
+function _parseDate(value) {
     var dt = 0;
     var d = 0;
     var m = 0;
@@ -73,7 +73,7 @@ function _parseDate(value) {
         d = 1
         m = parseInt(comp[0], 10) - 1;
         y = parseInt(comp[1], 10);
-    }    
+    }
     dt = new Date(y, m, d);
     var lastday = new Date(y, m + 1, 0);
     if (m > 11 || m < 0) { return null }
@@ -140,7 +140,7 @@ const _dateTimeMask = (input = new HTMLInputElement()) => {
     input.maxLength = 19;
 };
 
-const _dateShortTimeMask = input => {    
+const _dateShortTimeMask = input => {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -401,7 +401,7 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.fulladdress").prop("disabled", true);
             },
             success: function (obj) {
-                if (num  != "") {
+                if (num != "") {
                     num = ", " + num;
                 }
                 jQuery(".autocomplete.address:input")
@@ -422,7 +422,7 @@ function __searchCEP(ceps, num) {
 
                 jQuery(".autocomplete.fulladdress:input")
                     .val(
-                        obj.logradouro +                       
+                        obj.logradouro +
                         num +
                         " " +
                         obj.complemento +
@@ -452,7 +452,7 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.fulladdress")
                     .not(":input")
                     .text(
-                        obj.logradouro +                        
+                        obj.logradouro +
                         num +
                         " - " +
                         obj.bairro +
@@ -468,7 +468,12 @@ function __searchCEP(ceps, num) {
                     });
                 } else {
                     console.log('Address not found');
-                    eval(jQuery(this).attr("data-addressnotfound") || "void(0)");
+                    let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "")
+                    jQuery(".autocomplete.fulladdress")
+                        .not(":input").text(nft);
+                    jQuery(".autocomplete.fulladdress:input")
+                        .val(nft).change();
+                    eval(jQuery(this).attr("data-addressnotfound") || jQuery(this).attr("data-notfound") || "void(0)");
                     setTimeout(function () {
                         jQuery(".autocomplete.address:input").focus();
                     });
@@ -495,7 +500,7 @@ function __searchCEP(ceps, num) {
 
 jQuery.fn.isValid = function () {
     var results = [];
- 
+
     if (jQuery(this).length > 1 || jQuery(this).prop("tagName") == "FORM") {
         eval(jQuery(this).attr("data-beforevalidatecallback") || "void(0)");
         var elements = [];
@@ -818,7 +823,7 @@ jQuery.fn.isValid = function () {
 
                     case "after":
                     case "before":
-                      
+
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
@@ -841,7 +846,7 @@ jQuery.fn.isValid = function () {
                             results.push(parseFloat(value) >= parseFloat(num));
                         } else {
                             results.push(parseFloat(value) <= parseFloat(num));
-                           
+
                         }
                         break;
                     case "eq":
@@ -988,9 +993,9 @@ jQuery.fn.isValid = function () {
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
-                        }                            
+                        }
                         var idade = _getAge(value);
-                        results.push(idade >= parseInt(valids[i + 1]));                          
+                        results.push(idade >= parseInt(valids[i + 1]));
                         break;
                     case "maxage":
                         if (jQuery.trim(value) === "") {
@@ -998,7 +1003,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         var idade = _getAge(value);
-                        results.push(idade <= parseInt(valids[i + 1]));                          
+                        results.push(idade <= parseInt(valids[i + 1]));
                         break;
                     case "age":
                         if (jQuery.trim(value) === "") {
@@ -1006,7 +1011,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         var idade = _getAge(value);
-                        results.push(idade == parseInt(valids[i + 1]));                          
+                        results.push(idade == parseInt(valids[i + 1]));
                         break;
                     default:
                         results.push(true);
