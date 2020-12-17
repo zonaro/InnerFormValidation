@@ -468,7 +468,7 @@ function __searchCEP(ceps, num) {
                     });
                 } else {
                     console.log('Address not found');
-                    let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "")
+                    let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "";
                     jQuery(".autocomplete.fulladdress")
                         .not(":input").text(nft);
                     jQuery(".autocomplete.fulladdress:input")
