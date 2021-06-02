@@ -1093,7 +1093,7 @@ jQuery.fn.startValidation = function () {
 }
 
 jQuery.fn.validateOnType = function (time) {
-    return jQuery(this).find(":input")
+    return jQuery(this)
         .on("keyup", function () {
             var p = jQuery(this);
             p.removeClass("error");
@@ -1106,21 +1106,21 @@ jQuery.fn.validateOnType = function (time) {
 }
 
 jQuery.fn.validateOnBlur = function () {
-    return jQuery(this).find(":input")
+    return jQuery(this)
         .on("blur", function () {
             jQuery(this).isValid();
         });
 }
 
 jQuery.fn.validateOnChange = function () {
-    return jQuery(this).find(":input")
+    return jQuery(this)
         .on("change", function () {
             jQuery(this).isValid();
         });
 }
 
 jQuery.fn.phoneMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _telMask(this);
     });
 }
@@ -1128,27 +1128,27 @@ jQuery.fn.phoneMask = function () {
 
 jQuery.fn.upperMask = function () {
 
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _upperMask(this);
     });
 }
 
 
 jQuery.fn.lowerMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _lowerMask(this);
     });
 }
 
 jQuery.fn.cpfMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _cpfMask(this);
     });
 }
 
 
 jQuery.fn.cepMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _cepMask(this);
     });
 }
@@ -1156,13 +1156,13 @@ jQuery.fn.cepMask = function () {
 
 jQuery.fn.cnpjMask = function () {
 
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _cnpjMask(this);
     });
 }
 
 jQuery.fn.cpfCnpjMask = function () {
-    return jQuery(this).find(":input").on('input', function () {
+    return jQuery(this).on('input', function () {
         _cpfCnpjMask(this);
     });
 }
@@ -1170,31 +1170,31 @@ jQuery.fn.cpfCnpjMask = function () {
 
 jQuery.fn.creditCardMask = function () {
 
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _cardnumbermask(this);
     });
 }
 
 jQuery.fn.dateMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _dateMask(this);
     });
 }
 
 jQuery.fn.monthYearMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _monthYear(this);
     });
 }
 
 jQuery.fn.numberMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _onlyNumbers(this);
     });
 }
 
 jQuery.fn.lenMask = function (tam) {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         var array = jQuery(this)
             .attr("class")
             .split(" ")
@@ -1214,7 +1214,7 @@ jQuery.fn.lenMask = function (tam) {
 }
 
 jQuery.fn.cepAutoComplete = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         __searchCEP(
             jQuery(this).val(),
             jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val() || jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val()
@@ -1223,51 +1223,51 @@ jQuery.fn.cepAutoComplete = function () {
 }
 
 jQuery.fn.timeMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _timeMask(this);
     });
 }
 
 jQuery.fn.shortTimeMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _shortTimeMask(this);
     });
 }
 
 jQuery.fn.dateShortTimeMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _dateShortTimeMask(this);
     });
 }
 
 jQuery.fn.dateTimeMask = function () {
 
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _dateTimeMask(this);
     });
 }
 
 jQuery.fn.alphaMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _alphamask(this);
     });
 }
 
 jQuery.fn.alphaNumericMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _alphanumericmask(this);
     });
 }
 
 
 jQuery.fn.noSpaceMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         _nospacemask(this);
     });
 }
 
 jQuery.fn.maxLenMask = function () {
-    return jQuery(this).find(":input").on("input", function () {
+    return jQuery(this).on("input", function () {
         var array = jQuery(this)
             .attr("class")
             .split(" ")
