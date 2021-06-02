@@ -1,3 +1,5 @@
+
+
 var __timer;
 
 function _valid_time(value) {
@@ -17,8 +19,6 @@ function _valid_time(value) {
 }
 
 const _getAge = birthDate => Math.floor((new Date() - _parseDate(birthDate)) / 3.15576e+10);
-
-
 
 const _validateNotChar = (value, chars) => {
     chars = chars.split("");
@@ -127,6 +127,10 @@ const _dateMask = input => {
         input.maxLength = text.length;
     }
     input.value = text;
+};
+
+$.fn.dateMask = function () {
+    _dateMask(this)
 };
 
 const _dateTimeMask = (input = new HTMLInputElement()) => {
@@ -846,7 +850,6 @@ jQuery.fn.isValid = function () {
                             results.push(parseFloat(value) >= parseFloat(num));
                         } else {
                             results.push(parseFloat(value) <= parseFloat(num));
-
                         }
                         break;
                     case "eq":
@@ -1048,14 +1051,49 @@ jQuery.fn.isValid = function () {
 };
 
 jQuery(document).ready(function () {
-    jQuery(
-        'form.validate, form[data-validate="true"], form[data-validation="true"]'
-    ).on("submit", function () {
+
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').startValidation().startMasks()
+});
+
+jQuery.fn.startMasks = function () {
+
+    jQuery(this).find(".mask.phone, .mask.tel, .mask.cel").phoneMask();
+    jQuery(this).find(".mask.upper").upperMask();
+    jQuery(this).find(".mask.lower, .mask.email, .mask.mail").lowerMask();
+    jQuery(this).find(".mask.cpf").cpfMask();
+    jQuery(this).find(".mask.cep").cepMask();
+    jQuery(this).find(".mask.cnpj").cnpjMask();
+    jQuery(this).find(".mask.cpfcnpj, .mask.cnpjcpf").cpfCnpjMask();
+    jQuery(this).find(".mask.creditcard, .mask.debitcard").creditCardMask();
+    jQuery(this).find(".mask.date, .mask.data").dateMask();
+    jQuery(this).find(".mask.monthyear").monthYearMask();
+    jQuery(this).find(".mask.num, .mask.number, .mask.month").numberMask();
+    jQuery(this).find(".mask.len").lenMask();
+    jQuery(this).find(".autocomplete.cep").cepAutoComplete();
+    jQuery(this).find(".mask.time").timeMask();
+    jQuery(this).find(".mask.dateshorttime, .mask.datetimeshort").shortTimeMask();
+    jQuery(this).find(".mask.datetime").dateTimeMask();
+    jQuery(this).find(".mask.alpha").alphaMask();
+    jQuery(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
+    jQuery(this).find(".mask.nospace").noSpaceMask();
+    jQuery(this).find(".mask.maxlen").maxLenMask();
+
+}
+
+jQuery.fn.startValidation = function () {
+
+    jQuery(this).validateOnBlur();
+    jQuery(this).validateOnChange();
+    jQuery(this).find(".onkeyup").validateOnType();
+
+    return jQuery(this).on("submit", function () {
         return jQuery(this).isValid();
     });
 
-    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]')
-        .find(".onkeyup")
+}
+
+jQuery.fn.validateOnType = function (time) {
+    return jQuery(this).find(":input")
         .on("keyup", function () {
             var p = jQuery(this);
             p.removeClass("error");
@@ -1063,66 +1101,107 @@ jQuery(document).ready(function () {
             clearTimeout(__timer);
             __timer = setTimeout(function () {
                 p.isValid();
-            }, 900);
+            }, time || 900);
         });
+}
 
-    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]')
-        .find(":input")
+jQuery.fn.validateOnBlur = function () {
+    return jQuery(this).find(":input")
         .on("blur", function () {
             jQuery(this).isValid();
         });
+}
 
-    jQuery(".mask.phone, .mask.tel, .mask.cel").on("input", function () {
+jQuery.fn.validateOnChange = function () {
+    return jQuery(this).find(":input")
+        .on("change", function () {
+            jQuery(this).isValid();
+        });
+}
+
+jQuery.fn.phoneMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _telMask(this);
     });
+}
 
-    jQuery(".mask.upper").on("input", function () {
+
+jQuery.fn.upperMask = function () {
+
+    return jQuery(this).find(":input").on("input", function () {
         _upperMask(this);
     });
+}
 
-    jQuery(".mask.lower, .mask.email, .mask.mail").on("input", function () {
+
+jQuery.fn.lowerMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _lowerMask(this);
     });
+}
 
-    jQuery(".mask.cpf").on("input", function () {
+jQuery.fn.cpfMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _cpfMask(this);
     });
+}
 
-    jQuery(".mask.cep").on("input", function () {
+
+jQuery.fn.cepMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _cepMask(this);
     });
+}
 
-    jQuery(".mask.cnpj").on("input", function () {
+
+jQuery.fn.cnpjMask = function () {
+
+    return jQuery(this).find(":input").on("input", function () {
         _cnpjMask(this);
     });
-    jQuery(".mask.cpfcnpj, .mask.cnpjcpf").on('input', function () {
+}
+
+jQuery.fn.cpfCnpjMask = function () {
+    return jQuery(this).find(":input").on('input', function () {
         _cpfCnpjMask(this);
     });
+}
 
-    jQuery(".mask.creditcard, .mask.debitcard").on("input", function () {
+
+jQuery.fn.creditCardMask = function () {
+
+    return jQuery(this).find(":input").on("input", function () {
         _cardnumbermask(this);
     });
+}
 
-    jQuery(".mask.date, .mask.data").on("input", function () {
+jQuery.fn.dateMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _dateMask(this);
     });
+}
 
-    jQuery(".mask.monthyear").on("input", function () {
+jQuery.fn.monthYearMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _monthYear(this);
     });
+}
 
-    jQuery(".mask.num, .mask.number, .mask.month").on("input", function () {
+jQuery.fn.numberMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _onlyNumbers(this);
     });
+}
 
-    jQuery(".mask.len").on("input", function () {
+jQuery.fn.lenMask = function (tam) {
+    return jQuery(this).find(":input").on("input", function () {
         var array = jQuery(this)
             .attr("class")
             .split(" ")
             .filter(function (el) {
                 return el != null && el != "";
             });
-        var tam = parseInt(array[array.indexOf("len") + 1]);
+        tam = tam || parseInt(array[array.indexOf("len") + 1]);
         if (!isNaN(tam)) {
             jQuery(this).attr("maxlength", tam);
             jQuery(this).val(
@@ -1132,43 +1211,63 @@ jQuery(document).ready(function () {
             );
         }
     });
+}
 
-    jQuery(".autocomplete.cep").on("input", function () {
+jQuery.fn.cepAutoComplete = function () {
+    return jQuery(this).find(":input").on("input", function () {
         __searchCEP(
             jQuery(this).val(),
             jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val() || jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val()
         );
     });
+}
 
-    jQuery(".mask.time").on("input", function () {
+jQuery.fn.timeMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _timeMask(this);
     });
+}
 
-    jQuery(".mask.shorttime, .mask.timeshort").on("input", function () {
+jQuery.fn.shortTimeMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _shortTimeMask(this);
     });
+}
 
-    jQuery(".mask.dateshorttime, .mask.datetimeshort").on("input", function () {
+jQuery.fn.dateShortTimeMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _dateShortTimeMask(this);
     });
+}
 
-    jQuery(".mask.datetime").on("input", function () {
+jQuery.fn.dateTimeMask = function () {
+
+    return jQuery(this).find(":input").on("input", function () {
         _dateTimeMask(this);
     });
+}
 
-    jQuery(".mask.alpha").on("input", function () {
+jQuery.fn.alphaMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _alphamask(this);
     });
+}
 
-    jQuery(".mask.alphanumeric, .mask.alphanum").on("input", function () {
+jQuery.fn.alphaNumericMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _alphanumericmask(this);
     });
+}
 
-    jQuery(".mask.nospace").on("input", function () {
+
+jQuery.fn.noSpaceMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         _nospacemask(this);
     });
+}
 
-    jQuery(".mask.maxlen").on("input", function () {
+jQuery.fn.maxLenMask = function () {
+    return jQuery(this).find(":input").on("input", function () {
         var array = jQuery(this)
             .attr("class")
             .split(" ")
@@ -1185,4 +1284,4 @@ jQuery(document).ready(function () {
             );
         }
     });
-});
+}
