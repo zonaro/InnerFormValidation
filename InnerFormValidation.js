@@ -129,7 +129,7 @@ const _dateMask = input => {
     input.value = text;
 };
 
-$.fn.dateMask = function () {
+jQuery.fn.dateMask = function () {
     _dateMask(this)
 };
 
@@ -1321,3 +1321,5 @@ jQuery.fn.maxLenMask = function () {
         }
     });
 }
+
+console.log('InnerFormValidation loaded');
