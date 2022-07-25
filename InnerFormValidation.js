@@ -1133,6 +1133,8 @@ jQuery.fn.startValidation = function () {
 }
 
 jQuery.fn.validateOnType = function (time) {
+    time = time || 900;
+    console.log("InnerFormValidation:", "Validation on type started", "delay", time);
     return jQuery(this)
         .on("keyup", function () {
             var p = jQuery(this);
@@ -1141,11 +1143,13 @@ jQuery.fn.validateOnType = function (time) {
             clearTimeout(__timer);
             __timer = setTimeout(function () {
                 p.isValid();
-            }, time || 900);
+            }, time);
         });
 }
 
 jQuery.fn.validateOnBlur = function () {
+    console.log("InnerFormValidation:", "Validation on blur started");
+
     return jQuery(this)
         .on("blur", function () {
             jQuery(this).isValid();
@@ -1153,6 +1157,8 @@ jQuery.fn.validateOnBlur = function () {
 }
 
 jQuery.fn.validateOnChange = function () {
+    console.log("InnerFormValidation:", "Validation on change started");
+
     return jQuery(this)
         .on("change", function () {
             jQuery(this).isValid();
@@ -1254,6 +1260,7 @@ jQuery.fn.lenMask = function (tam) {
 }
 
 jQuery.fn.cepAutoComplete = function () {
+    console.log("InnerFormValidation:", "Autocomplete for CEP started");
     return jQuery(this).on("input", function () {
         __searchCEP(
             jQuery(this).val(),
