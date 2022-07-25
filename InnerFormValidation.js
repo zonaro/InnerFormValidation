@@ -386,6 +386,10 @@ function __searchCEP(ceps, num) {
     var city = jQuery(".autocomplete.city").prop("disabled");
     var state = jQuery(".autocomplete.state").prop("disabled");
     var fulladdress = jQuery(".autocomplete.fulladdress").prop("disabled");
+    var gia = jQuery(".autocomplete.gia").prop("disabled");
+    var ddd = jQuery(".autocomplete.ddd").prop("disabled");
+    var ibge = jQuery(".autocomplete.ibge").prop("disabled");
+    var siafi = jQuery(".autocomplete.siafi").prop("disabled");
 
     if (
         (ceps.length == 9 && ceps.includes("-")) ||
@@ -403,6 +407,10 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.city").prop("disabled", true);
                 jQuery(".autocomplete.state").prop("disabled", true);
                 jQuery(".autocomplete.fulladdress").prop("disabled", true);
+                jQuery(".autocomplete.ibge").prop("disabled", true);
+                jQuery(".autocomplete.gia").prop("disabled", true);
+                jQuery(".autocomplete.ddd").prop("disabled", true);
+                jQuery(".autocomplete.siafi").prop("disabled", true);
             },
             success: function (obj) {
                 if (num != "") {
@@ -422,6 +430,18 @@ function __searchCEP(ceps, num) {
                     .change().focus();
                 jQuery(".autocomplete.state:input")
                     .val(obj.uf)
+                    .change().focus();
+                jQuery(".autocomplete.ibge:input")
+                    .val(obj.ibge)
+                    .change().focus();
+                jQuery(".autocomplete.gia:input")
+                    .val(obj.gia)
+                    .change().focus();
+                jQuery(".autocomplete.ddd:input")
+                    .val(obj.ddd)
+                    .change().focus();
+                jQuery(".autocomplete.siafi:input")
+                    .val(obj.siafi)
                     .change().focus();
 
                 jQuery(".autocomplete.fulladdress:input")
@@ -453,6 +473,18 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.state")
                     .not(":input")
                     .text(obj.uf);
+                jQuery(".autocomplete.ibge")
+                    .not(":input")
+                    .text(obj.ibge);
+                jQuery(".autocomplete.gia")
+                    .not(":input")
+                    .text(obj.gia);
+                jQuery(".autocomplete.siafi")
+                    .not(":input")
+                    .text(obj.siafi);
+                jQuery(".autocomplete.ddd")
+                    .not(":input")
+                    .text(obj.ddd);
                 jQuery(".autocomplete.fulladdress")
                     .not(":input")
                     .text(
@@ -497,6 +529,10 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.city").prop("disabled", city);
                 jQuery(".autocomplete.state").prop("disabled", state);
                 jQuery(".autocomplete.fulladdress").prop("disabled", fulladdress);
+                jQuery(".autocomplete.gia").prop("disabled", gia);
+                jQuery(".autocomplete.ddd").prop("disabled", ddd);
+                jQuery(".autocomplete.siafi").prop("disabled", siafi);
+                jQuery(".autocomplete.ibge").prop("disabled", ibge);
             }
         });
     }
