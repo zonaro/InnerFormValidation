@@ -401,6 +401,7 @@ function __searchCEP(ceps, num) {
             async: true,
             crossorigin: true,
             beforeSend: function () {
+                console.log("Getting info from ViaCEP...")
                 jQuery(".autocomplete.address").prop("disabled", true);
                 jQuery(".autocomplete.complement").prop("disabled", true);
                 jQuery(".autocomplete.neighborhood").prop("disabled", true);
@@ -504,7 +505,7 @@ function __searchCEP(ceps, num) {
                         jQuery(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
                     });
                 } else {
-                    console.log('Address not found');
+                    console.error('Address not found');
                     let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "";
                     jQuery(".autocomplete.fulladdress")
                         .not(":input").text(nft);
@@ -518,7 +519,7 @@ function __searchCEP(ceps, num) {
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
-                console.log("error");
+                console.log("error", xhr, ajaxOptions, thrownError);
                 setTimeout(function () {
                     jQuery(".autocomplete.address:input").focus();
                 });
@@ -536,6 +537,8 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.ibge").prop("disabled", ibge);
             }
         });
+    } else {
+        console.log("Invalid cep", ceps);
     }
 }
 
