@@ -500,7 +500,8 @@ function __searchCEP(ceps, num) {
 
                 if (obj.logradouro) {
                     setTimeout(function () {
-                        jQuery(".autocomplete.num:input, .autocomplete.number:input, .autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
+                        jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
+                        jQuery(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
                     });
                 } else {
                     console.log('Address not found');
