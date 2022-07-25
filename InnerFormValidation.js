@@ -1264,7 +1264,7 @@ jQuery.fn.cepAutoComplete = function () {
     return jQuery(this).on("input", function () {
         __searchCEP(
             jQuery(this).val(),
-            jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val() || jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val()
+            jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val()  
         );
     });
 }
