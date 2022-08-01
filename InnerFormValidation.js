@@ -375,10 +375,10 @@ String.prototype.replaceAll = function (from, to) {
     return array.join(to);
 };
 
-function __searchCEP(ceps, num,timeout) {
+function __searchCEP(ceps, num, timeout) {
     ceps = ceps || "";
     num = num || "";
-    timeout = timeout || 0;  
+    timeout = timeout || 0;
     console.log('Searching CEP', ceps, num, timeout);
     var address = jQuery(".autocomplete.address").prop("disabled");
     var complement = jQuery(".autocomplete.complement").prop("disabled");
@@ -418,7 +418,7 @@ function __searchCEP(ceps, num,timeout) {
                 if (num != "") {
                     num = ", " + num;
                 }
-              
+
                 console.log("ViaCEP Response", obj);
 
                 jQuery(".autocomplete.address:input")
@@ -1094,8 +1094,7 @@ jQuery.fn.isValid = function () {
 };
 
 jQuery(document).ready(function () {
-
-    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"]').startValidation().startMasks()
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks()
 });
 
 jQuery.fn.startMasks = function () {
@@ -1124,11 +1123,9 @@ jQuery.fn.startMasks = function () {
 }
 
 jQuery.fn.startValidation = function () {
-
-    jQuery(this).validateOnBlur();
-    jQuery(this).validateOnChange();
+    jQuery(this).not(".notonblur").validateOnBlur();
+    jQuery(this).not(".notonchange").validateOnChange();
     jQuery(this).find(".onkeyup").validateOnType();
-
     return jQuery(this).on("submit", function () {
         return jQuery(this).isValid();
     });
@@ -1138,7 +1135,7 @@ jQuery.fn.startValidation = function () {
 jQuery.fn.validateOnType = function (time) {
     time = time || 900;
     console.log("InnerFormValidation:", "Validation on type started", "delay", time);
-    return jQuery(this)
+    let x = jQuery(this)
         .on("keyup", function () {
             var p = jQuery(this);
             p.removeClass("error");
@@ -1148,102 +1145,123 @@ jQuery.fn.validateOnType = function (time) {
                 p.isValid();
             }, time);
         });
+    console.log("InnerFormValidation:", "Validation on Type started", x, "delay", time);
+    return x;
 }
 
 jQuery.fn.validateOnBlur = function () {
-    console.log("InnerFormValidation:", "Validation on blur started");
-
-    return jQuery(this)
+    let x = jQuery(this)
         .on("blur", function () {
             jQuery(this).isValid();
         });
+    console.log("InnerFormValidation:", "Validation on Blur started", x);
+    return x;
 }
 
 jQuery.fn.validateOnChange = function () {
-    console.log("InnerFormValidation:", "Validation on change started");
-
-    return jQuery(this)
+    let x = jQuery(this)
         .on("change", function () {
             jQuery(this).isValid();
         });
+    console.log("InnerFormValidation:", "Validation on Change started", x);
+    return x;
 }
 
 jQuery.fn.phoneMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _telMask(this);
     });
+    console.log("InnerFormValidation:", "PhoneMask started", x);
+    return x;
 }
 
 
 jQuery.fn.upperMask = function () {
-
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _upperMask(this);
     });
+    console.log("InnerFormValidation:", "UpperMask started", x);
+    return x;
 }
 
 
 jQuery.fn.lowerMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _lowerMask(this);
     });
+    console.log("InnerFormValidation:", "LowerMask started", x);
+    return x;
 }
 
 jQuery.fn.cpfMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _cpfMask(this);
     });
+    console.log("InnerFormValidation:", "CpfMask started", x);
+    return x;
 }
 
 
 jQuery.fn.cepMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _cepMask(this);
     });
+    console.log("InnerFormValidation:", "CepMask started", x);
+    return x;
 }
 
 
 jQuery.fn.cnpjMask = function () {
-
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _cnpjMask(this);
     });
+    console.log("InnerFormValidation:", "CnpjMask started", x);
+    return x;
 }
 
 jQuery.fn.cpfCnpjMask = function () {
-    return jQuery(this).on('input', function () {
+    let x = jQuery(this).on('input', function () {
         _cpfCnpjMask(this);
     });
+    console.log("InnerFormValidation:", "CpfCnpjMask started", x);
+    return x;
 }
 
 
 jQuery.fn.creditCardMask = function () {
-
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _cardnumbermask(this);
     });
+    console.log("InnerFormValidation:", "CreditCardMask started", x);
+    return x;
 }
 
 jQuery.fn.dateMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _dateMask(this);
     });
+    console.log("InnerFormValidation:", "DateMask started", x);
+    return x;
 }
 
 jQuery.fn.monthYearMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _monthYear(this);
     });
+    console.log("InnerFormValidation:", "MonthYearMask started", x);
+    return x;
 }
 
 jQuery.fn.numberMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _onlyNumbers(this);
     });
+    console.log("InnerFormValidation:", "NumberMask started", x);
+    return x;
 }
 
 jQuery.fn.lenMask = function (tam) {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         var array = jQuery(this)
             .attr("class")
             .split(" ")
@@ -1260,65 +1278,81 @@ jQuery.fn.lenMask = function (tam) {
             );
         }
     });
+    console.log("InnerFormValidation:", "LenMax started", x);
+    return x;
 }
 
 jQuery.fn.cepAutoComplete = function () {
-    console.log("InnerFormValidation:", "Autocomplete for CEP started");
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         __searchCEP(
             jQuery(this).val(),
             jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val(),
             jQuery(this).data('timeout') || 0
         );
     });
+    console.log("InnerFormValidation:", "Autocomplete for CEP started", x);
 }
 
 jQuery.fn.timeMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _timeMask(this);
     });
+    console.log("InnerFormValidation:", "TimeMask started", x);
+    return x;
 }
 
 jQuery.fn.shortTimeMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _shortTimeMask(this);
     });
+    console.log("InnerFormValidation:", "ShortTimeMask started", x);
+    return x;
+
 }
 
 jQuery.fn.dateShortTimeMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _dateShortTimeMask(this);
     });
+    console.log("InnerFormValidation:", "DateShortTimeMask started", x);
+    return x;
 }
 
 jQuery.fn.dateTimeMask = function () {
-
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _dateTimeMask(this);
     });
+    console.log("InnerFormValidation:", "DateTimeMask started", x);
+    return x;
 }
 
 jQuery.fn.alphaMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _alphamask(this);
     });
+    console.log("InnerFormValidation:", "AlphaMask started", x);
+    return x;
 }
 
 jQuery.fn.alphaNumericMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _alphanumericmask(this);
     });
+    console.log("InnerFormValidation:", "AlphaNumericMask started", x);
+    return x;
 }
 
 
 jQuery.fn.noSpaceMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         _nospacemask(this);
     });
+    console.log("InnerFormValidation:", "NoSpaceMask started", x);
+    return x;
 }
 
 jQuery.fn.maxLenMask = function () {
-    return jQuery(this).on("input", function () {
+    let x = jQuery(this).on("input", function () {
         var array = jQuery(this)
             .attr("class")
             .split(" ")
@@ -1335,6 +1369,8 @@ jQuery.fn.maxLenMask = function () {
             );
         }
     });
+    console.log("InnerFormValidation:", "MaxLenMask started", x);
+    return x;
 }
 
 console.log('InnerFormValidation loaded');
