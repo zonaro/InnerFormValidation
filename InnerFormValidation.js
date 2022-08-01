@@ -375,10 +375,11 @@ String.prototype.replaceAll = function (from, to) {
     return array.join(to);
 };
 
-function __searchCEP(ceps, num) {
+function __searchCEP(ceps, num,timeout) {
     ceps = ceps || "";
     num = num || "";
-    console.log('Searching CEP', ceps, num);
+    timeout = timeout || 0;  
+    console.log('Searching CEP', ceps, num, timeout);
     var address = jQuery(".autocomplete.address").prop("disabled");
     var complement = jQuery(".autocomplete.complement").prop("disabled");
     var neighborhood = jQuery(".autocomplete.neighborhood").prop("disabled");
@@ -413,9 +414,13 @@ function __searchCEP(ceps, num) {
                 jQuery(".autocomplete.siafi").prop("disabled", true);
             },
             success: function (obj) {
+                obj["numero"] = num;
                 if (num != "") {
                     num = ", " + num;
                 }
+                returnObj = obj;
+                console.log("ViaCEP Response", obj);
+
                 jQuery(".autocomplete.address:input")
                     .val(obj.logradouro)
                     .change().focus();
@@ -502,7 +507,7 @@ function __searchCEP(ceps, num) {
                     setTimeout(function () {
                         jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
                         jQuery(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
-                    });
+                    }, timeout);
                 } else {
                     console.error('Address not found');
                     let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "";
@@ -513,7 +518,7 @@ function __searchCEP(ceps, num) {
                     eval(jQuery(this).attr("data-addressnotfound") || jQuery(this).attr("data-notfound") || "void(0)");
                     setTimeout(function () {
                         jQuery(".autocomplete.address:input").focus();
-                    });
+                    }, timeout);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -521,7 +526,7 @@ function __searchCEP(ceps, num) {
                 console.log("error", xhr, ajaxOptions, thrownError);
                 setTimeout(function () {
                     jQuery(".autocomplete.address:input").focus();
-                });
+                }, timeout);
             },
             complete: function () {
                 jQuery(".autocomplete.address").prop("disabled", address);
@@ -537,7 +542,7 @@ function __searchCEP(ceps, num) {
             }
         });
     } else {
-        console.log("Invalid CEP", ceps);
+        console.log("Awaiting a valid CEP", ceps);
     }
 }
 
@@ -565,7 +570,7 @@ jQuery.fn.isValid = function () {
         eval(jQuery(this).attr("data-validcallback") || "void(0)");
         eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
         return true;
-    } else {     
+    } else {
         this.removeClass("error");
         this.removeClass("success");
         this.closest(".form-group").removeClass("has-error");
@@ -1262,7 +1267,8 @@ jQuery.fn.cepAutoComplete = function () {
     return jQuery(this).on("input", function () {
         __searchCEP(
             jQuery(this).val(),
-            jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val()  
+            jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val(),
+            jQuery(this).data('timeout') || 0
         );
     });
 }
