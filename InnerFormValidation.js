@@ -380,6 +380,7 @@ String.prototype.replaceAll = function (from, to) {
 function __searchCEP(ceps, num) {
     ceps = ceps || "";
     num = num || "";
+    console.log('Searching CEP', ceps, num);
     var address = jQuery(".autocomplete.address").prop("disabled");
     var complement = jQuery(".autocomplete.complement").prop("disabled");
     var neighborhood = jQuery(".autocomplete.neighborhood").prop("disabled");
