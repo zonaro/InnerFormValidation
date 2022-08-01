@@ -1089,7 +1089,7 @@ jQuery.fn.isValid = function () {
         }
         jQuery(this).removeClass("error");
         eval(jQuery(this).attr("data-validcallback") || "void(0)");
-        eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
+        eval(jQuery(this).attr("data-aftervalidate") || "void(0)");
         return true;
     }
 };
