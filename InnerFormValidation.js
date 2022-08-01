@@ -375,11 +375,11 @@ String.prototype.replaceAll = function (from, to) {
     return array.join(to);
 };
 
-function __searchCEP(ceps, num, timeout) {
-    ceps = ceps || "";
+function SearchViaCEP(cep, num, timeout) {
+    cep = cep || "";
     num = num || "";
     timeout = timeout || 0;
-    console.log('Searching CEP', ceps, num, timeout);
+    console.log('Searching CEP', cep, num, timeout);
     var address = jQuery(".autocomplete.address").prop("disabled");
     var complement = jQuery(".autocomplete.complement").prop("disabled");
     var neighborhood = jQuery(".autocomplete.neighborhood").prop("disabled");
@@ -392,12 +392,12 @@ function __searchCEP(ceps, num, timeout) {
     var siafi = jQuery(".autocomplete.siafi").prop("disabled");
 
     if (
-        (ceps.length == 9 && ceps.includes("-")) ||
-        (ceps.length == 8 && ceps.includes("-") == false)
+        (cep.length == 9 && cep.includes("-")) ||
+        (cep.length == 8 && cep.includes("-") == false)
     ) {
         jQuery.ajax({
             type: "GET",
-            url: "https://viacep.com.br/ws/" + ceps + "/json/",
+            url: "https://viacep.com.br/ws/" + cep + "/json/",
             async: true,
             crossorigin: true,
             beforeSend: function () {
@@ -542,7 +542,7 @@ function __searchCEP(ceps, num, timeout) {
             }
         });
     } else {
-        console.log("Awaiting a valid CEP", ceps);
+        console.log("Awaiting a valid CEP", cep);
     }
 }
 
@@ -1284,7 +1284,7 @@ jQuery.fn.lenMask = function (tam) {
 
 jQuery.fn.cepAutoComplete = function () {
     let x = jQuery(this).on("input", function () {
-        __searchCEP(
+        SearchViaCEP(
             jQuery(this).val(),
             jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val(),
             jQuery(this).data('timeout') || 0
