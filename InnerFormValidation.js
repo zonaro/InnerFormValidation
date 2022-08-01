@@ -889,6 +889,7 @@ jQuery.fn.isValid = function () {
                                 num = _parseDate(num);
                             }
                         }
+                        debugger;
                         if (valids[i] == "after") {
                             results.push(parseFloat(value) >= parseFloat(num));
                         } else {
