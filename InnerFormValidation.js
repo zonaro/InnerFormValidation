@@ -1,5 +1,3 @@
-
-
 var __timer;
 
 function _valid_time(value) {
@@ -305,7 +303,7 @@ const _ValidateCnpj = cnpj => {
     if (cnpj.length != 14)
         return false;
 
-    // Elimina CNPJs invalidos conhecidos
+    // Elimina CNPJs inválidos conhecidos
     if (cnpj == "00000000000000" ||
         cnpj == "11111111111111" ||
         cnpj == "22222222222222" ||
@@ -539,7 +537,7 @@ function __searchCEP(ceps, num) {
             }
         });
     } else {
-        console.log("Invalid cep", ceps);
+        console.log("Invalid CEP", ceps);
     }
 }
 
@@ -567,8 +565,7 @@ jQuery.fn.isValid = function () {
         eval(jQuery(this).attr("data-validcallback") || "void(0)");
         eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
         return true;
-    } else {
-        //debugger;
+    } else {     
         this.removeClass("error");
         this.removeClass("success");
         this.closest(".form-group").removeClass("has-error");
