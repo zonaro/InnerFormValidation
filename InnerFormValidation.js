@@ -418,7 +418,7 @@ function __searchCEP(ceps, num,timeout) {
                 if (num != "") {
                     num = ", " + num;
                 }
-                returnObj = obj;
+              
                 console.log("ViaCEP Response", obj);
 
                 jQuery(".autocomplete.address:input")
