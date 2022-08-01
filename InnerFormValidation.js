@@ -1134,7 +1134,6 @@ jQuery.fn.startValidation = function () {
 
 jQuery.fn.validateOnType = function (time) {
     time = time || 900;
-    console.log("InnerFormValidation:", "Validation on type started", "delay", time);
     let x = jQuery(this)
         .on("keyup", function () {
             var p = jQuery(this);
