@@ -375,10 +375,11 @@ String.prototype.replaceAll = function (from, to) {
     return array.join(to);
 };
 
-function SearchViaCEP(cep, num, timeout) {
+function SearchViaCEP(cep, num, timeout, callback) {
     cep = cep || "";
     num = num || "";
     timeout = timeout || 0;
+    callback = callback || function (o) { console.log('No callback defined', o); }
     console.log('Searching CEP', cep, num, timeout);
     var address = jQuery(".autocomplete.address").prop("disabled");
     var complement = jQuery(".autocomplete.complement").prop("disabled");
@@ -520,6 +521,7 @@ function SearchViaCEP(cep, num, timeout) {
                         jQuery(".autocomplete.address:input").focus();
                     }, timeout);
                 }
+                callback(obj);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
