@@ -367,15 +367,19 @@ const validatePassword = input => {
     return ctr;
 };
 
-String.prototype.replaceAll = function (from, to) {
-    var array = this.split(from);
-    array = array.filter(function (el) {
-        return el !== null;
-    });
-    return array.join(to);
-};
+if (String.prototype.replaceAll == undefined) {
+    String.prototype.replaceAll = function (from, to) {
+        var array = this.split(from);
+        array = array.filter(function (el) {
+            return el !== null;
+        });
+        return array.join(to);
+    };
+    console.log("replaceAll added to String.prototype");
+}
 
-function SearchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
+
+function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
     CEPNumber = CEPNumber || "";
     homeNumber = homeNumber || "";
     delay = delay || 0;
@@ -525,7 +529,7 @@ function SearchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
-                console.log("error", xhr, ajaxOptions, thrownError);
+                console.log("VIACEP error", xhr, ajaxOptions, thrownError);
                 setTimeout(function () {
                     jQuery(".autocomplete.address:input").focus();
                 }, delay);
@@ -1286,7 +1290,7 @@ jQuery.fn.lenMask = function (tam) {
 
 jQuery.fn.cepAutoComplete = function () {
     let x = jQuery(this).on("input", function () {
-        SearchViaCEP(
+        searchViaCEP(
             jQuery(this).val(),
             jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val(),
             jQuery(this).data('timeout') || 0
