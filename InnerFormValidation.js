@@ -1,6 +1,6 @@
-var __timer;
+var onTypeTimeout;
 
-function _valid_time(value) {
+function validateTime(value) {
     var comp = value.split(":");
     if (comp.length == 3) {
         var h = parseInt(comp[0], 10);
@@ -16,9 +16,9 @@ function _valid_time(value) {
     return false;
 }
 
-const _getAge = birthDate => Math.floor((new Date() - _parseDate(birthDate)) / 3.15576e+10);
+const getAge = birthDate => Math.floor((new Date() - parseDate(birthDate)) / 3.15576e+10);
 
-const _validateNotChar = (value, chars) => {
+const validateNotChar = (value, chars) => {
     chars = chars.split("");
     for (var i = 0; i < chars.length; i++) {
         if (value.indexOf(chars[i]) >= 0) {
@@ -27,7 +27,7 @@ const _validateNotChar = (value, chars) => {
     }
     return true;
 };
-const _validateAnyChar = (value, chars) => {
+const validateAnyChar = (value, chars) => {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -38,7 +38,7 @@ const _validateAnyChar = (value, chars) => {
     return v.indexOf(true) >= 0;
 };
 
-const _validateAllChar = (value, chars) => {
+const validateAllChar = (value, chars) => {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -49,12 +49,12 @@ const _validateAllChar = (value, chars) => {
     return v.indexOf(false) < 0;
 };
 
-function _validDate(value) {
-    var datenumber = _parseDate(value);
+function validDate(value) {
+    var datenumber = parseDate(value);
     return datenumber != null && !isNaN(datenumber);
 }
 
-function _parseDate(value) {
+function parseDate(value) {
     var dt = 0;
     var d = 0;
     var m = 0;
@@ -80,24 +80,24 @@ function _parseDate(value) {
     return null;
 }
 
-const _nospacemask = input => {
+const ApplyNoSpaceMask = (input = new HTMLInputElement()) => {
     input.value = input.value
         .replace(/[ ]+/g, '');
 };
 
-const _alphamask = (input) => {
+const applyAlphaMask = (input = new HTMLInputElement()) => {
     input.value = input.value
         .replace(/[!@#$%¨&*()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
-const _alphanumericmask = (input) => {
+const applyAlphaNumericMask = (input = new HTMLInputElement()) => {
     input.value = input.value
         .replace(/[!@#$%¨&*()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
-const _telMask = input => {
+const applyPhoneMask = (input = new HTMLInputElement()) => {
     var value = input.value;
     value = value.replace(/\D/g, "");
     value = value.replace(/^(\d{4})(\d{1,4})$/g, "$1-$2");
@@ -108,15 +108,15 @@ const _telMask = input => {
     input.value = value;
 };
 
-const _upperMask = input => {
+const applyUpperMask = (input = new HTMLInputElement()) => {
     input.value = input.value.toUpperCase();
 };
 
-const _lowerMask = input => {
+const applyLowerMask = (input = new HTMLInputElement()) => {
     input.value = input.value.toLowerCase();
 };
 
-const _dateMask = input => {
+const applyDateMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
@@ -128,10 +128,10 @@ const _dateMask = input => {
 };
 
 jQuery.fn.dateMask = function () {
-    _dateMask(this)
+    applyDateMask(this)
 };
 
-const _dateTimeMask = (input = new HTMLInputElement()) => {
+const applyDateTimeMask = (input = new HTMLInputElement()) => {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -142,7 +142,7 @@ const _dateTimeMask = (input = new HTMLInputElement()) => {
     input.maxLength = 19;
 };
 
-const _dateShortTimeMask = input => {
+const applyDateShortMask = (input = new HTMLInputElement()) => {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -152,20 +152,20 @@ const _dateShortTimeMask = input => {
     input.maxLength = 16;
 };
 
-const _timeMask = input => {
+const applyTimeMask = (input = new HTMLInputElement()) => {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1:$2");
     input.value = value.replace(/^(\d{2}:\d{2})(\d{1,2})$/g, "$1:$2");
     input.maxLength = 8;
 };
 
-const _shortTimeMask = input => {
+const applyShortTimeMask = (input = new HTMLInputElement()) => {
     var value = input.value.replace(/\D/g, "");
     input.value = value.replace(/^(\d{2})(\d{1,2})$/g, "$1:$2");
     input.maxLength = 5;
 };
 
-const _cpfCnpjMask = (input) => {
+const applyCPForCNPJMask = (input = new HTMLInputElement()) => {
     var value = input.value;
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
@@ -183,7 +183,7 @@ const _cpfCnpjMask = (input) => {
     input.maxLength = 18;
 };
 
-const _cpfMask = input => {
+const applyCPFMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{3})(\d+)/g, "$1.$2");
@@ -195,7 +195,7 @@ const _cpfMask = input => {
     input.value = text;
 };
 
-const _cepMask = input => {
+const applyCEPMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
@@ -205,7 +205,7 @@ const _cepMask = input => {
     input.value = text;
 };
 
-const _cnpjMask = input => {
+const applyCNPJMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/, "$1.$2");
@@ -218,7 +218,7 @@ const _cnpjMask = input => {
     input.value = text;
 };
 
-const _cardnumbermask = input => {
+const applyCreditCardMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
@@ -230,13 +230,13 @@ const _cardnumbermask = input => {
     input.value = text;
 };
 
-const _onlyNumbers = input => {
+const applyNumberMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     input.value = text;
 };
 
-const _monthYear = input => {
+const applyMonthYearMask = (input = new HTMLInputElement()) => {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
@@ -246,12 +246,12 @@ const _monthYear = input => {
     input.value = text;
 };
 
-const _checkLuhn = cardNo => {
+const checkLuhn = cardNumber => {
     var s = 0;
     var doubleDigit = false;
-    cardNo = cardNo.replace(/[^\d]+/g, "");
-    for (var i = cardNo.length - 1; i >= 0; i--) {
-        var digit = +cardNo[i];
+    cardNumber = cardNumber.replace(/[^\d]+/g, "");
+    for (var i = cardNumber.length - 1; i >= 0; i--) {
+        var digit = +cardNumber[i];
         if (doubleDigit) {
             digit *= 2;
             if (digit > 9) digit -= 9;
@@ -262,8 +262,8 @@ const _checkLuhn = cardNo => {
     return s % 10 == 0;
 };
 
-const _validatecardbrand = cardnumber => {
-    cardnumber = cardnumber.replace(/[^0-9]+/g, "");
+const validateCardBrand = cardNumber => {
+    cardNumber = cardNumber.replace(/[^0-9]+/g, "");
     var cards = {
         visa: /^4[0-9]{12}(?:[0-9]{3})/,
         mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/, //2307 4425 8875 4358
@@ -287,7 +287,7 @@ const _validatecardbrand = cardnumber => {
     };
 
     for (var flag in cards) {
-        if (cards[flag].test(cardnumber)) {
+        if (cards[flag].test(cardNumber)) {
             return flag;
         }
     }
@@ -295,31 +295,31 @@ const _validatecardbrand = cardnumber => {
     return false;
 };
 
-const _ValidateCnpj = cnpj => {
-    cnpj = cnpj.replace(/\D/g, "");
+const validateCNPJ = CNPJNumber => {
+    CNPJNumber = CNPJNumber.replace(/\D/g, "");
 
-    if (cnpj == '') return false;
+    if (CNPJNumber == '') return false;
 
-    if (cnpj.length != 14)
+    if (CNPJNumber.length != 14)
         return false;
 
     // Elimina CNPJs inválidos conhecidos
-    if (cnpj == "00000000000000" ||
-        cnpj == "11111111111111" ||
-        cnpj == "22222222222222" ||
-        cnpj == "33333333333333" ||
-        cnpj == "44444444444444" ||
-        cnpj == "55555555555555" ||
-        cnpj == "66666666666666" ||
-        cnpj == "77777777777777" ||
-        cnpj == "88888888888888" ||
-        cnpj == "99999999999999")
+    if (CNPJNumber == "00000000000000" ||
+        CNPJNumber == "11111111111111" ||
+        CNPJNumber == "22222222222222" ||
+        CNPJNumber == "33333333333333" ||
+        CNPJNumber == "44444444444444" ||
+        CNPJNumber == "55555555555555" ||
+        CNPJNumber == "66666666666666" ||
+        CNPJNumber == "77777777777777" ||
+        CNPJNumber == "88888888888888" ||
+        CNPJNumber == "99999999999999")
         return false;
 
     // Valida DVs
-    tamanho = cnpj.length - 2
-    numeros = cnpj.substring(0, tamanho);
-    digitos = cnpj.substring(tamanho);
+    tamanho = CNPJNumber.length - 2
+    numeros = CNPJNumber.substring(0, tamanho);
+    digitos = CNPJNumber.substring(tamanho);
     soma = 0;
     pos = tamanho - 7;
     for (i = tamanho; i >= 1; i--) {
@@ -332,7 +332,7 @@ const _ValidateCnpj = cnpj => {
         return false;
 
     tamanho = tamanho + 1;
-    numeros = cnpj.substring(0, tamanho);
+    numeros = CNPJNumber.substring(0, tamanho);
     soma = 0;
     pos = tamanho - 7;
     for (i = tamanho; i >= 1; i--) {
@@ -347,7 +347,7 @@ const _ValidateCnpj = cnpj => {
     return true;
 };
 
-const _validatePass = input => {
+const validatePassword = input => {
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
     matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g);
@@ -375,12 +375,12 @@ String.prototype.replaceAll = function (from, to) {
     return array.join(to);
 };
 
-function SearchViaCEP(cep, num, timeout, callback) {
-    cep = cep || "";
-    num = num || "";
-    timeout = timeout || 0;
-    callback = callback || function (o) { console.log('No callback defined', o); }
-    console.log('Searching CEP', cep, num, timeout);
+function SearchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
+    CEPNumber = CEPNumber || "";
+    homeNumber = homeNumber || "";
+    delay = delay || 0;
+    callbackFunction = callbackFunction || function (o) { console.log('No callback defined', o); }
+    console.log('Searching CEP', CEPNumber, homeNumber, delay);
     var address = jQuery(".autocomplete.address").prop("disabled");
     var complement = jQuery(".autocomplete.complement").prop("disabled");
     var neighborhood = jQuery(".autocomplete.neighborhood").prop("disabled");
@@ -393,12 +393,12 @@ function SearchViaCEP(cep, num, timeout, callback) {
     var siafi = jQuery(".autocomplete.siafi").prop("disabled");
 
     if (
-        (cep.length == 9 && cep.includes("-")) ||
-        (cep.length == 8 && cep.includes("-") == false)
+        (CEPNumber.length == 9 && CEPNumber.includes("-")) ||
+        (CEPNumber.length == 8 && CEPNumber.includes("-") == false)
     ) {
         jQuery.ajax({
             type: "GET",
-            url: "https://viacep.com.br/ws/" + cep + "/json/",
+            url: "https://viacep.com.br/ws/" + CEPNumber + "/json/",
             async: true,
             crossorigin: true,
             beforeSend: function () {
@@ -415,9 +415,9 @@ function SearchViaCEP(cep, num, timeout, callback) {
                 jQuery(".autocomplete.siafi").prop("disabled", true);
             },
             success: function (obj) {
-                obj["numero"] = num;
-                if (num != "") {
-                    num = ", " + num;
+                obj["numero"] = homeNumber;
+                if (homeNumber != "") {
+                    homeNumber = ", " + homeNumber;
                 }
 
                 console.log("ViaCEP Response", obj);
@@ -453,7 +453,7 @@ function SearchViaCEP(cep, num, timeout, callback) {
                 jQuery(".autocomplete.fulladdress:input")
                     .val(
                         obj.logradouro +
-                        num +
+                        homeNumber +
                         " " +
                         obj.complemento +
                         " - " +
@@ -495,7 +495,7 @@ function SearchViaCEP(cep, num, timeout, callback) {
                     .not(":input")
                     .text(
                         obj.logradouro +
-                        num +
+                        homeNumber +
                         " - " +
                         obj.bairro +
                         " - " +
@@ -508,7 +508,7 @@ function SearchViaCEP(cep, num, timeout, callback) {
                     setTimeout(function () {
                         jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
                         jQuery(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
-                    }, timeout);
+                    }, delay);
                 } else {
                     console.error('Address not found');
                     let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "";
@@ -519,16 +519,16 @@ function SearchViaCEP(cep, num, timeout, callback) {
                     eval(jQuery(this).attr("data-addressnotfound") || jQuery(this).attr("data-notfound") || "void(0)");
                     setTimeout(function () {
                         jQuery(".autocomplete.address:input").focus();
-                    }, timeout);
+                    }, delay);
                 }
-                callback(obj);
+                callbackFunction(obj);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
                 console.log("error", xhr, ajaxOptions, thrownError);
                 setTimeout(function () {
                     jQuery(".autocomplete.address:input").focus();
-                }, timeout);
+                }, delay);
             },
             complete: function () {
                 jQuery(".autocomplete.address").prop("disabled", address);
@@ -544,7 +544,7 @@ function SearchViaCEP(cep, num, timeout, callback) {
             }
         });
     } else {
-        console.log("Awaiting a valid CEP", cep);
+        console.log("Awaiting a valid CEP", CEPNumber);
     }
 }
 
@@ -692,7 +692,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(value.split("/").length == 3)
-                        results.push(_validDate(value));
+                        results.push(validDate(value));
                         break;
                     case "datetime":
                     case "dateshorttime":
@@ -703,7 +703,7 @@ jQuery.fn.isValid = function () {
                         }
                         var comp = value.split(" ");
                         if (comp.length == 2) {
-                            results.push(_validDate(comp[0]) && _valid_time(comp[1]));
+                            results.push(validDate(comp[0]) && validateTime(comp[1]));
                             break;
                         }
                         results.push(false);
@@ -715,7 +715,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(_valid_time(value));
+                        results.push(validateTime(value));
                         break;
                     case "month":
                         if (jQuery.trim(value) === "") {
@@ -764,7 +764,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(_ValidateCnpj(value));
+                        results.push(validateCNPJ(value));
                         break;
                     case "cpf":
                         if (jQuery.trim(value) === "") {
@@ -822,10 +822,10 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var vlu = _checkLuhn(value);
+                        var vlu = checkLuhn(value);
 
                         if (vlu) {
-                            var flagcard = _validatecardbrand(value);
+                            var flagcard = validateCardBrand(value);
                             jQuery(this).attr("data-flagcard", flagcard.toString());
                             if (
                                 jQuery(this).is(
@@ -867,7 +867,7 @@ jQuery.fn.isValid = function () {
                                 break;
                         }
 
-                        results.push(_validatePass(this) >= strenght);
+                        results.push(validatePassword(this) >= strenght);
                         break;
 
                     case "after":
@@ -883,12 +883,12 @@ jQuery.fn.isValid = function () {
                         }
 
                         var num = valids[i + 1] || "0";
-                        if ((num.indexOf("today") || num.indexOf("/")) && _validDate(value)) {
-                            value = _parseDate(value);
+                        if ((num.indexOf("today") || num.indexOf("/")) && validDate(value)) {
+                            value = parseDate(value);
                             if (num == "today") {
                                 num = Date.now();
                             } else {
-                                num = _parseDate(num);
+                                num = parseDate(num);
                             }
                         }
                         debugger;
@@ -961,12 +961,12 @@ jQuery.fn.isValid = function () {
                         switch (valids[i].toLowerCase()) {
                             case "containsanychar":
                             case "containsanychars":
-                                results.push(_validateAnyChar(valor1, valor2));
+                                results.push(validateAnyChar(valor1, valor2));
                                 break;
                             case "containschar":
                             case "containsallchar":
                             case "containsallchars":
-                                results.push(_validateAllChar(valor1, valor2));
+                                results.push(validateAllChar(valor1, valor2));
                                 break;
                             case "eqv":
                             case "equalvalue":
@@ -980,7 +980,7 @@ jQuery.fn.isValid = function () {
                             case "containsnotchars":
                             case "notcontainschars":
                             case "notcontainschar":
-                                results.push(_validateNotChar(valor1, valor2));
+                                results.push(validateNotChar(valor1, valor2));
                                 break;
                             default:
                                 results.push(valor1.includes(valor2));
@@ -1043,7 +1043,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var idade = _getAge(value);
+                        var idade = getAge(value);
                         results.push(idade >= parseInt(valids[i + 1]));
                         break;
                     case "maxage":
@@ -1051,7 +1051,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var idade = _getAge(value);
+                        var idade = getAge(value);
                         results.push(idade <= parseInt(valids[i + 1]));
                         break;
                     case "age":
@@ -1059,7 +1059,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var idade = _getAge(value);
+                        var idade = getAge(value);
                         results.push(idade == parseInt(valids[i + 1]));
                         break;
                     default:
@@ -1081,7 +1081,7 @@ jQuery.fn.isValid = function () {
                     .get(0)
                     .setCustomValidity(jQuery(this).attr("data-invalidmessage") || "");
                 eval(jQuery(this).attr("data-invalidcallback") || "void(0)");
-                eval(jQuery(this).attr("data-aftervalidate") || "void(0)");
+                eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
                 return false;
             }
         }
@@ -1091,7 +1091,7 @@ jQuery.fn.isValid = function () {
         }
         jQuery(this).removeClass("error");
         eval(jQuery(this).attr("data-validcallback") || "void(0)");
-        eval(jQuery(this).attr("data-aftervalidate") || "void(0)");
+        eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
         return true;
     }
 };
@@ -1142,8 +1142,8 @@ jQuery.fn.validateOnType = function (time) {
             var p = jQuery(this);
             p.removeClass("error");
             p.closest(".form-group").removeClass("has-error");
-            clearTimeout(__timer);
-            __timer = setTimeout(function () {
+            clearTimeout(onTypeTimeout);
+            onTypeTimeout = setTimeout(function () {
                 p.isValid();
             }, time);
         });
@@ -1171,7 +1171,7 @@ jQuery.fn.validateOnChange = function () {
 
 jQuery.fn.phoneMask = function () {
     let x = jQuery(this).on("input", function () {
-        _telMask(this);
+        applyPhoneMask(this);
     });
     console.log("InnerFormValidation:", "PhoneMask started", x);
     return x;
@@ -1180,7 +1180,7 @@ jQuery.fn.phoneMask = function () {
 
 jQuery.fn.upperMask = function () {
     let x = jQuery(this).on("input", function () {
-        _upperMask(this);
+        applyUpperMask(this);
     });
     console.log("InnerFormValidation:", "UpperMask started", x);
     return x;
@@ -1189,7 +1189,7 @@ jQuery.fn.upperMask = function () {
 
 jQuery.fn.lowerMask = function () {
     let x = jQuery(this).on("input", function () {
-        _lowerMask(this);
+        applyLowerMask(this);
     });
     console.log("InnerFormValidation:", "LowerMask started", x);
     return x;
@@ -1197,7 +1197,7 @@ jQuery.fn.lowerMask = function () {
 
 jQuery.fn.cpfMask = function () {
     let x = jQuery(this).on("input", function () {
-        _cpfMask(this);
+        applyCPFMask(this);
     });
     console.log("InnerFormValidation:", "CpfMask started", x);
     return x;
@@ -1206,7 +1206,7 @@ jQuery.fn.cpfMask = function () {
 
 jQuery.fn.cepMask = function () {
     let x = jQuery(this).on("input", function () {
-        _cepMask(this);
+        applyCEPMask(this);
     });
     console.log("InnerFormValidation:", "CepMask started", x);
     return x;
@@ -1215,7 +1215,7 @@ jQuery.fn.cepMask = function () {
 
 jQuery.fn.cnpjMask = function () {
     let x = jQuery(this).on("input", function () {
-        _cnpjMask(this);
+        applyCNPJMask(this);
     });
     console.log("InnerFormValidation:", "CnpjMask started", x);
     return x;
@@ -1223,7 +1223,7 @@ jQuery.fn.cnpjMask = function () {
 
 jQuery.fn.cpfCnpjMask = function () {
     let x = jQuery(this).on('input', function () {
-        _cpfCnpjMask(this);
+        applyCPForCNPJMask(this);
     });
     console.log("InnerFormValidation:", "CpfCnpjMask started", x);
     return x;
@@ -1232,7 +1232,7 @@ jQuery.fn.cpfCnpjMask = function () {
 
 jQuery.fn.creditCardMask = function () {
     let x = jQuery(this).on("input", function () {
-        _cardnumbermask(this);
+        applyCreditCardMask(this);
     });
     console.log("InnerFormValidation:", "CreditCardMask started", x);
     return x;
@@ -1240,7 +1240,7 @@ jQuery.fn.creditCardMask = function () {
 
 jQuery.fn.dateMask = function () {
     let x = jQuery(this).on("input", function () {
-        _dateMask(this);
+        applyDateMask(this);
     });
     console.log("InnerFormValidation:", "DateMask started", x);
     return x;
@@ -1248,7 +1248,7 @@ jQuery.fn.dateMask = function () {
 
 jQuery.fn.monthYearMask = function () {
     let x = jQuery(this).on("input", function () {
-        _monthYear(this);
+        applyMonthYearMask(this);
     });
     console.log("InnerFormValidation:", "MonthYearMask started", x);
     return x;
@@ -1256,7 +1256,7 @@ jQuery.fn.monthYearMask = function () {
 
 jQuery.fn.numberMask = function () {
     let x = jQuery(this).on("input", function () {
-        _onlyNumbers(this);
+        applyNumberMask(this);
     });
     console.log("InnerFormValidation:", "NumberMask started", x);
     return x;
@@ -1297,7 +1297,7 @@ jQuery.fn.cepAutoComplete = function () {
 
 jQuery.fn.timeMask = function () {
     let x = jQuery(this).on("input", function () {
-        _timeMask(this);
+        applyTimeMask(this);
     });
     console.log("InnerFormValidation:", "TimeMask started", x);
     return x;
@@ -1305,7 +1305,7 @@ jQuery.fn.timeMask = function () {
 
 jQuery.fn.shortTimeMask = function () {
     let x = jQuery(this).on("input", function () {
-        _shortTimeMask(this);
+        applyShortTimeMask(this);
     });
     console.log("InnerFormValidation:", "ShortTimeMask started", x);
     return x;
@@ -1314,7 +1314,7 @@ jQuery.fn.shortTimeMask = function () {
 
 jQuery.fn.dateShortTimeMask = function () {
     let x = jQuery(this).on("input", function () {
-        _dateShortTimeMask(this);
+        applyDateShortMask(this);
     });
     console.log("InnerFormValidation:", "DateShortTimeMask started", x);
     return x;
@@ -1322,7 +1322,7 @@ jQuery.fn.dateShortTimeMask = function () {
 
 jQuery.fn.dateTimeMask = function () {
     let x = jQuery(this).on("input", function () {
-        _dateTimeMask(this);
+        applyDateTimeMask(this);
     });
     console.log("InnerFormValidation:", "DateTimeMask started", x);
     return x;
@@ -1330,7 +1330,7 @@ jQuery.fn.dateTimeMask = function () {
 
 jQuery.fn.alphaMask = function () {
     let x = jQuery(this).on("input", function () {
-        _alphamask(this);
+        applyAlphaMask(this);
     });
     console.log("InnerFormValidation:", "AlphaMask started", x);
     return x;
@@ -1338,7 +1338,7 @@ jQuery.fn.alphaMask = function () {
 
 jQuery.fn.alphaNumericMask = function () {
     let x = jQuery(this).on("input", function () {
-        _alphanumericmask(this);
+        applyAlphaNumericMask(this);
     });
     console.log("InnerFormValidation:", "AlphaNumericMask started", x);
     return x;
@@ -1347,7 +1347,7 @@ jQuery.fn.alphaNumericMask = function () {
 
 jQuery.fn.noSpaceMask = function () {
     let x = jQuery(this).on("input", function () {
-        _nospacemask(this);
+        ApplyNoSpaceMask(this);
     });
     console.log("InnerFormValidation:", "NoSpaceMask started", x);
     return x;
