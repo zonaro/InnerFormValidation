@@ -427,35 +427,35 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
                 console.log("ViaCEP Response", obj);
 
                 jQuery(".autocomplete.address:input")
-                    .val(obj.logradouro)
+                    .setOrReplaceVal(obj.logradouro)
                     .change().focus();
                 jQuery(".autocomplete.complement:input")
-                    .val(obj.complemento)
+                    .setOrReplaceVal(obj.complemento)
                     .change().focus();
                 jQuery(".autocomplete.neighborhood:input")
-                    .val(obj.bairro)
+                    .setOrReplaceVal(obj.bairro)
                     .change().focus();
                 jQuery(".autocomplete.city:input")
-                    .val(obj.localidade)
+                    .setOrReplaceVal(obj.localidade)
                     .change().focus();
                 jQuery(".autocomplete.state:input")
-                    .val(obj.uf)
+                    .setOrReplaceVal(obj.uf)
                     .change().focus();
                 jQuery(".autocomplete.ibge:input")
-                    .val(obj.ibge)
+                    .setOrReplaceVal(obj.ibge)
                     .change().focus();
                 jQuery(".autocomplete.gia:input")
-                    .val(obj.gia)
+                    .setOrReplaceVal(obj.gia)
                     .change().focus();
                 jQuery(".autocomplete.ddd:input")
-                    .val(obj.ddd)
+                    .setOrReplaceVal(obj.ddd)
                     .change().focus();
                 jQuery(".autocomplete.siafi:input")
-                    .val(obj.siafi)
+                    .setOrReplaceVal(obj.siafi)
                     .change().focus();
 
                 jQuery(".autocomplete.fulladdress:input")
-                    .val(
+                    .setOrReplaceVal(
                         obj.logradouro +
                         homeNumber +
                         " " +
@@ -468,6 +468,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
                         obj.uf
                     )
                     .change().focus();
+
                 jQuery(".autocomplete.address")
                     .not(":input")
                     .text(obj.logradouro);
@@ -525,7 +526,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
                         jQuery(".autocomplete.address:input").focus();
                     }, delay);
                 }
-                callbackFunction(obj);
+                if (obj) callbackFunction(obj);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
@@ -552,8 +553,24 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
     }
 }
 
+
+jQuery.fn.setOrReplaceVal = function (value) {
+
+    let valor = jQuery.trim(jQuery(this).val() || "");
+    if (valor == "") {
+        jQuery(this).val(value)
+    } else if (jQuery(this).is(".noreplace") == false) {
+        jQuery(this).val(value)
+    }
+    return jQuery(this);
+
+}
+
+
+
+
 jQuery.fn.isValid = function () {
-    var results = [];
+    let results = [];
 
     if (jQuery(this).length > 1 || jQuery(this).prop("tagName") == "FORM") {
         eval(jQuery(this).attr("data-beforevalidatecallback") || "void(0)");
