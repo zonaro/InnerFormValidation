@@ -16,9 +16,11 @@ function validateTime(value) {
     return false;
 }
 
-const getAge = birthDate => Math.floor((new Date() - parseDate(birthDate)) / 3.15576e+10);
+const getAge = function (birthDate) {
+    return Math.floor((new Date() - parseDate(birthDate)) / 3.15576e+10);
+};
 
-const validateNotChar = (value, chars) => {
+const validateNotChar = function (value, chars) {
     chars = chars.split("");
     for (var i = 0; i < chars.length; i++) {
         if (value.indexOf(chars[i]) >= 0) {
@@ -27,7 +29,7 @@ const validateNotChar = (value, chars) => {
     }
     return true;
 };
-const validateAnyChar = (value, chars) => {
+const validateAnyChar = function (value, chars) {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -38,7 +40,7 @@ const validateAnyChar = (value, chars) => {
     return v.indexOf(true) >= 0;
 };
 
-const validateAllChar = (value, chars) => {
+const validateAllChar = function (value, chars) {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -80,24 +82,24 @@ function parseDate(value) {
     return null;
 }
 
-const ApplyNoSpaceMask = (input = new HTMLInputElement()) => {
+const ApplyNoSpaceMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[ ]+/g, '');
 };
 
-const applyAlphaMask = (input = new HTMLInputElement()) => {
+const applyAlphaMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[!@#$%¨&*()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
-const applyAlphaNumericMask = (input = new HTMLInputElement()) => {
+const applyAlphaNumericMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[!@#$%¨&*()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
-const applyPhoneMask = (input = new HTMLInputElement()) => {
+const applyPhoneMask = function (input = new HTMLInputElement()) {
     var value = input.value;
     value = value.replace(/\D/g, "");
     value = value.replace(/^(\d{4})(\d{1,4})$/g, "$1-$2");
@@ -108,15 +110,15 @@ const applyPhoneMask = (input = new HTMLInputElement()) => {
     input.value = value;
 };
 
-const applyUpperMask = (input = new HTMLInputElement()) => {
+const applyUpperMask = function (input = new HTMLInputElement()) {
     input.value = input.value.toUpperCase();
 };
 
-const applyLowerMask = (input = new HTMLInputElement()) => {
+const applyLowerMask = function (input = new HTMLInputElement()) {
     input.value = input.value.toLowerCase();
 };
 
-const applyDateMask = (input = new HTMLInputElement()) => {
+const applyDateMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
@@ -131,7 +133,7 @@ jQuery.fn.dateMask = function () {
     applyDateMask(this)
 };
 
-const applyDateTimeMask = (input = new HTMLInputElement()) => {
+const applyDateTimeMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -142,7 +144,7 @@ const applyDateTimeMask = (input = new HTMLInputElement()) => {
     input.maxLength = 19;
 };
 
-const applyDateShortMask = (input = new HTMLInputElement()) => {
+const applyDateShortMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -152,20 +154,20 @@ const applyDateShortMask = (input = new HTMLInputElement()) => {
     input.maxLength = 16;
 };
 
-const applyTimeMask = (input = new HTMLInputElement()) => {
+const applyTimeMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1:$2");
     input.value = value.replace(/^(\d{2}:\d{2})(\d{1,2})$/g, "$1:$2");
     input.maxLength = 8;
 };
 
-const applyShortTimeMask = (input = new HTMLInputElement()) => {
+const applyShortTimeMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     input.value = value.replace(/^(\d{2})(\d{1,2})$/g, "$1:$2");
     input.maxLength = 5;
 };
 
-const applyCPForCNPJMask = (input = new HTMLInputElement()) => {
+const applyCPForCNPJMask = function (input = new HTMLInputElement()) {
     var value = input.value;
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
@@ -183,7 +185,7 @@ const applyCPForCNPJMask = (input = new HTMLInputElement()) => {
     input.maxLength = 18;
 };
 
-const applyCPFMask = (input = new HTMLInputElement()) => {
+const applyCPFMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{3})(\d+)/g, "$1.$2");
@@ -195,7 +197,7 @@ const applyCPFMask = (input = new HTMLInputElement()) => {
     input.value = text;
 };
 
-const applyCEPMask = (input = new HTMLInputElement()) => {
+const applyCEPMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
@@ -205,7 +207,7 @@ const applyCEPMask = (input = new HTMLInputElement()) => {
     input.value = text;
 };
 
-const applyCNPJMask = (input = new HTMLInputElement()) => {
+const applyCNPJMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/, "$1.$2");
@@ -218,7 +220,7 @@ const applyCNPJMask = (input = new HTMLInputElement()) => {
     input.value = text;
 };
 
-const applyCreditCardMask = (input = new HTMLInputElement()) => {
+const applyCreditCardMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
@@ -230,13 +232,13 @@ const applyCreditCardMask = (input = new HTMLInputElement()) => {
     input.value = text;
 };
 
-const applyNumberMask = (input = new HTMLInputElement()) => {
+const applyNumberMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     input.value = text;
 };
 
-const applyMonthYearMask = (input = new HTMLInputElement()) => {
+const applyMonthYearMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
@@ -246,7 +248,7 @@ const applyMonthYearMask = (input = new HTMLInputElement()) => {
     input.value = text;
 };
 
-const checkLuhn = cardNumber => {
+const checkLuhn = function (cardNumber) {
     var s = 0;
     var doubleDigit = false;
     cardNumber = cardNumber.replace(/[^\d]+/g, "");
@@ -254,7 +256,8 @@ const checkLuhn = cardNumber => {
         var digit = +cardNumber[i];
         if (doubleDigit) {
             digit *= 2;
-            if (digit > 9) digit -= 9;
+            if (digit > 9)
+                digit -= 9;
         }
         s += digit;
         doubleDigit = !doubleDigit;
@@ -262,11 +265,11 @@ const checkLuhn = cardNumber => {
     return s % 10 == 0;
 };
 
-const validateCardBrand = cardNumber => {
+const validateCardBrand = function (cardNumber) {
     cardNumber = cardNumber.replace(/[^0-9]+/g, "");
     var cards = {
         visa: /^4[0-9]{12}(?:[0-9]{3})/,
-        mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/, //2307 4425 8875 4358
+        mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/,
         diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
         amex: /^3[47][0-9]{13}/,
         discover: /^6(?:011|5[0-9]{2})[0-9]{12}/,
@@ -295,10 +298,11 @@ const validateCardBrand = cardNumber => {
     return false;
 };
 
-const validateCNPJ = CNPJNumber => {
+const validateCNPJ = function (CNPJNumber) {
     CNPJNumber = CNPJNumber.replace(/\D/g, "");
 
-    if (CNPJNumber == '') return false;
+    if (CNPJNumber == '')
+        return false;
 
     if (CNPJNumber.length != 14)
         return false;
@@ -317,7 +321,7 @@ const validateCNPJ = CNPJNumber => {
         return false;
 
     // Valida DVs
-    tamanho = CNPJNumber.length - 2
+    tamanho = CNPJNumber.length - 2;
     numeros = CNPJNumber.substring(0, tamanho);
     digitos = CNPJNumber.substring(tamanho);
     soma = 0;
@@ -347,7 +351,7 @@ const validateCNPJ = CNPJNumber => {
     return true;
 };
 
-const validatePassword = input => {
+const validatePassword = function (input) {
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
     matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g);
