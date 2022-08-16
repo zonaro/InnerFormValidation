@@ -557,7 +557,10 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
     }
 }
 
-
+/**
+ * Sets a value to an input if that input is empty. If this input is not empty, set the value only if it does not contain the .noreplace class
+ * @param {Object} value any input value 
+ */
 jQuery.fn.setOrReplaceVal = function (value) {
 
     let valor = jQuery.trim(jQuery(this).val() || "");
@@ -570,9 +573,26 @@ jQuery.fn.setOrReplaceVal = function (value) {
 
 }
 
+/**
+ * Check if given value is valid
+ * @arguments The first argument is the value, the subsequent arguments are the validation classes
+ * @return {Boolean} true if is valid, otherwise false
+ */
+jQuery.isValid = function () {
+    let items = Array.prototype.slice.call(arguments);
+    if (items.length > 0) {
+        let v = items.shift();
+        return jQuery("<input value='" + v + "' class='" + items.join(" ") + "' />").isValid();
+    }
+    return false;
+}
 
 
-
+/**
+ * Checks if an input, form or collection of inputs is valid
+ * @arguments When empty, uses the validation classes contained in the class attribute. if specified, use each argument as a validation class
+ * @return {Boolean} true if is valid, otherwise false
+ */
 jQuery.fn.isValid = function () {
     let results = [];
 
@@ -915,7 +935,7 @@ jQuery.fn.isValid = function () {
                             } else {
                                 num = parseDate(num);
                             }
-                        }                      
+                        }
                         if (valids[i] == "after") {
                             results.push(parseFloat(value) >= parseFloat(num));
                         } else {
