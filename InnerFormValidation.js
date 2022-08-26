@@ -26,7 +26,7 @@ function barcodeCheckSum(code) {
         i = parseInt((p + 9) / 10) * 10;
         T = i - p;
     }
-    return T.ToString();
+    return T;
 }
 
 function validateTime(value) {
