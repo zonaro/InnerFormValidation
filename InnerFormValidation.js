@@ -46,11 +46,11 @@ function validateTime(value) {
     return false;
 }
 
-function validateEAN(code) {
-    code = code || ""
+function validateEAN(value) {
+    value = value || ""
     if (!isNaN(value)) {
-        let bar = code.text.slice(0, -1);
-        let ver = code.slice(-1);
+        let bar = value.text.slice(0, -1);
+        let ver = value.slice(-1);
         return barcodeCheckSum(bar) == ver;
     }
     return false;
