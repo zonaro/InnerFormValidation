@@ -181,7 +181,7 @@ After validation the inputs receive a class indicating **success** or **error**:
 
 ### Data Attributes
 
-You can add the following attributeson forms and inputs:
+You can add the following attributes on forms and inputs:
 
 #### HTML5 Default Validation
 
