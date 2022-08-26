@@ -1,6 +1,5 @@
 var onTypeTimeout = 1;
 
-
 function barcodeCheckSum(code) { 
     code = code || ""
     let i = 0;
