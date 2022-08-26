@@ -74,6 +74,8 @@ Add one or more classes to any `input` element;
 - 🎭**cpfcnpj** - Valid Brazilian CPF or CNPJ;
 
 - 🎭**cep** - Valid  Brazilian PostalCode;
+ 
+- **ean** - EAN barcode;
 
 - **eq** `selector` - Equal selector (eg: `eq #user_email`);
 
