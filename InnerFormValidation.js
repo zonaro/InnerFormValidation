@@ -1,4 +1,33 @@
-var onTypeTimeout;
+var onTypeTimeout = 1;
+
+
+function barcodeCheckSum(code) {
+
+    let i = 0;
+    let j;
+    let p = 0;
+    let T;
+    T = code.Length;
+    for (j = 1; j <= T; j++) {
+        if ((j & ~-2) == 0) {
+            p += parseInt(code.substring(j - 1, 1));
+        }
+        else {
+            i += parseInt(code.substring(j - 1, 1));
+        }
+    }
+    if ((T == 7 | T == 11)) {
+        i = i * 3 + p;
+        p = parseInt((i + 9) / 10) * 10;
+        T = p - i;
+    }
+    else {
+        p = p * 3 + i;
+        i = parseInt((p + 9) / 10) * 10;
+        T = i - p;
+    }
+    return T.ToString();
+}
 
 function validateTime(value) {
     var comp = value.split(":");
@@ -6,18 +35,26 @@ function validateTime(value) {
         var h = parseInt(comp[0], 10);
         var m = parseInt(comp[1], 10);
         var s = parseInt(comp[2], 10);
-        return h <= 23 && h >= 0 && m <= 59 && m >= 0 && s <= 59 && s >= 0;
+        let ff = h <= 23 && h >= 0 && m <= 59 && m >= 0;
+        return ff && s >= 0 && s <= 59;
     }
     if (comp.length == 2) {
         var h = parseInt(comp[0], 10);
         var m = parseInt(comp[1], 10);
-        return h <= 23 && h >= 0 && m <= 59 && m >= 0;
+        return ff;
     }
     return false;
 }
 
-const getAge = function (birthDate) {
-    return Math.floor((new Date() - parseDate(birthDate)) / 3.15576e+10);
+function validateEAN(code) {
+    let bar = code.text.slice(0, -1);
+    let ver = code.slice(-1);
+    return barcodeCheckSum(bar) == ver;
+}
+
+const getAge = function (birthDate, fromDate) {
+    fromDate = fromDate || new Date()
+    return Math.floor((fromDate - parseDate(birthDate)) / 3.15576e+10);
 };
 
 const validateNotChar = function (value, chars) {
@@ -656,6 +693,13 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(!isNaN(value.replaceAll(",", ".")));
+                        break;
+                    case "ean":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(!isNaN(value.replaceAll(",", ".")) && validateEAN(value));
                         break;
                     case "upper":
                         if (jQuery.trim(value) === "") {
