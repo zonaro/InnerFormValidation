@@ -53,7 +53,7 @@ function validateEAN(code) {
 }
 
 const getAge = function (birthDate, fromDate) {
-    fromDate = fromDate || new Date()
+    fromDate = fromDate || new Date();
     return Math.floor((fromDate - parseDate(birthDate)) / 3.15576e+10);
 };
 
