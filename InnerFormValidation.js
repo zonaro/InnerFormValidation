@@ -49,7 +49,7 @@ function validateTime(value) {
 function validateEAN(value) {
     value = value || ""
     if (!isNaN(value)) {
-        let bar = value.text.slice(0, -1);
+        let bar = value.slice(0, -1);
         let ver = value.slice(-1);
         return barcodeCheckSum(bar) == ver;
     }
