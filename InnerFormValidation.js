@@ -5,8 +5,8 @@ function barcodeCheckSum(code) {
     code = code || ""
     let i = 0;
     let p = 0;
-    let T = code.length;
-    for (var j = 1; j <= T; j++) {
+    let t = code.length;
+    for (var j = 1; j <= t; j++) {
         if ((j & ~-2) == 0) {
             p += parseInt(code.substring(j - 1, j));
         }
@@ -14,16 +14,16 @@ function barcodeCheckSum(code) {
             i += parseInt(code.substring(j - 1, j));
         }
     }
-    if ((T == 7 || T == 11)) {
+    if ((t == 7 || t == 11)) {
         i = i * 3 + p;
         p = parseInt((i + 9) / 10) * 10;
-        T = p - i;
+        t = p - i;
     } else {
         p = p * 3 + i;
         i = parseInt((p + 9) / 10) * 10;
-        T = i - p;
+        t = i - p;
     }
-    return T;
+    return t;
 }
 
 function validateTime(value) {
