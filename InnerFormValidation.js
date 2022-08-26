@@ -1,18 +1,17 @@
 var onTypeTimeout = 1;
 
 
-function barcodeCheckSum(code) {  
-    debugger;
+function barcodeCheckSum(code) { 
     code = code || ""
     let i = 0;
     let p = 0;
     let T = code.length;
     for (var j = 1; j <= T; j++) {
         if ((j & ~-2) == 0) {
-            p += parseInt(code.substring(j - 1, 1));
+            p += parseInt(code.substring(j - 1, j));
         }
         else {
-            i += parseInt(code.substring(j - 1, 1));
+            i += parseInt(code.substring(j - 1, j));
         }
     }
     if ((T == 7 || T == 11)) {
