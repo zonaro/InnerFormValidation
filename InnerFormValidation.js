@@ -2,13 +2,11 @@ var onTypeTimeout = 1;
 
 
 function barcodeCheckSum(code) {
-
+    code = code || ""
     let i = 0;
-    let j;
     let p = 0;
-    let T;
-    T = code.Length;
-    for (j = 1; j <= T; j++) {
+    let T = code.Length;
+    for (var j = 1; j <= T; j++) {
         if ((j & ~-2) == 0) {
             p += parseInt(code.substring(j - 1, 1));
         }
@@ -16,12 +14,11 @@ function barcodeCheckSum(code) {
             i += parseInt(code.substring(j - 1, 1));
         }
     }
-    if ((T == 7 | T == 11)) {
+    if ((T == 7 || T == 11)) {
         i = i * 3 + p;
         p = parseInt((i + 9) / 10) * 10;
         T = p - i;
-    }
-    else {
+    } else {
         p = p * 3 + i;
         i = parseInt((p + 9) / 10) * 10;
         T = i - p;
@@ -48,7 +45,7 @@ function validateTime(value) {
 
 function validateEAN(value) {
     value = value || ""
-    if (!isNaN(value) && value.length > 1 && value.length <=16) {
+    if (!isNaN(value) && value.length > 1 && value.length <= 16) {
         let bar = value.slice(0, -1);
         let ver = value.slice(-1);
         return barcodeCheckSum(bar) == ver;
