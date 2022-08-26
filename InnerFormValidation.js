@@ -119,7 +119,7 @@ function parseDate(value) {
     return null;
 }
 
-const ApplyNoSpaceMask = function (input = new HTMLInputElement()) {
+const applyNoSpaceMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[ ]+/g, '');
 };
@@ -1435,7 +1435,7 @@ jQuery.fn.alphaNumericMask = function () {
 
 jQuery.fn.noSpaceMask = function () {
     let x = jQuery(this).on("input", function () {
-        ApplyNoSpaceMask(this);
+        applyNoSpaceMask(this);
     });
     console.log("InnerFormValidation:", "NoSpaceMask started", x);
     return x;
