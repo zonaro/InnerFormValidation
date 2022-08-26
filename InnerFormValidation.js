@@ -8,10 +8,10 @@ function barcodeCheckSum(code) {
     let t = code.length;
     for (var j = 1; j <= t; j++) {
         if ((j & ~-2) == 0) {
-            p += parseInt(code.substring(j - 1, j));
+            p += parseInt(code.slice(j - 1, j));
         }
         else {
-            i += parseInt(code.substring(j - 1, j));
+            i += parseInt(code.slice(j - 1, j));
         }
     }
     if ((t == 7 || t == 11)) {
