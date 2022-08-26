@@ -47,9 +47,13 @@ function validateTime(value) {
 }
 
 function validateEAN(code) {
-    let bar = code.text.slice(0, -1);
-    let ver = code.slice(-1);
-    return barcodeCheckSum(bar) == ver;
+    code = code || ""
+    if (!isNaN(value)) {
+        let bar = code.text.slice(0, -1);
+        let ver = code.slice(-1);
+        return barcodeCheckSum(bar) == ver;
+    }
+    return false;
 }
 
 const getAge = function (birthDate, fromDate) {
@@ -699,7 +703,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(!isNaN(value.replaceAll(",", ".")) && validateEAN(value));
+                        results.push(validateEAN(value));
                         break;
                     case "upper":
                         if (jQuery.trim(value) === "") {
