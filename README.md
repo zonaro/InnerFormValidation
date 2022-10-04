@@ -10,7 +10,7 @@ Mask and Validate Forms with jQuery and CSS classes.
 ### CDN
 
 ```html
-<script src="https://gitcdn.xyz/repo/innercodetech/InnerFormValidation/master/InnerFormValidation.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/innercodetech/innerformvalidation@master/InnerFormValidation.js"></script>
 ```
 
 
