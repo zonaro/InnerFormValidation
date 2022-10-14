@@ -1508,4 +1508,4 @@ jQuery.fn.leadingZeroMask = function () {
     return x;
 }
 
-window.innerForm.log('InnerFormValidation loaded');
+window.innerForm.log('Loaded');
