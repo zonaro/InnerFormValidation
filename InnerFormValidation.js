@@ -1,6 +1,6 @@
 var onTypeTimeout = 1;
 
-function barcodeCheckSum(code) { 
+function barcodeCheckSum(code) {
     code = code || ""
     let i = 0;
     let p = 0;
@@ -1210,6 +1210,7 @@ jQuery.fn.startMasks = function () {
     jQuery(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
     jQuery(this).find(".mask.nospace").noSpaceMask();
     jQuery(this).find(".mask.maxlen").maxLenMask();
+    jQuery(this).find(".mask.leadingzero").leadingZeroMask();
 
 }
 
@@ -1449,7 +1450,7 @@ jQuery.fn.maxLenMask = function () {
             .filter(function (el) {
                 return el != null && el != "";
             });
-        var tam = parseInt(array[array.indexOf("len") + 1]);
+        var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("maxlen") + 1]);
         if (!isNaN(tam)) {
             jQuery(this).attr("maxlength", tam);
             jQuery(this).val(
@@ -1460,6 +1461,34 @@ jQuery.fn.maxLenMask = function () {
         }
     });
     console.log("InnerFormValidation:", "MaxLenMask started", x);
+    return x;
+}
+
+function addLeadingZeros(num, totalLength) {
+    if (num < 0) {
+        const withoutMinus = String(num).slice(1);
+        return '-' + withoutMinus.padStart(totalLength, '0');
+    }
+
+    return String(num).padStart(totalLength, '0');
+}
+
+jQuery.fn.leadingZeroMask = function () {
+    let x = jQuery(this).on("blur", function () {
+        var array = jQuery(this)
+            .attr("class")
+            .split(" ")
+            .filter(function (el) {
+                return el != null && el != "";
+            });
+        var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("minlen") + 1]);
+        if (!isNaN(tam)) {
+            jQuery(this).val(
+                addLeadingZeros(jQuery(this).val(), tam)
+            ).isValid();
+        }
+    });
+    console.log("InnerFormValidation:", "LeadingZeroMask started", x);
     return x;
 }
 
