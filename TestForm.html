@@ -5,17 +5,23 @@
     <meta charset="utf-8" />
     <title>Testar InnerFormValidation</title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 
+    <script>window.innerForm = { verbose: true } //add this line to your code to see verbose messages on console </script>
     <script src="InnerFormValidation.js"></script>
- 
+
 </head>
+
 <body>
     <div class="container">
         <form action="javascript:void(0)" class="validate">
@@ -108,7 +114,7 @@
 
                     </div>
                 </div>
-               
+
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Field containing a space character</label>
@@ -119,21 +125,24 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Field containing any of {}() characters</label>
-                        <input type='text' placeholder="Digite alguns caracteres" class='form-control containsanychar {}()' />
+                        <input type='text' placeholder="Digite alguns caracteres"
+                            class='form-control containsanychar {}()' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Field containing none of ABCD characters</label>
-                        <input type='text' placeholder="Digite alguns caracteres" class='form-control notcontainschar ABCD' />
+                        <input type='text' placeholder="Digite alguns caracteres"
+                            class='form-control notcontainschar ABCD' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Required field with HTML5 bubble</label>
-                        <input type='text' placeholder="Preencha esse campo" class='form-control obg' data-invalidmessage="Hey bro, don't forget me! 🙄" />
+                        <input type='text' placeholder="Preencha esse campo" class='form-control obg'
+                            data-invalidmessage="Hey bro, don't forget me! 🙄" />
 
                     </div>
                 </div>
@@ -146,7 +155,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>  Numeric</label>
+                        <label> Numeric</label>
                         <input type='text' placeholder="Apenas Numeros" class='form-control num' />
 
                     </div>
@@ -161,7 +170,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> Number with leading Zeros</label>
-                        <input type='text' placeholder="Apenas Numeros" class='form-control mask num len 8 leadingzero' />
+                        <input type='text' placeholder="Apenas Numeros"
+                            class='form-control mask num len 8 leadingzero' />
 
                     </div>
                 </div>
@@ -174,42 +184,42 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>  Brazilian telephone (with mask)</label>
+                        <label> Brazilian telephone (with mask)</label>
                         <input type='text' placeholder="Telefone" class='form-control mask tel' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>   Brazilian telephone</label>
+                        <label> Brazilian telephone</label>
                         <input type='text' placeholder="Telefone" class='form-control tel' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>  CPF (with mask)</label>
+                        <label> CPF (with mask)</label>
                         <input type='text' placeholder="CPF" class='form-control mask cpf' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <div>   CNPJ (with mask)</div>
+                        <div> CNPJ (with mask)</div>
                         <input type='text' placeholder="CNPJ" class='form-control mask cnpj' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <div>   CPF or CNPJ (with mask)</div>
+                        <div> CPF or CNPJ (with mask)</div>
                         <input type='text' placeholder="CPF ou CNPJ" class='form-control mask cpfcnpj' />
 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>  Brazilian Postal Code (aka CEP) (with mask)</label>
+                        <label> Brazilian Postal Code (aka CEP) (with mask)</label>
                         <input type='text' placeholder="CEP" class='form-control mask cep' />
 
                     </div>
@@ -250,7 +260,7 @@
 
                     </div>
                 </div>
-                 <div class="col-md-6">
+                <div class="col-md-6">
                     <div class="form-group">
                         <label> Age validation (18+)</label>
                         <input type='text' placeholder="dd/MM/yyyy" class='form-control mask date minage 18' />
@@ -308,14 +318,15 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>  Medium Password (min 4 characters and 3 criteria)</label>
+                        <label> Medium Password (min 4 characters and 3 criteria)</label>
                         <input type='password' placeholder="Senha" class='form-control password medium minlen 4' />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>CreditCard (with mask)</label>
-                        <input type='text' id="senha" placeholder="Qualquer Cartao" class='form-control mask creditcard' />
+                        <input type='text' id="senha" placeholder="Qualquer Cartao"
+                            class='form-control mask creditcard' />
 
                     </div>
                 </div>
@@ -340,13 +351,15 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Date Range</label>
-                        <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange" class='form-control mask date 01/01/2019 to 31/12/2019' />
+                        <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange"
+                            class='form-control mask date 01/01/2019 to 31/12/2019' />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Success and/or Error callback (compare the value with div#div_OK)</label>
-                        <input type='text' placeholder="Escreva OK neste campo" class='form-control obg eq #div_OK' data-invalidcallback="$('#div_OK').fadeOut()" data-validcallback="$('#div_OK').fadeIn()" />
+                        <input type='text' placeholder="Escreva OK neste campo" class='form-control obg eq #div_OK'
+                            data-invalidcallback="$('#div_OK').fadeOut()" data-validcallback="$('#div_OK').fadeIn()" />
                     </div>
                     <p id="div_OK">OK</p>
 
@@ -355,7 +368,8 @@
 
                     <div class="form-group">
                         <label>Number Autocomplete (for address)</label>
-                        <input type='text' placeholder="Digite o Numero" class='form-control mask homenum autocomplete' />
+                        <input type='text' placeholder="Digite o Numero"
+                            class='form-control mask homenum autocomplete' />
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -368,25 +382,29 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>DDD</label>
-                        <input type='text' placeholder="Digite o Numero" class='form-control mask num autocomplete ddd keepold' />
+                        <input type='text' placeholder="Digite o Numero"
+                            class='form-control mask num autocomplete ddd keepold' />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>IBGE</label>
-                        <input type='text' placeholder="Digite o Numero" class='form-control mask num autocomplete ibge' />
+                        <input type='text' placeholder="Digite o Numero"
+                            class='form-control mask num autocomplete ibge' />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>GIA</label>
-                        <input type='text' placeholder="Digite o Numero" class='form-control mask num autocomplete gia' />
+                        <input type='text' placeholder="Digite o Numero"
+                            class='form-control mask num autocomplete gia' />
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Siafi</label>
-                        <input type='text' placeholder="Digite o Numero" class='form-control mask num autocomplete siafi' />
+                        <input type='text' placeholder="Digite o Numero"
+                            class='form-control mask num autocomplete siafi' />
                     </div>
                 </div>
             </div>
@@ -410,6 +428,5 @@
     </div>
 
 </body>
+
 </html>
-
-

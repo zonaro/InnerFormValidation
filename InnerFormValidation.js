@@ -1,3 +1,4 @@
+window.innerForm = window.innerForm || {};
 window.innerForm.verbose = window.innerForm.verbose || false;
 window.innerForm.onTypeTimeout = 1;
 
