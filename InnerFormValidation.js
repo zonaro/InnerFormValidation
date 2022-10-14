@@ -15,7 +15,7 @@ window.innerForm.warn = function () {
 
 function addLeadingZeros(num, totalLength) {
     num = num || ""
-    num = $.trim(num);
+    num = jQuery.trim(num);
     if (!isNaN(num) && num < 0) {
         const withoutMinus = String(num).slice(1);
         return '-' + withoutMinus.padStart(totalLength, '0');
