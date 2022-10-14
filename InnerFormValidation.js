@@ -1,4 +1,15 @@
-var onTypeTimeout = 1;
+window.innerForm.verbose = false;
+window.innerForm.onTypeTimeout = 1;
+w
+
+function addLeadingZeros(num, totalLength) {
+    if (!isNaN(num) && num < 0) {
+        const withoutMinus = String(num).slice(1);
+        return '-' + withoutMinus.padStart(totalLength, '0');
+    }
+
+    return String(num).padStart(totalLength, '0');
+}
 
 function barcodeCheckSum(code) {
     code = code || ""
@@ -208,7 +219,7 @@ const applyCPForCNPJMask = function (input = new HTMLInputElement()) {
     var value = input.value;
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
-        console.log(value.length);
+        if (window.innerForm.verbose) console.log(value.length);
         value = value.replace(/^(\d{3})(\d+)$/g, "$1.$2");
         value = value.replace(/^(\d{3}\.\d{3})(\d+)$/g, "$1.$2");
         value = value.replace(/^(\d{3}\.\d{3}\.\d{3})(\d{1,2})$/g, "$1-$2");
@@ -416,7 +427,7 @@ if (String.prototype.replaceAll == undefined) {
         });
         return array.join(to);
     };
-    console.log("replaceAll added to String.prototype");
+    if (window.innerForm.verbose) console.log("replaceAll added to String.prototype");
 }
 
 
@@ -424,8 +435,8 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
     CEPNumber = CEPNumber || "";
     homeNumber = homeNumber || "";
     delay = delay || 0;
-    callbackFunction = callbackFunction || function (o) { console.log('No callback defined', o); }
-    console.log('Searching CEP', CEPNumber, homeNumber, delay);
+    callbackFunction = callbackFunction || function (o) { if (window.innerForm.verbose) console.log('No callback defined', o); }
+    if (window.innerForm.verbose) console.log('Searching CEP', CEPNumber, homeNumber, delay);
     let address = jQuery(".autocomplete.address").prop("disabled");
     let complement = jQuery(".autocomplete.complement").prop("disabled");
     let neighborhood = jQuery(".autocomplete.neighborhood").prop("disabled");
@@ -447,7 +458,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
             async: true,
             crossorigin: true,
             beforeSend: function () {
-                console.log("Getting info from ViaCEP...")
+                if (window.innerForm.verbose) console.log("Getting info from ViaCEP...")
                 jQuery(".autocomplete.address").prop("disabled", true);
                 jQuery(".autocomplete.complement").prop("disabled", true);
                 jQuery(".autocomplete.neighborhood").prop("disabled", true);
@@ -465,7 +476,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
                     homeNumber = ", " + homeNumber;
                 }
 
-                console.log("ViaCEP Response", obj);
+                if (window.innerForm.verbose) console.log("ViaCEP Response", obj);
 
                 jQuery(".autocomplete.address:input")
                     .setOrReplaceVal(obj.logradouro)
@@ -556,7 +567,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
                         jQuery(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
                     }, delay);
                 } else {
-                    console.error('Address not found');
+                    if (window.innerForm.verbose) console.error('Address not found');
                     let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "";
                     jQuery(".autocomplete.fulladdress")
                         .not(":input").text(nft);
@@ -571,7 +582,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 //Error event
-                console.log("VIACEP error", xhr, ajaxOptions, thrownError);
+                if (window.innerForm.verbose) console.log("VIACEP error", xhr, ajaxOptions, thrownError);
                 setTimeout(function () {
                     jQuery(".autocomplete.address:input").focus();
                 }, delay);
@@ -590,7 +601,7 @@ function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
             }
         });
     } else {
-        console.log("Awaiting a valid CEP", CEPNumber);
+        if (window.innerForm.verbose) console.log("Awaiting a valid CEP", CEPNumber);
     }
 }
 
@@ -1231,12 +1242,12 @@ jQuery.fn.validateOnType = function (time) {
             var p = jQuery(this);
             p.removeClass("error");
             p.closest(".form-group").removeClass("has-error");
-            clearTimeout(onTypeTimeout);
-            onTypeTimeout = setTimeout(function () {
+            clearTimeout(window.innerForm.onTypeTimeout);
+            window.innerForm.onTypeTimeout = setTimeout(function () {
                 p.isValid();
             }, time);
         });
-    console.log("InnerFormValidation:", "Validation on Type started", x, "delay", time);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "Validation on Type started", x, "delay", time);
     return x;
 }
 
@@ -1245,7 +1256,7 @@ jQuery.fn.validateOnBlur = function () {
         .on("blur", function () {
             jQuery(this).isValid();
         });
-    console.log("InnerFormValidation:", "Validation on Blur started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "Validation on Blur started", x);
     return x;
 }
 
@@ -1254,7 +1265,7 @@ jQuery.fn.validateOnChange = function () {
         .on("change", function () {
             jQuery(this).isValid();
         });
-    console.log("InnerFormValidation:", "Validation on Change started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "Validation on Change started", x);
     return x;
 }
 
@@ -1262,7 +1273,7 @@ jQuery.fn.phoneMask = function () {
     let x = jQuery(this).on("input", function () {
         applyPhoneMask(this);
     });
-    console.log("InnerFormValidation:", "PhoneMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "PhoneMask started", x);
     return x;
 }
 
@@ -1271,7 +1282,7 @@ jQuery.fn.upperMask = function () {
     let x = jQuery(this).on("input", function () {
         applyUpperMask(this);
     });
-    console.log("InnerFormValidation:", "UpperMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "UpperMask started", x);
     return x;
 }
 
@@ -1280,7 +1291,7 @@ jQuery.fn.lowerMask = function () {
     let x = jQuery(this).on("input", function () {
         applyLowerMask(this);
     });
-    console.log("InnerFormValidation:", "LowerMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "LowerMask started", x);
     return x;
 }
 
@@ -1288,7 +1299,7 @@ jQuery.fn.cpfMask = function () {
     let x = jQuery(this).on("input", function () {
         applyCPFMask(this);
     });
-    console.log("InnerFormValidation:", "CpfMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "CpfMask started", x);
     return x;
 }
 
@@ -1297,7 +1308,7 @@ jQuery.fn.cepMask = function () {
     let x = jQuery(this).on("input", function () {
         applyCEPMask(this);
     });
-    console.log("InnerFormValidation:", "CepMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "CepMask started", x);
     return x;
 }
 
@@ -1306,7 +1317,7 @@ jQuery.fn.cnpjMask = function () {
     let x = jQuery(this).on("input", function () {
         applyCNPJMask(this);
     });
-    console.log("InnerFormValidation:", "CnpjMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "CnpjMask started", x);
     return x;
 }
 
@@ -1314,7 +1325,7 @@ jQuery.fn.cpfCnpjMask = function () {
     let x = jQuery(this).on('input', function () {
         applyCPForCNPJMask(this);
     });
-    console.log("InnerFormValidation:", "CpfCnpjMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "CpfCnpjMask started", x);
     return x;
 }
 
@@ -1323,7 +1334,7 @@ jQuery.fn.creditCardMask = function () {
     let x = jQuery(this).on("input", function () {
         applyCreditCardMask(this);
     });
-    console.log("InnerFormValidation:", "CreditCardMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "CreditCardMask started", x);
     return x;
 }
 
@@ -1331,7 +1342,7 @@ jQuery.fn.dateMask = function () {
     let x = jQuery(this).on("input", function () {
         applyDateMask(this);
     });
-    console.log("InnerFormValidation:", "DateMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "DateMask started", x);
     return x;
 }
 
@@ -1339,7 +1350,7 @@ jQuery.fn.monthYearMask = function () {
     let x = jQuery(this).on("input", function () {
         applyMonthYearMask(this);
     });
-    console.log("InnerFormValidation:", "MonthYearMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "MonthYearMask started", x);
     return x;
 }
 
@@ -1347,7 +1358,7 @@ jQuery.fn.numberMask = function () {
     let x = jQuery(this).on("input", function () {
         applyNumberMask(this);
     });
-    console.log("InnerFormValidation:", "NumberMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "NumberMask started", x);
     return x;
 }
 
@@ -1369,7 +1380,7 @@ jQuery.fn.lenMask = function (tam) {
             );
         }
     });
-    console.log("InnerFormValidation:", "LenMax started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "LenMax started", x);
     return x;
 }
 
@@ -1381,14 +1392,14 @@ jQuery.fn.cepAutoComplete = function () {
             jQuery(this).data('timeout') || 0
         );
     });
-    console.log("InnerFormValidation:", "Autocomplete for CEP started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "Autocomplete for CEP started", x);
 }
 
 jQuery.fn.timeMask = function () {
     let x = jQuery(this).on("input", function () {
         applyTimeMask(this);
     });
-    console.log("InnerFormValidation:", "TimeMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "TimeMask started", x);
     return x;
 }
 
@@ -1396,7 +1407,7 @@ jQuery.fn.shortTimeMask = function () {
     let x = jQuery(this).on("input", function () {
         applyShortTimeMask(this);
     });
-    console.log("InnerFormValidation:", "ShortTimeMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "ShortTimeMask started", x);
     return x;
 
 }
@@ -1405,7 +1416,7 @@ jQuery.fn.dateShortTimeMask = function () {
     let x = jQuery(this).on("input", function () {
         applyDateShortMask(this);
     });
-    console.log("InnerFormValidation:", "DateShortTimeMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "DateShortTimeMask started", x);
     return x;
 }
 
@@ -1413,7 +1424,7 @@ jQuery.fn.dateTimeMask = function () {
     let x = jQuery(this).on("input", function () {
         applyDateTimeMask(this);
     });
-    console.log("InnerFormValidation:", "DateTimeMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "DateTimeMask started", x);
     return x;
 }
 
@@ -1421,7 +1432,7 @@ jQuery.fn.alphaMask = function () {
     let x = jQuery(this).on("input", function () {
         applyAlphaMask(this);
     });
-    console.log("InnerFormValidation:", "AlphaMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "AlphaMask started", x);
     return x;
 }
 
@@ -1429,7 +1440,7 @@ jQuery.fn.alphaNumericMask = function () {
     let x = jQuery(this).on("input", function () {
         applyAlphaNumericMask(this);
     });
-    console.log("InnerFormValidation:", "AlphaNumericMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "AlphaNumericMask started", x);
     return x;
 }
 
@@ -1438,7 +1449,7 @@ jQuery.fn.noSpaceMask = function () {
     let x = jQuery(this).on("input", function () {
         applyNoSpaceMask(this);
     });
-    console.log("InnerFormValidation:", "NoSpaceMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "NoSpaceMask started", x);
     return x;
 }
 
@@ -1460,18 +1471,11 @@ jQuery.fn.maxLenMask = function () {
             );
         }
     });
-    console.log("InnerFormValidation:", "MaxLenMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "MaxLenMask started", x);
     return x;
 }
 
-function addLeadingZeros(num, totalLength) {
-    if (num < 0) {
-        const withoutMinus = String(num).slice(1);
-        return '-' + withoutMinus.padStart(totalLength, '0');
-    }
 
-    return String(num).padStart(totalLength, '0');
-}
 
 jQuery.fn.leadingZeroMask = function () {
     let x = jQuery(this).on("blur", function () {
@@ -1488,8 +1492,8 @@ jQuery.fn.leadingZeroMask = function () {
             ).isValid();
         }
     });
-    console.log("InnerFormValidation:", "LeadingZeroMask started", x);
+    if (window.innerForm.verbose) console.log("InnerFormValidation:", "LeadingZeroMask started", x);
     return x;
 }
 
-console.log('InnerFormValidation loaded');
+if (window.innerForm.verbose) console.log('InnerFormValidation loaded');
