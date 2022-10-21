@@ -50,7 +50,7 @@ Add one or more classes to any `input` element;
 
 - 🎭**leadingzero** `numericvalue` - Force `numericvalue` of characters by adding leading zeros;
 
-- 🎭**ean** - Validate a EAN;
+- 🎭**ean** - Validate EAN barcode;
 
 - 🎭**date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
