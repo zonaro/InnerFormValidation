@@ -11,6 +11,11 @@ Mask and Validate Forms with jQuery and CSS classes.
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/innercodetech/innerformvalidation@master/InnerFormValidation.js"></script>
+
+
+<script>window.innerForm = { verbose: true } //add this line to your code to see verbose messages on console </script>
+
+
 ```
 
 
@@ -36,11 +41,11 @@ Add one or more classes to any `input` element;
 
 - 🎭**num** or **number** - Only number characters (0 to 9);
   
-- 🎭**apha** - Only Alphabetical characters (Aa to Zz);
+- 🎭**alpha** - Only Alphabetical characters (Aa to Zz);
   
-- 🎭**upper** - Only uppercase characters (allow non alphanumeric);
+- 🎭**upper** - Only uppercase characters (allow non alphanumeric, combine with alpha to allow only letters);
   
-- 🎭**lower** - Only lowercase characters (allow non alphanumeric);
+- 🎭**lower** - Only lowercase characters (allow non alphanumeric, combine with alpha to allow only letters`);
   
 - **minlen** `numericvalue` - Minimum `numericvalue` characters;
 
@@ -49,8 +54,6 @@ Add one or more classes to any `input` element;
 - **len** `numericvalue` - Exact `numericvalue` of characters;
 
 - 🎭**leadingzero** `numericvalue` - Force `numericvalue` of characters by adding leading zeros;
-
-- 🎭**ean** - Validate EAN barcode;
 
 - 🎭**date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
@@ -92,7 +95,7 @@ Add one or more classes to any `input` element;
 
 -  **link** or **url** - Valid URL;
 
-- **password** - Validate Password Strenght (*Uppercase, Lowercase, Special Character and Number* ):
+- **password** - Validate Password Strenght (*Uppercase, Lowercase, Special Character and Number*):
 
   - **strong** - Need 4 of 4 criteria;
   - **medium** - Need 3 of 4 criteria;
@@ -122,7 +125,7 @@ Add one or more classes to any `input` element;
   - **bcglobal**
   - **rupay**
   
-  > OBS.: Define one or more brand classes to validate allowed flags. Use only  `creditcard ` class to validate any flag. After validation, this plugin adds the flagname on a `data-flagcard` attr
+  > OBS.: Define one or more brand classes to validate allowed flags. Use only  `creditcard` class to validate any flag. After validation, a `data-flagcard` attr is added to element
   
 - **after** `numericvalue` - Numbers greater than `numericvalue`;
 
