@@ -167,7 +167,7 @@ Add the  `autocomplete` class followed by:
  - **neighborhood** - to print the neighborhood on input or element;
  - **city** - to print the city on input or element;
  - **state** - to print the state on input or element;
- - **num** or **number** or **homenum** or **homenumber** - to add the address number. It is focused after a successfully address search. the **homenum** and **homenumber** classes skips the *only numbers* validation;
+ - **num** or **number** or **homenum** or **homenumber** - to add the address number. It is focused after a successfully address search. the **homenum** and **homenumber** classes skips the *only numbers* validation (allow alphanumeric and symbols), **num** and **number** allow only 0 to 9 chars.;
 
 ### Validation Styles
 
