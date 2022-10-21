@@ -25,8 +25,9 @@ Add one or more classes to any `input` element;
 
 > Optional: Add `mask` class combined with any class below to use the respective mask. The compatible classes are marked with 🎭
 
->Optional: Add `onkeyup` class to validate as soon as the user stops typing
->
+> Optional: Add `onkeyup` class to validate as soon as the user stops typing
+
+
 #### Validation/Mask Classes
 
 - **obg** or **req** - Required field;
@@ -46,6 +47,10 @@ Add one or more classes to any `input` element;
 - 🎭**maxlen** `numericvalue` - Maximum `numericvalue` characters;
 
 - **len** `numericvalue` - Exact `numericvalue` of characters;
+
+- 🎭**leadingzero** `numericvalue` - Force `numericvalue` of characters by adding leading zeros;
+
+- 🎭**ean** - Validate a EAN;
 
 - 🎭**date** or **data** - Valid Date  ( in *dd/MM/yyyy* format);
 
