@@ -10,12 +10,8 @@ Mask and Validate Forms with jQuery and CSS classes.
 ### CDN
 
 ```html
+<script>window.innerForm = { verbose: true } //add this line before script to see verbose messages on console </script>
 <script src="https://cdn.jsdelivr.net/gh/innercodetech/innerformvalidation@master/InnerFormValidation.js"></script>
-
-
-<script>window.innerForm = { verbose: true } //add this line to your code to see verbose messages on console </script>
-
-
 ```
 
 
