@@ -1210,8 +1210,7 @@ jQuery.fn.isValid = function () {
 
 jQuery(document).ready(function () {
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
-    jQuery(":input").each(function () {
-        window.innerForm.log(this);
+    jQuery(":input").each(function () {     
         jQuery(this).focus(function () {
             jQuery(this).addClass("prevFocus");
         });
