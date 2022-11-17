@@ -662,7 +662,7 @@ jQuery.fn.isValid = function () {
         var elements = [];
         var config = Array.prototype.slice.call(arguments)[0];
         jQuery(this)
-            .find(":input" + (config || ""))
+            .find(":input.prevFocus" + (config || ""))
             .each(function () {
                 results.push(jQuery(this).isValid());
                 elements.push(jQuery(this));
@@ -1209,7 +1209,13 @@ jQuery.fn.isValid = function () {
 };
 
 jQuery(document).ready(function () {
-    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks()
+    jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
+    jQuery(":input").each(function () {
+        window.innerForm.log(this);
+        jQuery(this).focus(function () {
+            jQuery(this).addClass("prevFocus");
+        });
+    });
 });
 
 jQuery.fn.startMasks = function () {
@@ -1243,6 +1249,7 @@ jQuery.fn.startValidation = function () {
     jQuery(this).not(".notonchange").validateOnChange();
     jQuery(this).find(".onkeyup").validateOnType();
     return jQuery(this).on("submit", function () {
+        jQuery(this).find(":input").addClass('prevFocus');
         return jQuery(this).isValid();
     });
 
@@ -1508,5 +1515,7 @@ jQuery.fn.leadingZeroMask = function () {
     window.innerForm.log("InnerFormValidation:", "LeadingZeroMask started", x);
     return x;
 }
+
+
 
 window.innerForm.log('Loaded');
