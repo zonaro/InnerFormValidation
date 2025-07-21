@@ -261,10 +261,19 @@ const applyCPFMask = function (input = new HTMLInputElement()) {
 const applyCEPMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
-    text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
-    if (/^[\d]{5}-[\d]{3}$/g.test(text)) {
-        input.maxLength = text.length;
+
+    // Limita a 8 dígitos
+    if (text.length > 8) {
+        text = text.substring(0, 8);
     }
+
+    // Só aplica a formatação se tiver 6 ou mais dígitos
+    if (text.length >= 6) {
+        text = text.replace(/^(\d{5})(\d{1,3})$/g, "$1-$2");
+    }
+
+    // Define maxLength baseado no formato final esperado
+    input.maxLength = 9; // "00000-000"
     input.value = text;
 };
 
@@ -1210,7 +1219,7 @@ jQuery.fn.isValid = function () {
 
 jQuery(document).ready(function () {
     jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
-    jQuery(":input").each(function () {     
+    jQuery(":input").each(function () {
         jQuery(this).focus(function () {
             jQuery(this).addClass("prevFocus");
         });
