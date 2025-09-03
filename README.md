@@ -62,6 +62,8 @@ Add one or more classes to any `input` element;
 - 🎭**time** - Valid Time (in hh:mm:ss format);
 
 - 🎭**timeshort** - Valid Time (in hh:mm format);
+ 
+- 🎭**minutesecond** - Valid Minutes and seconds (in mm:ss format);
 
 - **minage** `numericvalue` - Age greater than `numericvalue`  from date (in *dd/MM/yyyy* format);
 
