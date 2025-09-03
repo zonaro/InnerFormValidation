@@ -5,7 +5,7 @@ Mask and Validate Forms with jQuery and CSS classes.
 
 ### Examples
 
-[Formulário de teste]( https://innercodetech.github.io/InnerFormValidation/TestForm )
+[Formulário de teste]( https://zonaro.github.io/InnerFormValidation/TestForm )
 
 ### CDN
 

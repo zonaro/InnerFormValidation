@@ -49,19 +49,30 @@ function barcodeCheckSum(code) {
     return t;
 }
 
-function validateTime(value) {
+function validateTime(value, minutesSeconds) {
+    minutesSeconds = minutesSeconds || false;
     var comp = value.split(":");
     if (comp.length == 3) {
+        minutesSeconds == false;
         var h = parseInt(comp[0], 10);
         var m = parseInt(comp[1], 10);
         var s = parseInt(comp[2], 10);
-        let ff = h <= 23 && h >= 0 && m <= 59 && m >= 0;
-        return ff && s >= 0 && s <= 59;
+        let ff = h <= 23 && h >= 0 && m <= 59 && m >= 0 && s >= 0 && s <= 59;
+        return ff;
     }
     if (comp.length == 2) {
-        var h = parseInt(comp[0], 10);
-        var m = parseInt(comp[1], 10);
-        return ff;
+        if (minutesSeconds) {
+            var m = parseInt(comp[0], 10);
+            var s = parseInt(comp[1], 10);
+            let ff = m <= 59 && m >= 0 && s >= 0 && s <= 59;
+            return ff;
+        } else {
+            var h = parseInt(comp[0], 10);
+            var m = parseInt(comp[1], 10);
+            let ff = h <= 23 && h >= 0 && m <= 59 && m >= 0;
+            return ff;
+        }
+
     }
     return false;
 }
@@ -711,7 +722,8 @@ jQuery.fn.isValid = function () {
         }
         for (var i = 0; i < valids.length; i++) {
             if (this.prop("disabled") == false) {
-                switch (valids[i].toLowerCase()) {
+                let currentValid = valids[i].toLowerCase();
+                switch (currentValid) {
                     case "nospace":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
@@ -833,11 +845,12 @@ jQuery.fn.isValid = function () {
                     case "time":
                     case "shorttime":
                     case "timeshort":
+                    case "minutesecond":
                         if (jQuery.trim(value) === "") {
                             results.push(true);
                             break;
                         }
-                        results.push(validateTime(value));
+                        results.push(validateTime(value, currentValid == "minutesecond"));
                         break;
                     case "month":
                         if (jQuery.trim(value) === "") {
@@ -1079,7 +1092,7 @@ jQuery.fn.isValid = function () {
                             valor2 = " ";
                         }
 
-                        switch (valids[i].toLowerCase()) {
+                        switch (currentValid) {
                             case "containsanychar":
                             case "containsanychars":
                                 results.push(validateAnyChar(valor1, valor2));
@@ -1242,7 +1255,8 @@ jQuery.fn.startMasks = function () {
     jQuery(this).find(".mask.len").lenMask();
     jQuery(this).find(".autocomplete.cep").cepAutoComplete();
     jQuery(this).find(".mask.time").timeMask();
-    jQuery(this).find(".mask.dateshorttime, .mask.datetimeshort").shortTimeMask();
+    jQuery(this).find(".mask.shorttime, .mask.timeshort, .mask.minutesecond").shortTimeMask();
+    jQuery(this).find(".mask.dateshorttime, .mask.datetimeshort").dateShortTimeMask();
     jQuery(this).find(".mask.datetime").dateTimeMask();
     jQuery(this).find(".mask.alpha").alphaMask();
     jQuery(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
