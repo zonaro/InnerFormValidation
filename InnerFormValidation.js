@@ -1654,7 +1654,7 @@ jQuery.fn.startMasks = function () {
     jQuery(this).find(".mask.maxlen").maxLenMask();
     jQuery(this).find(".mask.leadingzero").leadingZeroMask();
     jQuery(this).find(".mask.daterange").dateRangeMask();
-    jQuery(this).find(".mask.monthrange").monthRangeMask();
+    jQuery(this).find(".mask.monthyearrange").monthYearRangeMask();
     jQuery(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
 
 }
