@@ -435,7 +435,7 @@ window.innerForm.validateEAN = function (value) {
 
 window.innerForm.getAge = function (birthDate, fromDate) {
     fromDate = fromDate || new Date();
-    return Math.floor((fromDate - parseDate(birthDate)) / 3.15576e+10);
+    return Math.floor((fromDate - window.innerForm.parseDate(birthDate)) / 3.15576e+10);
 };
 
 window.innerForm.validateNotChar = function (value, chars) {
@@ -470,7 +470,7 @@ window.innerForm.validateAllChar = function (value, chars) {
 };
 
 window.innerForm.validDate = function (value) {
-    var datenumber = parseDate(value);
+    var datenumber = window.innerForm.parseDate(value);
     return datenumber != null && !isNaN(datenumber);
 }
 
