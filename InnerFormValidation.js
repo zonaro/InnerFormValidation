@@ -544,18 +544,7 @@ window.innerForm.validMonthYearRange = function (value) {
     // Validate both month/years individually (add day 01 for validation)
     var testDate1 = "01/" + monthYear1;
     var testDate2 = "01/" + monthYear2;
-
-    if (!window.innerForm.validDate(testDate1) || !window.innerForm.validDate(testDate2)) {
-        return false;
-    }
-
-    // Parse both dates to compare (use day 1 for comparison)
-    var parsedDate1 = window.innerForm.parseDate(testDate1);
-    var parsedDate2 = window.innerForm.parseDate(testDate2);
-
-    // First month/year should be <= second month/year
-
-    return parsedDate1 <= parsedDate2;
+    return window.innerForm.validDateRange(testDate1 + " ~ " + testDate2);
 
 
 }
