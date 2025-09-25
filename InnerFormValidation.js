@@ -1,6 +1,352 @@
+/**
+ * InnerFormValidation.js
+ * 
+ * A comprehensive set of input validation and masking utilities for forms, primarily for Brazilian formats (CPF, CNPJ, CEP, etc.).
+ * Extends jQuery with validation and masking methods, and provides utility functions for logging, date parsing, and more.
+ * 
+ * @namespace window.innerForm
+ * @property {boolean} verbose - Enables verbose logging.
+ * @property {number} onTypeTimeout - Timeout for on-type validation.
+ * 
+ * @function log
+ * @description Logs messages to the console if verbose is enabled.
+ * 
+ * @function error
+ * @description Logs error messages to the console if verbose is enabled.
+ * 
+ * @function warn
+ * @description Logs warning messages to the console if verbose is enabled.
+ * 
+ * @function addLeadingZeros
+ * @param {string|number} num - The number to pad.
+ * @param {number} totalLength - Desired total length.
+ * @returns {string} The padded number as a string.
+ * 
+ * @function barcodeCheckSum
+ * @param {string} code - Barcode string.
+ * @returns {number} The calculated checksum.
+ * 
+ * @function validateTime
+ * @param {string} value - Time string (HH:MM or HH:MM:SS).
+ * @param {boolean} [minutesSeconds=false] - If true, validates as MM:SS.
+ * @returns {boolean} True if valid, false otherwise.
+ * 
+ * @function validateEAN
+ * @param {string} value - EAN code.
+ * @returns {boolean} True if valid, false otherwise.
+ * 
+ * @function getAge
+ * @param {string|Date} birthDate - Birth date.
+ * @param {Date} [fromDate=new Date()] - Reference date.
+ * @returns {number} Age in years.
+ * 
+ * @function validateNotChar
+ * @param {string} value - Input value.
+ * @param {string} chars - Characters to check for absence.
+ * @returns {boolean} True if none of the chars are present.
+ * 
+ * @function validateAnyChar
+ * @param {string} value - Input value.
+ * @param {string} chars - Characters to check for presence.
+ * @returns {boolean} True if any char is present.
+ * 
+ * @function validateAllChar
+ * @param {string} value - Input value.
+ * @param {string} chars - Characters to check for presence.
+ * @returns {boolean} True if all chars are present.
+ * 
+ * @function validDate
+ * @param {string} value - Date string.
+ * @returns {boolean} True if valid date.
+ * 
+ * @function parseDate
+ * @param {string} value - Date string (DD/MM/YYYY or MM/YYYY).
+ * @returns {number|null} Timestamp if valid, null otherwise.
+ * 
+ * @function applyNoSpaceMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Removes all spaces from input value.
+ * 
+ * @function applyAlphaMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Allows only alphabetic characters and spaces.
+ * 
+ * @function applyAlphaNumericMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Allows only alphanumeric characters and spaces.
+ * 
+ * @function applyPhoneMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies Brazilian phone number mask.
+ * 
+ * @function applyUpperMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Converts input value to uppercase.
+ * 
+ * @function applyLowerMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Converts input value to lowercase.
+ * 
+ * @function applyDateMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies date mask (DD/MM/YYYY).
+ * 
+ * @function applyDateTimeMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies date and time mask (DD/MM/YYYY HH:MM:SS).
+ * 
+ * @function applyDateShortMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies short date and time mask (DD/MM/YYYY HH:MM).
+ * 
+ * @function applyTimeMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies time mask (HH:MM:SS).
+ * 
+ * @function applyShortTimeMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies short time mask (HH:MM).
+ * 
+ * @function applyCPForCNPJMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies CPF or CNPJ mask based on input length.
+ * 
+ * @function applyCPFMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies CPF mask (000.000.000-00).
+ * 
+ * @function applyCEPMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies CEP mask (00000-000).
+ * 
+ * @function applyCNPJMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies CNPJ mask (00.000.000/0000-00).
+ * 
+ * @function applyCreditCardMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies credit card mask (0000 0000 0000 0000).
+ * 
+ * @function applyNumberMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Allows only numeric characters.
+ * 
+ * @function applyMonthYearMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies month/year mask (MM/YYYY).
+ * 
+ * @function applyMonthYearRangeMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies month/year range mask (MM/YYYY ~ MM/YYYY).
+ * 
+ * @function applyShortMonthYearRangeMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies short month/year range mask (MM/YY ~ MM/YY).
+ * 
+ * @function applyDateRangeMask
+ * @param {HTMLInputElement} input - Input element.
+ * @description Applies date range mask (DD/MM/YYYY ~ DD/MM/YYYY).
+ * 
+ * @function checkLuhn
+ * @param {string} cardNumber - Card number.
+ * @returns {boolean} True if valid per Luhn algorithm.
+ * 
+ * @function validateCardBrand
+ * @param {string} cardNumber - Card number.
+ * @returns {string|boolean} Card brand or false if not recognized.
+ * 
+ * @function validateCNPJ
+ * @param {string} CNPJNumber - CNPJ number.
+ * @returns {boolean} True if valid.
+ * 
+ * @function validatePassword
+ * @param {HTMLInputElement} input - Password input.
+ * @returns {number} Password strength (number of matched criteria).
+ * 
+ * @function searchViaCEP
+ * @param {string} CEPNumber - CEP (postal code).
+ * @param {string} homeNumber - Home number.
+ * @param {number} delay - Delay before callback.
+ * @param {function} callbackFunction - Callback to execute with address data.
+ * @description Fetches address data from ViaCEP and fills form fields.
+ * 
+ * @function setOrReplaceVal
+ * @memberof jQuery.fn
+ * @param {any} value - Value to set.
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Sets value if empty or not .noreplace.
+ * 
+ * @function isValid
+ * @memberof jQuery
+ * @param {...any} args - Value and validation classes.
+ * @returns {boolean} True if valid.
+ * @description Checks if a value is valid for given validation classes.
+ * 
+ * @function isValid
+ * @memberof jQuery.fn
+ * @param {...string} [validationClasses] - Validation classes.
+ * @returns {boolean} True if valid.
+ * @description Checks if an input, form, or collection is valid.
+ * 
+ * @function startMasks
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Initializes all masks on the selected elements.
+ * 
+ * @function startValidation
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Initializes validation on blur, change, and submit.
+ * 
+ * @function validateOnType
+ * @memberof jQuery.fn
+ * @param {number} [time=900] - Delay in ms.
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Validates input on keyup after a delay.
+ * 
+ * @function validateOnBlur
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Validates input on blur.
+ * 
+ * @function validateOnChange
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Validates input on change.
+ * 
+ * @function phoneMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies phone mask on input.
+ * 
+ * @function upperMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies uppercase mask on input.
+ * 
+ * @function lowerMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies lowercase mask on input.
+ * 
+ * @function cpfMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies CPF mask on input.
+ * 
+ * @function cepMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies CEP mask on input.
+ * 
+ * @function cnpjMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies CNPJ mask on input.
+ * 
+ * @function cpfCnpjMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies CPF or CNPJ mask on input.
+ * 
+ * @function creditCardMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies credit card mask on input.
+ * 
+ * @function dateMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies date mask on input.
+ * 
+ * @function monthYearMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies month/year mask on input.
+ * 
+ * @function numberMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Allows only numbers in input.
+ * 
+ * @function dateRangeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies date range mask on input.
+ * 
+ * @function shortMonthYearRangeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies short month/year range mask on input.
+ * 
+ * @function monthYearRangeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies month/year range mask on input.
+ * 
+ * @function lenMask
+ * @memberof jQuery.fn
+ * @param {number} [tam] - Length to enforce.
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Enforces maximum length on input.
+ * 
+ * @function cepAutoComplete
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Autocompletes address fields based on CEP.
+ * 
+ * @function timeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies time mask on input.
+ * 
+ * @function shortTimeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies short time mask on input.
+ * 
+ * @function dateShortTimeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies short date/time mask on input.
+ * 
+ * @function dateTimeMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Applies date/time mask on input.
+ * 
+ * @function alphaMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Allows only alphabetic characters in input.
+ * 
+ * @function alphaNumericMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Allows only alphanumeric characters in input.
+ * 
+ * @function noSpaceMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Removes spaces from input.
+ * 
+ * @function maxLenMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Enforces maximum length on input.
+ * 
+ * @function leadingZeroMask
+ * @memberof jQuery.fn
+ * @returns {jQuery} The jQuery object for chaining.
+ * @description Pads input with leading zeros on blur.
+ * 
+ * @event document.ready
+ * @description Initializes validation and masks on forms and inputs.
+ */
+
 window.innerForm = window.innerForm || {};
 window.innerForm.verbose = window.innerForm.verbose || false;
-window.innerForm.onTypeTimeout = 1;
+window.innerForm.onTypeTimeout = 900;
 
 window.innerForm.log = function () {
     if (window.innerForm.verbose) console.log("InnerFormValidation:", arguments);
@@ -13,7 +359,7 @@ window.innerForm.warn = function () {
     if (window.innerForm.verbose) console.warn("InnerFormValidation:", arguments);
 }
 
-function addLeadingZeros(num, totalLength) {
+window.innerForm.addLeadingZeros = function (num, totalLength) {
     num = num || ""
     num = jQuery.trim(num);
     if (!isNaN(num) && num < 0) {
@@ -24,7 +370,7 @@ function addLeadingZeros(num, totalLength) {
     return String(num).padStart(totalLength, '0');
 }
 
-function barcodeCheckSum(code) {
+window.innerForm.barcodeCheckSum = function (code) {
     code = code || ""
     let i = 0;
     let p = 0;
@@ -49,7 +395,7 @@ function barcodeCheckSum(code) {
     return t;
 }
 
-function validateTime(value, minutesSeconds) {
+window.innerForm.validateTime = function (value, minutesSeconds) {
     minutesSeconds = minutesSeconds || false;
     var comp = value.split(":");
     if (comp.length == 3) {
@@ -77,22 +423,22 @@ function validateTime(value, minutesSeconds) {
     return false;
 }
 
-function validateEAN(value) {
+window.innerForm.validateEAN = function (value) {
     value = value || ""
     if (!isNaN(value) && value.length > 1 && value.length <= 16) {
         let bar = value.slice(0, -1);
         let ver = value.slice(-1);
-        return barcodeCheckSum(bar) == ver;
+        return window.innerForm.barcodeCheckSum(bar) == ver;
     }
     return false;
 }
 
-const getAge = function (birthDate, fromDate) {
+window.innerForm.getAge = function (birthDate, fromDate) {
     fromDate = fromDate || new Date();
     return Math.floor((fromDate - parseDate(birthDate)) / 3.15576e+10);
 };
 
-const validateNotChar = function (value, chars) {
+window.innerForm.validateNotChar = function (value, chars) {
     chars = chars.split("");
     for (var i = 0; i < chars.length; i++) {
         if (value.indexOf(chars[i]) >= 0) {
@@ -101,7 +447,7 @@ const validateNotChar = function (value, chars) {
     }
     return true;
 };
-const validateAnyChar = function (value, chars) {
+window.innerForm.validateAnyChar = function (value, chars) {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -112,7 +458,7 @@ const validateAnyChar = function (value, chars) {
     return v.indexOf(true) >= 0;
 };
 
-const validateAllChar = function (value, chars) {
+window.innerForm.validateAllChar = function (value, chars) {
     chars = chars.split("");
     var v = [];
     for (var i = 0; i < chars.length; i++) {
@@ -123,12 +469,12 @@ const validateAllChar = function (value, chars) {
     return v.indexOf(false) < 0;
 };
 
-function validDate(value) {
+window.innerForm.validDate = function (value) {
     var datenumber = parseDate(value);
     return datenumber != null && !isNaN(datenumber);
 }
 
-function parseDate(value) {
+window.innerForm.parseDate = function (value) {
     var dt = 0;
     var d = 0;
     var m = 0;
@@ -154,24 +500,24 @@ function parseDate(value) {
     return null;
 }
 
-const applyNoSpaceMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyNoSpaceMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[ ]+/g, '');
 };
 
-const applyAlphaMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyAlphaMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[!@#$%¨&*()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
-const applyAlphaNumericMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyAlphaNumericMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[!@#$%¨&*()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
         .replace(/[ ]+/g, ' ');
 };
 
-const applyPhoneMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyPhoneMask = function (input = new HTMLInputElement()) {
     var value = input.value;
     value = value.replace(/\D/g, "");
     value = value.replace(/^(\d{4})(\d{1,4})$/g, "$1-$2");
@@ -182,15 +528,15 @@ const applyPhoneMask = function (input = new HTMLInputElement()) {
     input.value = value;
 };
 
-const applyUpperMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyUpperMask = function (input = new HTMLInputElement()) {
     input.value = input.value.toUpperCase();
 };
 
-const applyLowerMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyLowerMask = function (input = new HTMLInputElement()) {
     input.value = input.value.toLowerCase();
 };
 
-const applyDateMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyDateMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
@@ -201,11 +547,12 @@ const applyDateMask = function (input = new HTMLInputElement()) {
     input.value = text;
 };
 
+
 jQuery.fn.dateMask = function () {
-    applyDateMask(this)
+    window.innerForm.applyDateMask(this)
 };
 
-const applyDateTimeMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyDateTimeMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -216,7 +563,7 @@ const applyDateTimeMask = function (input = new HTMLInputElement()) {
     input.maxLength = 19;
 };
 
-const applyDateShortMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyDateShortMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
     value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -226,20 +573,21 @@ const applyDateShortMask = function (input = new HTMLInputElement()) {
     input.maxLength = 16;
 };
 
-const applyTimeMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyTimeMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     value = value.replace(/^(\d{2})(\d+)$/g, "$1:$2");
     input.value = value.replace(/^(\d{2}:\d{2})(\d{1,2})$/g, "$1:$2");
     input.maxLength = 8;
 };
 
-const applyShortTimeMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyShortTimeMask = function (input = new HTMLInputElement()) {
     var value = input.value.replace(/\D/g, "");
     input.value = value.replace(/^(\d{2})(\d{1,2})$/g, "$1:$2");
     input.maxLength = 5;
 };
 
-const applyCPForCNPJMask = function (input = new HTMLInputElement()) {
+
+window.innerForm.applyCPForCNPJMask = function (input = new HTMLInputElement()) {
     var value = input.value;
     value = value.replace(/\D/g, "");
     if (value.length <= 11) {
@@ -257,7 +605,8 @@ const applyCPForCNPJMask = function (input = new HTMLInputElement()) {
     input.maxLength = 18;
 };
 
-const applyCPFMask = function (input = new HTMLInputElement()) {
+
+window.innerForm.applyCPFMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{3})(\d+)/g, "$1.$2");
@@ -269,7 +618,8 @@ const applyCPFMask = function (input = new HTMLInputElement()) {
     input.value = text;
 };
 
-const applyCEPMask = function (input = new HTMLInputElement()) {
+
+window.innerForm.applyCEPMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
 
@@ -288,7 +638,10 @@ const applyCEPMask = function (input = new HTMLInputElement()) {
     input.value = text;
 };
 
-const applyCNPJMask = function (input = new HTMLInputElement()) {
+
+
+
+window.innerForm.applyCNPJMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d+)/, "$1.$2");
@@ -301,7 +654,8 @@ const applyCNPJMask = function (input = new HTMLInputElement()) {
     input.value = text;
 };
 
-const applyCreditCardMask = function (input = new HTMLInputElement()) {
+
+window.innerForm.applyCreditCardMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
@@ -313,13 +667,14 @@ const applyCreditCardMask = function (input = new HTMLInputElement()) {
     input.value = text;
 };
 
-const applyNumberMask = function (input = new HTMLInputElement()) {
+
+window.innerForm.applyNumberMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     input.value = text;
 };
 
-const applyMonthYearMask = function (input = new HTMLInputElement()) {
+window.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
     text = text.replace(/\D/g, "");
     text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
@@ -329,7 +684,41 @@ const applyMonthYearMask = function (input = new HTMLInputElement()) {
     input.value = text;
 };
 
-const checkLuhn = function (cardNumber) {
+
+window.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
+    // formato MM/AAAA ~ MM/AAAA
+    var text = input.value || "";
+    text = text.replace(/\D/g, "");
+    text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
+    if (/^[\d]{2}\/[\d]{4} ~ [\d]{2}\/[\d]{4}$/g.test(text)) {
+        input.maxLength = text.length;
+    }
+    input.value = text;
+}
+
+window.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
+    // formato MM/AA ~ MM/AA
+    var text = input.value || "";
+    text = text.replace(/\D/g, "");
+    text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
+    if (/^[\d]{2}\/[\d]{2} ~ [\d]{2}\/[\d]{2}$/g.test(text)) {
+        input.maxLength = text.length;
+    }
+    input.value = text;
+}
+
+window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
+    // formato DD/MM/AAAA ~ DD/MM/AAAA
+    var text = input.value || "";
+    text = text.replace(/\D/g, "");
+    text = text.replace(/^(\d{2})(\d{1,2})(\d{4})/g, "$1/$2/$3");
+    if (/^[\d]{2}\/[\d]{2}\/[\d]{4} ~ [\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
+        input.maxLength = text.length;
+    }
+    input.value = text;
+}
+
+window.innerForm.checkLuhn = function (cardNumber) {
     var s = 0;
     var doubleDigit = false;
     cardNumber = cardNumber.replace(/[^\d]+/g, "");
@@ -346,7 +735,7 @@ const checkLuhn = function (cardNumber) {
     return s % 10 == 0;
 };
 
-const validateCardBrand = function (cardNumber) {
+window.innerForm.validateCardBrand = function (cardNumber) {
     cardNumber = cardNumber.replace(/[^0-9]+/g, "");
     var cards = {
         visa: /^4[0-9]{12}(?:[0-9]{3})/,
@@ -379,7 +768,7 @@ const validateCardBrand = function (cardNumber) {
     return false;
 };
 
-const validateCNPJ = function (CNPJNumber) {
+window.innerForm.validateCNPJ = function (CNPJNumber) {
     CNPJNumber = CNPJNumber.replace(/\D/g, "");
 
     if (CNPJNumber == '')
@@ -432,7 +821,7 @@ const validateCNPJ = function (CNPJNumber) {
     return true;
 };
 
-const validatePassword = function (input) {
+window.innerForm.validatePassword = function (input) {
     // Create an array and push all possible values that you want in password
     var matchedCase = new Array();
     matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g);
@@ -464,7 +853,7 @@ if (String.prototype.replaceAll == undefined) {
 }
 
 
-function searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction) {
+window.innerForm.searchViaCEP = function (CEPNumber, homeNumber, delay, callbackFunction) {
     CEPNumber = CEPNumber || "";
     homeNumber = homeNumber || "";
     delay = delay || 0;
@@ -826,7 +1215,7 @@ jQuery.fn.isValid = function () {
                             break;
                         }
                         results.push(value.split("/").length == 3)
-                        results.push(validDate(value));
+                        results.push(window.innerForm.validDate(value));
                         break;
                     case "datetime":
                     case "dateshorttime":
@@ -837,7 +1226,7 @@ jQuery.fn.isValid = function () {
                         }
                         var comp = value.split(" ");
                         if (comp.length == 2) {
-                            results.push(validDate(comp[0]) && validateTime(comp[1]));
+                            results.push(window.innerForm.validDate(comp[0]) && window.innerForm.validateTime(comp[1]));
                             break;
                         }
                         results.push(false);
@@ -850,7 +1239,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(validateTime(value, currentValid == "minutesecond"));
+                        results.push(window.innerForm.validateTime(value, currentValid == "minutesecond"));
                         break;
                     case "month":
                         if (jQuery.trim(value) === "") {
@@ -899,7 +1288,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        results.push(validateCNPJ(value));
+                        results.push(window.innerForm.validateCNPJ(value));
                         break;
                     case "cpf":
                         if (jQuery.trim(value) === "") {
@@ -957,10 +1346,10 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var vlu = checkLuhn(value);
+                        var vlu = window.innerForm.checkLuhn(value);
 
                         if (vlu) {
-                            var flagcard = validateCardBrand(value);
+                            var flagcard = window.innerForm.validateCardBrand(value);
                             jQuery(this).attr("data-flagcard", flagcard.toString());
                             if (
                                 jQuery(this).is(
@@ -1002,7 +1391,7 @@ jQuery.fn.isValid = function () {
                                 break;
                         }
 
-                        results.push(validatePassword(this) >= strenght);
+                        results.push(window.innerForm.validatePassword(this) >= strenght);
                         break;
 
                     case "after":
@@ -1018,12 +1407,12 @@ jQuery.fn.isValid = function () {
                         }
 
                         var num = valids[i + 1] || "0";
-                        if ((num.indexOf("today") || num.indexOf("/")) && validDate(value)) {
-                            value = parseDate(value);
+                        if ((num.indexOf("today") || num.indexOf("/")) && window.innerForm.validDate(value)) {
+                            value = window.innerForm.parseDate(value);
                             if (num == "today") {
                                 num = Date.now();
                             } else {
-                                num = parseDate(num);
+                                num = window.innerForm.parseDate(num);
                             }
                         }
                         if (valids[i] == "after") {
@@ -1095,12 +1484,12 @@ jQuery.fn.isValid = function () {
                         switch (currentValid) {
                             case "containsanychar":
                             case "containsanychars":
-                                results.push(validateAnyChar(valor1, valor2));
+                                results.push(window.innerForm.validateAnyChar(valor1, valor2));
                                 break;
                             case "containschar":
                             case "containsallchar":
                             case "containsallchars":
-                                results.push(validateAllChar(valor1, valor2));
+                                results.push(window.innerForm.validateAllChar(valor1, valor2));
                                 break;
                             case "eqv":
                             case "equalvalue":
@@ -1114,7 +1503,7 @@ jQuery.fn.isValid = function () {
                             case "containsnotchars":
                             case "notcontainschars":
                             case "notcontainschar":
-                                results.push(validateNotChar(valor1, valor2));
+                                results.push(window.innerForm.validateNotChar(valor1, valor2));
                                 break;
                             default:
                                 results.push(valor1.includes(valor2));
@@ -1177,7 +1566,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var idade = getAge(value);
+                        var idade = window.innerForm.getAge(value);
                         results.push(idade >= parseInt(valids[i + 1]));
                         break;
                     case "maxage":
@@ -1193,7 +1582,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var idade = getAge(value);
+                        var idade = window.innerForm.getAge(value);
                         results.push(idade == parseInt(valids[i + 1]));
                         break;
                     default:
@@ -1239,6 +1628,7 @@ jQuery(document).ready(function () {
     });
 });
 
+
 jQuery.fn.startMasks = function () {
 
     jQuery(this).find(".mask.phone, .mask.tel, .mask.cel").phoneMask();
@@ -1263,6 +1653,9 @@ jQuery.fn.startMasks = function () {
     jQuery(this).find(".mask.nospace").noSpaceMask();
     jQuery(this).find(".mask.maxlen").maxLenMask();
     jQuery(this).find(".mask.leadingzero").leadingZeroMask();
+    jQuery(this).find(".mask.monthrange").monthRangeMask();
+    jQuery(this).find(".mask.daterange").dateRangeMask();
+    jQuery(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
 
 }
 
@@ -1278,14 +1671,16 @@ jQuery.fn.startValidation = function () {
 }
 
 jQuery.fn.validateOnType = function (time) {
-    time = time || 900;
+    time = time || window.innerForm.onTypeTimeout;
     let x = jQuery(this)
         .on("keyup", function () {
             var p = jQuery(this);
             p.removeClass("error");
             p.closest(".form-group").removeClass("has-error");
-            clearTimeout(window.innerForm.onTypeTimeout);
-            window.innerForm.onTypeTimeout = setTimeout(function () {
+            if (window.innerForm.onTypeTimeoutFunction) {
+                clearTimeout(window.innerForm.onTypeTimeoutFunction);
+            }
+            window.innerForm.onTypeTimeoutFunction = setTimeout(function () {
                 p.isValid();
             }, time);
         });
@@ -1313,7 +1708,7 @@ jQuery.fn.validateOnChange = function () {
 
 jQuery.fn.phoneMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyPhoneMask(this);
+        window.innerForm.applyPhoneMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "PhoneMask started", x);
     return x;
@@ -1322,7 +1717,7 @@ jQuery.fn.phoneMask = function () {
 
 jQuery.fn.upperMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyUpperMask(this);
+        window.innerForm.applyUpperMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "UpperMask started", x);
     return x;
@@ -1331,7 +1726,7 @@ jQuery.fn.upperMask = function () {
 
 jQuery.fn.lowerMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyLowerMask(this);
+        window.innerForm.applyLowerMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "LowerMask started", x);
     return x;
@@ -1339,7 +1734,7 @@ jQuery.fn.lowerMask = function () {
 
 jQuery.fn.cpfMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyCPFMask(this);
+        window.innerForm.applyCPFMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "CpfMask started", x);
     return x;
@@ -1348,7 +1743,7 @@ jQuery.fn.cpfMask = function () {
 
 jQuery.fn.cepMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyCEPMask(this);
+        window.innerForm.applyCEPMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "CepMask started", x);
     return x;
@@ -1357,7 +1752,7 @@ jQuery.fn.cepMask = function () {
 
 jQuery.fn.cnpjMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyCNPJMask(this);
+        window.innerForm.applyCNPJMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "CnpjMask started", x);
     return x;
@@ -1365,7 +1760,7 @@ jQuery.fn.cnpjMask = function () {
 
 jQuery.fn.cpfCnpjMask = function () {
     let x = jQuery(this).on('input', function () {
-        applyCPForCNPJMask(this);
+        window.innerForm.applyCPForCNPJMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "CpfCnpjMask started", x);
     return x;
@@ -1374,7 +1769,7 @@ jQuery.fn.cpfCnpjMask = function () {
 
 jQuery.fn.creditCardMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyCreditCardMask(this);
+        window.innerForm.applyCreditCardMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "CreditCardMask started", x);
     return x;
@@ -1382,7 +1777,7 @@ jQuery.fn.creditCardMask = function () {
 
 jQuery.fn.dateMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyDateMask(this);
+        window.innerForm.applyDateMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "DateMask started", x);
     return x;
@@ -1390,7 +1785,7 @@ jQuery.fn.dateMask = function () {
 
 jQuery.fn.monthYearMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyMonthYearMask(this);
+        window.innerForm.applyMonthYearMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "MonthYearMask started", x);
     return x;
@@ -1398,9 +1793,35 @@ jQuery.fn.monthYearMask = function () {
 
 jQuery.fn.numberMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyNumberMask(this);
+        window.innerForm.applyNumberMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "NumberMask started", x);
+    return x;
+}
+
+jQuery.fn.dateRangeMask = function () {
+    let x = jQuery(this).on("input", function () {
+        window.innerForm.applyDateRangeMask(this);
+    });
+    window.innerForm.log("InnerFormValidation:", "DateRangeMask started", x);
+    return x;
+}
+
+jQuery.fn.shortMonthYearRangeMask = function () {
+
+    let x = jQuery(this).on("input", function () {
+        window.innerForm.applyShortMonthYearRangeMask(this);
+    });
+    window.innerForm.log("InnerFormValidation:", "ShortMonthYearRangeMask started", x);
+    return x;
+
+}
+jQuery.fn.monthYearRangeMask = function () {
+
+    let x = jQuery(this).on("input", function () {
+        window.innerForm.applyMonthYearRangeMask(this);
+    });
+    window.innerForm.log("InnerFormValidation:", "MonthYearRangeMask started", x);
     return x;
 }
 
@@ -1428,7 +1849,7 @@ jQuery.fn.lenMask = function (tam) {
 
 jQuery.fn.cepAutoComplete = function () {
     let x = jQuery(this).on("input", function () {
-        searchViaCEP(
+        window.innerForm.searchViaCEP(
             jQuery(this).val(),
             jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val(),
             jQuery(this).data('timeout') || 0
@@ -1439,7 +1860,7 @@ jQuery.fn.cepAutoComplete = function () {
 
 jQuery.fn.timeMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyTimeMask(this);
+        window.innerForm.applyTimeMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "TimeMask started", x);
     return x;
@@ -1447,7 +1868,7 @@ jQuery.fn.timeMask = function () {
 
 jQuery.fn.shortTimeMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyShortTimeMask(this);
+        window.innerForm.applyShortTimeMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "ShortTimeMask started", x);
     return x;
@@ -1456,7 +1877,7 @@ jQuery.fn.shortTimeMask = function () {
 
 jQuery.fn.dateShortTimeMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyDateShortMask(this);
+        window.innerForm.applyDateShortMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "DateShortTimeMask started", x);
     return x;
@@ -1464,7 +1885,7 @@ jQuery.fn.dateShortTimeMask = function () {
 
 jQuery.fn.dateTimeMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyDateTimeMask(this);
+        window.innerForm.applyDateTimeMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "DateTimeMask started", x);
     return x;
@@ -1472,7 +1893,7 @@ jQuery.fn.dateTimeMask = function () {
 
 jQuery.fn.alphaMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyAlphaMask(this);
+        window.innerForm.applyAlphaMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "AlphaMask started", x);
     return x;
@@ -1480,7 +1901,7 @@ jQuery.fn.alphaMask = function () {
 
 jQuery.fn.alphaNumericMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyAlphaNumericMask(this);
+        window.innerForm.applyAlphaNumericMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "AlphaNumericMask started", x);
     return x;
@@ -1489,7 +1910,7 @@ jQuery.fn.alphaNumericMask = function () {
 
 jQuery.fn.noSpaceMask = function () {
     let x = jQuery(this).on("input", function () {
-        applyNoSpaceMask(this);
+        window.innerForm.applyNoSpaceMask(this);
     });
     window.innerForm.log("InnerFormValidation:", "NoSpaceMask started", x);
     return x;
@@ -1530,7 +1951,7 @@ jQuery.fn.leadingZeroMask = function () {
         var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("minlen") + 1]);
         if (!isNaN(tam)) {
             jQuery(this).val(
-                addLeadingZeros(jQuery(this).val(), tam)
+                window.innerForm.addLeadingZeros(jQuery(this).val(), tam)
             ).isValid();
         }
     });

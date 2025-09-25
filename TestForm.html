@@ -1,441 +1,1120 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8" />
-    <title>Testar InnerFormValidation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>InnerFormValidation - Demonstração Completa</title>
 
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <!-- Popper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
+
+    <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 
-    <script>window.innerForm = { verbose: true } //add this line to your code to see verbose messages on console </script>
-    <script src="InnerFormValidation.js"></script>
-    
+    <!-- InnerFormValidation Configuration -->
+    <script>
+        window.innerForm = {
+            verbose: true // Ativa logs detalhados no console
+        }
+    </script>
 
+    <!-- InnerFormValidation Library -->
+    <script src="InnerFormValidation.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            padding: 30px;
+        }
+
+        .section-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header h3 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        /* Estados de Validação */
+        .success {
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15) !important;
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+
+        .error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+            background-color: rgba(220, 53, 69, 0.05);
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .has-error .form-control {
+            border-color: #dc3545;
+        }
+
+        /* Indicadores de força da senha */
+        .password-strength {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        [data-pwstrength="4"]+.password-strength::after {
+            content: "💪 Senha Forte";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        [data-pwstrength="3"]+.password-strength::after {
+            content: "👍 Senha Média";
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        [data-pwstrength="2"]+.password-strength::after,
+        [data-pwstrength="1"]+.password-strength::after {
+            content: "⚠️ Senha Fraca";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        [data-pwstrength="0"]+.password-strength::after {
+            content: "❌ Muito Fraca";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        /* Indicador de bandeira do cartão */
+        .card-flag {
+            margin-top: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        [data-flagcard="visa"]+.card-flag::after {
+            content: "💳 Visa";
+            color: #1a1f71;
+        }
+
+        [data-flagcard="mastercard"]+.card-flag::after {
+            content: "💳 Mastercard";
+            color: #eb001b;
+        }
+
+        [data-flagcard="amex"]+.card-flag::after {
+            content: "💳 American Express";
+            color: #006fcf;
+        }
+
+        [data-flagcard="elo"]+.card-flag::after {
+            content: "💳 Elo";
+            color: #ffcb05;
+        }
+
+        /* Botões */
+        .btn-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Status de validação em tempo real */
+        .validation-status {
+            margin-top: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .validation-status.valid {
+            color: #28a745;
+        }
+
+        .validation-status.invalid {
+            color: #dc3545;
+        }
+
+        /* Seções colapsáveis */
+        .collapse-section {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .collapse-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+        }
+
+        .collapse-header:hover {
+            background: #e9ecef;
+        }
+
+        .collapse-content {
+            padding: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .section-header h3 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Tooltip customizado */
+        .tooltip-help {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: #6c757d;
+            margin-left: 5px;
+        }
+
+        .tooltip-help::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 1000;
+        }
+
+        .tooltip-help:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Destaque para campos obrigatórios */
+        .required-field label::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        /* Progress bar para demonstração */
+        .demo-progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 3px;
+            margin: 20px 0;
+        }
+
+        .demo-progress-bar {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            height: 20px;
+            border-radius: 7px;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
-        <form action="javascript:void(0)" class="validate">
-
-            <div class="row">
-                <div class="col-md-12">
-                    <h1>Validation Test</h1>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Forbidden Spaces (with mask)</label>
-                        <input type='text' placeholder="Texto" class='form-control mask nospace' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Alphanumeric (A-Z, 0-9)</label>
-                        <input type='text' placeholder="Texto" class='form-control alphanumeric' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Aplha (A-Z)</label>
-                        <input type='text' placeholder="Texto" class='form-control alpha' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Only Lowercase</label>
-                        <input type='text' placeholder="Texto" class='form-control lower' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Only lowercase (with mask)</label>
-                        <input type='text' placeholder="Texto" class='form-control mask lower' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Only Uppercase</label>
-                        <input type='text' placeholder="Texto" class='form-control upper' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Only UpperCase (with mask)</label>
-                        <input type='text' placeholder="Texto" class='form-control mask upper' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Required Field</label>
-                        <input type='text' placeholder="Preencha esse campo" class='form-control obg' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Minimum 4 characters lenght</label>
-                        <input type='text' placeholder="" class='form-control minlen 4' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Maximum 4 characters lenght</label>
-                        <input type='text' placeholder="" class='form-control maxlen 4' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Exact 4 characters lenght (with mask)</label>
-                        <input type='text' placeholder="" class='form-control mask len 4' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Exact 4 characters lenght</label>
-                        <input type='text' placeholder="" class='form-control len 4' />
-
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Field containing a space character</label>
-                        <input type='text' placeholder="Nome e Sobrenome" class='form-control contains _space' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Field containing any of {}() characters</label>
-                        <input type='text' placeholder="Digite alguns caracteres"
-                            class='form-control containsanychar {}()' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Field containing none of ABCD characters</label>
-                        <input type='text' placeholder="Digite alguns caracteres"
-                            class='form-control notcontainschar ABCD' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Required field with HTML5 bubble</label>
-                        <input type='text' placeholder="Preencha esse campo" class='form-control obg'
-                            data-invalidmessage="Hey bro, don't forget me! 🙄" />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type='text' placeholder="Email" class='form-control email' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Numeric</label>
-                        <input type='text' placeholder="Apenas Numeros" class='form-control num' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Numeric (with mask)</label>
-                        <input type='text' placeholder="Apenas Numeros" class='form-control mask num' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Number with leading Zeros</label>
-                        <input type='text' placeholder="Apenas Numeros"
-                            class='form-control mask num len 8 leadingzero' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> EAN</label>
-                        <input type='text' placeholder="Apenas Numeros" class='form-control mask num ean' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Brazilian telephone (with mask)</label>
-                        <input type='text' placeholder="Telefone" class='form-control mask tel' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Brazilian telephone</label>
-                        <input type='text' placeholder="Telefone" class='form-control tel' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> CPF (with mask)</label>
-                        <input type='text' placeholder="CPF" class='form-control mask cpf' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div> CNPJ (with mask)</div>
-                        <input type='text' placeholder="CNPJ" class='form-control mask cnpj' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div> CPF or CNPJ (with mask)</div>
-                        <input type='text' placeholder="CPF ou CNPJ" class='form-control mask cpfcnpj' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Brazilian Postal Code (aka CEP) (with mask)</label>
-                        <input type='text' placeholder="CEP" class='form-control mask cep' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-
-                    <div class="form-group">
-                        <label>URL</label>
-                        <input type='text' placeholder="CEP" class='form-control mask url' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Date (with mask)</label>
-                        <input type='text' placeholder="Data" class='form-control mask date' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Time (with mask)</label>
-                        <input type='text' placeholder="hh:mm:ss" class='form-control mask time' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Date and Time (with mask)</label>
-                        <input type='text' placeholder="dd/MM/yyyy hh:mm:ss" class='form-control mask datetime' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Short Date and Time (With mask)</label>
-                        <input type='text' placeholder="dd/MM/yyyy hh:mm" class='form-control mask datetimeshort' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Age validation (18+)</label>
-                        <input type='text' placeholder="dd/MM/yyyy" class='form-control mask date minage 18' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Short Time (with mask)</label>
-                        <input type='text' placeholder="hh:mm" class='form-control mask timeshort' />
-
-                    </div>
-                </div>
-
-                 <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Minutes and Seconds (with mask)</label>
-                        <input type='text' placeholder="mm:ss" class='form-control mask minutesecond' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Number greater than 10</label>
-                        <input type='text' placeholder="Numero" class='form-control mask num after 10' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Number less than 10</label>
-                        <input type='text' placeholder="Numero" class='form-control mask num before 10' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Any Date before today</label>
-                        <input type='text' placeholder="Data" class='form-control mask date before today' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Any date after today</label>
-                        <input type='text' placeholder="Data" class='form-control mask date after today' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Field comparison</label>
-                        <input type='text' id="c1" placeholder="Senha" class='form-control eq #c2' />
-                        <input type='text' id="c2" placeholder="Confirmar Senha" class='form-control eq #c1' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Strong password (min 8 characters and 4 criteria)</label>
-                        <input type='password' placeholder="Senha" class='form-control password strong minlen 8' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Medium Password (min 4 characters and 3 criteria)</label>
-                        <input type='password' placeholder="Senha" class='form-control password medium minlen 4' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>CreditCard (with mask)</label>
-                        <input type='text' id="senha" placeholder="Qualquer Cartao"
-                            class='form-control mask creditcard' />
-
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label> Visa CreditCard (with mask)</label>
-                        <input type='text' placeholder="Visa" class='form-control mask creditcard visa' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Mastercard CreditCard (with mask)</label>
-                        <input type='text' placeholder="Mastercard" class='form-control mask creditcard mastercard' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Number Range</label>
-                        <input type='text' placeholder="(entre 1 e 10)" class='form-control mask num 1 to 10' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Date Range</label>
-                        <input type='text' placeholder="(Entre 01/01/2019 e 31/12/2019)" id="datarange"
-                            class='form-control mask date 01/01/2019 to 31/12/2019' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Success and/or Error callback (compare the value with div#div_OK)</label>
-                        <input type='text' placeholder="Escreva OK neste campo" class='form-control obg eq #div_OK'
-                            data-invalidcallback="$('#div_OK').fadeOut()" data-validcallback="$('#div_OK').fadeIn()" />
-                    </div>
-                    <p id="div_OK">OK</p>
-
-                </div>
-                <div class="col-md-6">
-
-                    <div class="form-group">
-                        <label>Number Autocomplete (for address)</label>
-                        <input type='text' placeholder="Digite o Numero"
-                            class='form-control mask homenum autocomplete' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Brazilian Address autocomplete by PostalCode (aka CEP)</label>
-                        <input type='text' placeholder="Digite o CEP" class='form-control mask cep autocomplete' />
-                    </div>
-                    <p class="autocomplete fulladdress"></p>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>DDD</label>
-                        <input type='text' placeholder="Digite o Numero"
-                            class='form-control mask num autocomplete ddd keepold' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>IBGE</label>
-                        <input type='text' placeholder="Digite o Numero"
-                            class='form-control mask num autocomplete ibge' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>GIA</label>
-                        <input type='text' placeholder="Digite o Numero"
-                            class='form-control mask num autocomplete gia' />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>Siafi</label>
-                        <input type='text' placeholder="Digite o Numero"
-                            class='form-control mask num autocomplete siafi' />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <button class="btn btn-success">Test</button>
+        <div class="main-container">
+            <!-- Cabeçalho Principal -->
+            <div class="text-center mb-4">
+                <h1 class="display-4"
+                    style="background: linear-gradient(45deg, #667eea, #764ba2); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">
+                    <i class="fas fa-shield-alt"></i> InnerFormValidation
+                </h1>
+                <p class="lead text-muted">Demonstração completa de validação e mascaramento de formulários</p>
+                <div class="demo-progress">
+                    <div class="demo-progress-bar" id="validationProgress">0% Válido</div>
                 </div>
             </div>
 
-            <style>
-                .error {
-                    border-color: red !important;
-                }
+            <form action="javascript:void(0)" class="validate" id="mainForm">
 
-                .success {
-                    border-color: green !important;
-                }
-            </style>
+                <!-- ========== SEÇÃO 1: CAMPOS BÁSICOS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-edit"></i> 1. Validações Básicas</h3>
+                </div>
 
-        </form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group required-field">
+                            <label>Campo Obrigatório
+                                <i class="fas fa-question-circle tooltip-help"
+                                    data-tooltip="Este campo deve ser preenchido obrigatoriamente"></i>
+                            </label>
+                            <input type='text' placeholder="Digite algum texto" class='form-control obg onkeyup'
+                                data-invalidmessage="Este campo é obrigatório! 📝" />
+                            <div class="validation-status"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Email
+                                <i class="fas fa-question-circle tooltip-help"
+                                    data-tooltip="Deve ser um email válido (ex: usuario@dominio.com)"></i>
+                            </label>
+                            <input type='text' placeholder="seuemail@exemplo.com" class='form-control email onkeyup' />
+                            <div class="validation-status"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>URL/Link
+                                <i class="fas fa-question-circle tooltip-help" data-tooltip="Digite uma URL válida"></i>
+                            </label>
+                            <input type='text' placeholder="https://exemplo.com.br" class='form-control url onkeyup' />
+                            <div class="validation-status"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Apenas Números
+                                <i class="fas fa-question-circle tooltip-help"
+                                    data-tooltip="Aceita apenas números (0-9)"></i>
+                            </label>
+                            <input type='text' placeholder="123456" class='form-control mask num onkeyup' />
+                            <div class="validation-status"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 2: VALIDAÇÃO DE CARACTERES ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-keyboard"></i> 2. Validação e Mascaramento de Caracteres</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Apenas Letras (com máscara)</label>
+                            <input type='text' placeholder="Apenas letras" class='form-control mask alpha onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Letras e Números (com máscara)</label>
+                            <input type='text' placeholder="ABC123" class='form-control mask alphanumeric onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Sem Espaços (com máscara)</label>
+                            <input type='text' placeholder="SemEspacos" class='form-control mask nospace onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Apenas Maiúsculas (com máscara)</label>
+                            <input type='text' placeholder="TEXTO EM MAIÚSCULAS"
+                                class='form-control mask upper onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Apenas Minúsculas (com máscara)</label>
+                            <input type='text' placeholder="texto em minúsculas"
+                                class='form-control mask lower onkeyup' />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 3: VALIDAÇÃO DE COMPRIMENTO ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-ruler"></i> 3. Validação de Comprimento</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Mínimo 5 caracteres</label>
+                            <input type='text' placeholder="Mín. 5 chars" class='form-control minlen 5 onkeyup' />
+                            <small class="text-muted">Digite pelo menos 5 caracteres</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Máximo 10 caracteres</label>
+                            <input type='text' placeholder="Máx. 10 chars" class='form-control maxlen 10 onkeyup' />
+                            <small class="text-muted">Máximo 10 caracteres</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Exatamente 8 caracteres (com máscara)</label>
+                            <input type='text' placeholder="8 chars" class='form-control mask len 8 onkeyup' />
+                            <small class="text-muted">Deve ter exatamente 8 caracteres</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Números com Zeros à Esquerda (8 dígitos)</label>
+                            <input type='text' placeholder="Digite um número"
+                                class='form-control mask num len 8 leadingzero onkeyup' />
+                            <small class="text-muted">Ex: Digite "123" e vira "00000123" ao sair do campo</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 4: DOCUMENTOS BRASILEIROS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-id-card"></i> 4. Documentos Brasileiros</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>CPF (com máscara e validação)</label>
+                            <input type='text' placeholder="000.000.000-00" class='form-control mask cpf onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>CNPJ (com máscara e validação)</label>
+                            <input type='text' placeholder="00.000.000/0000-00"
+                                class='form-control mask cnpj onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>CPF ou CNPJ (automático)</label>
+                            <input type='text' placeholder="CPF ou CNPJ" class='form-control mask cpfcnpj onkeyup' />
+                            <small class="text-muted">Detecta automaticamente CPF ou CNPJ</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Telefone/Celular Brasileiro</label>
+                            <input type='text' placeholder="(11) 99999-9999" class='form-control mask tel onkeyup' />
+                            <small class="text-muted">Aceita telefone fixo e celular</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>CEP (com máscara)</label>
+                            <input type='text' placeholder="00000-000" class='form-control mask cep onkeyup' />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 5: DATA E HORA ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-calendar-alt"></i> 5. Data e Hora</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Data (dd/mm/aaaa)</label>
+                            <input type='text' placeholder="dd/mm/aaaa" class='form-control mask date onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Hora Completa (hh:mm:ss)</label>
+                            <input type='text' placeholder="hh:mm:ss" class='form-control mask time onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Hora Curta (hh:mm)</label>
+                            <input type='text' placeholder="hh:mm" class='form-control mask timeshort onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Data e Hora Completa</label>
+                            <input type='text' placeholder="dd/mm/aaaa hh:mm:ss"
+                                class='form-control mask datetime onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Data e Hora Curta</label>
+                            <input type='text' placeholder="dd/mm/aaaa hh:mm"
+                                class='form-control mask datetimeshort onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Minutos e Segundos</label>
+                            <input type='text' placeholder="mm:ss" class='form-control mask minutesecond onkeyup' />
+                            <small class="text-muted">Formato cronômetro</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Mês/Ano</label>
+                            <input type='text' placeholder="mm/aaaa" class='form-control mask monthyear onkeyup' />
+                            <small class="text-muted">Ex: validade de cartão</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 6: VALIDAÇÕES DE IDADE E COMPARAÇÃO ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-balance-scale"></i> 6. Validações de Idade e Comparação</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group required-field">
+                            <label>Data de Nascimento (18+ anos)</label>
+                            <input type='text' placeholder="dd/mm/aaaa"
+                                class='form-control mask date minage 18 onkeyup obg'
+                                data-invalidmessage="Você deve ter pelo menos 18 anos! 🎂" />
+                            <small class="text-muted">Deve ser maior de idade</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Data Antes de Hoje</label>
+                            <input type='text' placeholder="dd/mm/aaaa"
+                                class='form-control mask date before today onkeyup' />
+                            <small class="text-muted">Apenas datas passadas</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Data Após Hoje</label>
+                            <input type='text' placeholder="dd/mm/aaaa"
+                                class='form-control mask date after today onkeyup' />
+                            <small class="text-muted">Apenas datas futuras</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Número Maior que 10</label>
+                            <input type='text' placeholder="Digite um número"
+                                class='form-control mask num after 10 onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Número Menor que 100</label>
+                            <input type='text' placeholder="Digite um número"
+                                class='form-control mask num before 100 onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Número entre 1 e 50</label>
+                            <input type='text' placeholder="1 a 50" class='form-control mask num 1 to 50 onkeyup' />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 7: VALIDAÇÃO DE SENHAS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-lock"></i> 7. Validação de Senhas</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group required-field">
+                            <label>Senha Forte (4 critérios + 8 chars min)</label>
+                            <input type='password' id="strongPassword" placeholder="Digite uma senha forte"
+                                class='form-control password strong minlen 8 obg onkeyup' />
+                            <div class="password-strength"></div>
+                            <small class="text-muted">Deve conter: maiúscula, minúscula, número e símbolo</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group required-field">
+                            <label>Confirmar Senha</label>
+                            <input type='password' placeholder="Confirme a senha"
+                                class='form-control eq #strongPassword obg onkeyup'
+                                data-invalidmessage="As senhas devem ser idênticas! 🔐" />
+                            <small class="text-muted">Deve ser idêntica à senha anterior</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Senha Média (3 critérios + 4 chars min)</label>
+                            <input type='password' placeholder="Senha média"
+                                class='form-control password medium minlen 4 onkeyup' />
+                            <div class="password-strength"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Senha Personalizada (2 critérios)</label>
+                            <input type='password' placeholder="2 de 4 critérios"
+                                class='form-control password 2 onkeyup' />
+                            <div class="password-strength"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 8: CARTÕES DE CRÉDITO ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-credit-card"></i> 8. Cartões de Crédito</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Qualquer Cartão de Crédito</label>
+                            <input type='text' placeholder="0000 0000 0000 0000"
+                                class='form-control mask creditcard onkeyup' />
+                            <div class="card-flag"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Apenas Visa</label>
+                            <input type='text' placeholder="4000 0000 0000 0000"
+                                class='form-control mask creditcard visa onkeyup' />
+                            <div class="card-flag"></div>
+                            <small class="text-muted">Apenas cartões Visa são aceitos</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Visa ou Mastercard</label>
+                            <input type='text' placeholder="Visa ou Mastercard"
+                                class='form-control mask creditcard visa mastercard onkeyup' />
+                            <div class="card-flag"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Cartões Brasileiros (Elo)</label>
+                            <input type='text' placeholder="Cartão Elo"
+                                class='form-control mask creditcard elo onkeyup' />
+                            <div class="card-flag"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 9: VALIDAÇÕES AVANÇADAS DE CONTEÚDO ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-search"></i> 9. Validações Avançadas de Conteúdo</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Deve conter espaço</label>
+                            <input type='text' placeholder="Nome e Sobrenome"
+                                class='form-control contains _space onkeyup' />
+                            <small class="text-muted">Deve ter pelo menos um espaço</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Deve conter "@gmail.com"</label>
+                            <input type='text' placeholder="usuario@gmail.com"
+                                class='form-control contains @gmail.com onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Deve conter qualquer: {}()</label>
+                            <input type='text' placeholder="texto{}"
+                                class='form-control containsanychar {}() onkeyup' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Deve conter todos: ABC</label>
+                            <input type='text' placeholder="ABCDEF" class='form-control containsallchar ABC onkeyup' />
+                            <small class="text-muted">Deve conter A, B e C</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>NÃO deve conter: XYZ</label>
+                            <input type='text' placeholder="Qualquer texto sem XYZ"
+                                class='form-control notcontainschar XYZ onkeyup' />
+                            <small class="text-muted">Não pode conter X, Y ou Z</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 10: AUTOCOMPLETAR ENDEREÇOS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-map-marker-alt"></i> 10. Autocompletar Endereços (ViaCEP)</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>CEP (busca automática)</label>
+                            <input type='text' placeholder="00000-000" class='form-control mask cep autocomplete obg' />
+                            <small class="text-muted">Digite para buscar endereço</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Logradouro (preenchido automaticamente)</label>
+                            <input type='text' class='form-control autocomplete address' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Número</label>
+                            <input type='text' placeholder="123" class='form-control autocomplete homenum' />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Bairro</label>
+                            <input type='text' class='form-control autocomplete neighborhood' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Cidade</label>
+                            <input type='text' class='form-control autocomplete city' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <input type='text' class='form-control autocomplete state' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Endereço Completo</label>
+                            <p class="form-control-static autocomplete fulladdress"
+                                style="background: #f8f9fa; padding: 12px; border-radius: 8px; min-height: 50px;">
+                                O endereço completo aparecerá aqui após inserir o CEP...
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Campos extras do ViaCEP -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>DDD</label>
+                            <input type='text' class='form-control autocomplete ddd' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>IBGE</label>
+                            <input type='text' class='form-control autocomplete ibge' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>GIA</label>
+                            <input type='text' class='form-control autocomplete gia' readonly />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>SIAFI</label>
+                            <input type='text' class='form-control autocomplete siafi' readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 11: CALLBACKS E EVENTOS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-bolt"></i> 11. Sistema de Callbacks</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Campo com Callback Visual</label>
+                            <input type='text' placeholder="Digite 'OK'" class='form-control obg eq #hiddenOK onkeyup'
+                                data-invalidcallback="$('#callbackDemo').removeClass('alert-success').addClass('alert-danger').text('❌ Campo inválido').show()"
+                                data-validcallback="$('#callbackDemo').removeClass('alert-danger').addClass('alert-success').text('✅ Campo válido!').show()" />
+                            <input type="hidden" id="hiddenOK" value="OK">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Campo com HTML5 Bubble</label>
+                            <input type='text' placeholder="Campo obrigatório" class='form-control obg onkeyup'
+                                data-invalidmessage="Opa! Você esqueceu de preencher este campo! 😅" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div id="callbackDemo" class="alert" style="display: none; margin-top: 10px;">
+                            Status dos callbacks aparecerá aqui...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 12: VALIDAÇÕES ESPECIAIS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-star"></i> 12. Validações Especiais</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Código EAN (Código de Barras)</label>
+                            <input type='text' placeholder="7891000053508" class='form-control mask num ean onkeyup' />
+                            <small class="text-muted">Valida dígito verificador do código EAN</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Campo Igual a Valor Específico</label>
+                            <input type='text' placeholder="Digite: ADMIN" class='form-control eqv ADMIN onkeyup' />
+                            <small class="text-muted">Deve ser exatamente "ADMIN"</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Comparação Entre Campos</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type='password' id="pass1" placeholder="Senha"
+                                        class='form-control obg onkeyup' />
+                                </div>
+                                <div class="col-md-6">
+                                    <input type='password' placeholder="Confirmar Senha"
+                                        class='form-control eq #pass1 obg onkeyup' />
+                                </div>
+                            </div>
+                            <small class="text-muted">As duas senhas devem ser idênticas</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="row mt-4">
+                    <div class="col-md-12 text-center">
+                        <button type="submit" class="btn btn-custom btn-lg mx-2">
+                            <i class="fas fa-check"></i> Validar Formulário
+                        </button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-lg mx-2"
+                            onclick="$('#mainForm')[0].reset(); updateProgress();">
+                            <i class="fas fa-undo"></i> Limpar Tudo
+                        </button>
+
+                        <button type="button" class="btn btn-outline-info btn-lg mx-2"
+                            onclick="showValidationDetails()">
+                            <i class="fas fa-info-circle"></i> Status Detalhado
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status da Validação -->
+                <div id="validationStatus" class="alert mt-4" style="display: none;">
+                </div>
+
+            </form>
+
+            <!-- Informações Adicionais -->
+            <div class="mt-5">
+                <div class="section-header">
+                    <h3><i class="fas fa-info-circle"></i> Informações Adicionais</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">🚀 Como usar esta biblioteca:</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>1.</strong> Adicione a classe <code>validate</code> ao formulário</li>
+                                    <li><strong>2.</strong> Adicione classes de validação aos campos (ex:
+                                        <code>obg</code>, <code>email</code>, <code>cpf</code>)</li>
+                                    <li><strong>3.</strong> Adicione <code>mask</code> junto com a validação para
+                                        aplicar máscara</li>
+                                    <li><strong>4.</strong> Use <code>onkeyup</code> para validar em tempo real</li>
+                                    <li><strong>5.</strong> Configure callbacks com atributos <code>data-*</code></li>
+                                </ul>
+
+                                <div class="mt-3">
+                                    <strong>Classes mais usadas:</strong>
+                                    <span class="badge badge-primary mx-1">obg</span>
+                                    <span class="badge badge-primary mx-1">mask</span>
+                                    <span class="badge badge-primary mx-1">email</span>
+                                    <span class="badge badge-primary mx-1">cpf</span>
+                                    <span class="badge badge-primary mx-1">cnpj</span>
+                                    <span class="badge badge-primary mx-1">date</span>
+                                    <span class="badge badge-primary mx-1">tel</span>
+                                    <span class="badge badge-primary mx-1">onkeyup</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
+    <script>
+        // Atualizar progresso da validação
+        function updateProgress() {
+            setTimeout(() => {
+                const totalFields = $('#mainForm').find(':input:visible').length;
+                const validFields = $('#mainForm').find(':input.success').length;
+                const percentage = totalFields > 0 ? Math.round((validFields / totalFields) * 100) : 0;
+
+                const progressBar = $('#validationProgress');
+                progressBar.css('width', percentage + '%');
+                progressBar.text(percentage + '% Válido (' + validFields + '/' + totalFields + ')');
+            }, 100);
+        }
+
+        // Mostrar detalhes da validação
+        function showValidationDetails() {
+            const form = $('#mainForm');
+            const isValid = form.isValid();
+            const totalFields = form.find(':input:visible').length;
+            const validFields = form.find(':input.success').length;
+            const invalidFields = form.find(':input.error').length;
+
+            const status = $('#validationStatus');
+            status.removeClass('alert-success alert-danger alert-warning');
+
+            if (isValid) {
+                status.addClass('alert-success');
+                status.html(`
+                    <h4><i class="fas fa-check-circle"></i> Formulário Válido!</h4>
+                    <p>Todos os ${totalFields} campos estão válidos. ✅</p>
+                `);
+            } else {
+                status.addClass('alert-danger');
+                status.html(`
+                    <h4><i class="fas fa-exclamation-circle"></i> Formulário Inválido!</h4>
+                    <p>
+                        <strong>Campos válidos:</strong> ${validFields}<br>
+                        <strong>Campos inválidos:</strong> ${invalidFields}<br>
+                        <strong>Total de campos:</strong> ${totalFields}
+                    </p>
+                    <small>Corrija os campos marcados em vermelho para prosseguir.</small>
+                `);
+            }
+
+            status.show();
+            updateProgress();
+
+            // Esconder após 5 segundos
+            setTimeout(() => {
+                status.fadeOut();
+            }, 5000);
+        }
+
+        // Atualizar status de validação em tempo real
+        $(document).ready(function () {
+            // Atualizar progresso quando qualquer campo mudar
+            $('#mainForm').on('input change keyup blur', ':input', function () {
+                updateProgress();
+
+                // Atualizar status individual do campo
+                const field = $(this);
+                const status = field.siblings('.validation-status');
+
+                setTimeout(() => {
+                    if (field.hasClass('success')) {
+                        status.removeClass('invalid').addClass('valid').text('✅ Válido');
+                    } else if (field.hasClass('error')) {
+                        status.removeClass('valid').addClass('invalid').text('❌ Inválido');
+                    } else {
+                        status.removeClass('valid invalid').text('');
+                    }
+                }, 50);
+            });
+
+            // Progresso inicial
+            updateProgress();
+
+            // Adicionar efeito visual no submit
+            $('#mainForm').on('submit', function (e) {
+                e.preventDefault();
+                showValidationDetails();
+
+                // Efeito visual nos botões
+                $(this).find('button[type="submit"]').addClass('btn-pulse');
+                setTimeout(() => {
+                    $(this).find('button[type="submit"]').removeClass('btn-pulse');
+                }, 1000);
+            });
+
+            // Melhorar experiência com tooltips
+            $('[data-tooltip]').hover(
+                function () {
+                    $(this).addClass('tooltip-active');
+                },
+                function () {
+                    $(this).removeClass('tooltip-active');
+                }
+            );
+        });
+
+        // Adicionar efeito de pulse nos botões
+        const style = document.createElement('style');
+        style.textContent = `
+            .btn-pulse {
+                animation: pulse 1s infinite;
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            .tooltip-active::after {
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 
 </html>
