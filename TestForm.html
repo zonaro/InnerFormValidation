@@ -857,7 +857,9 @@
                         <div class="form-group">
                             <label>Período de Datas</label>
                             <input type='text' placeholder="dd/mm/aaaa ~ dd/mm/aaaa"
-                                class='form-control mask daterange onkeyup' />
+                                class='form-control mask daterange daterange onkeyup'
+                                data-invalidmessage="Digite um período válido! A primeira data deve ser anterior ou igual à segunda. 📅" />
+                            <div class="validation-status"></div>
                             <div class="code-buttons">
                                 <button type="button" class="code-btn" onclick="copyHTML(this)"
                                     title="Copiar HTML completo">
@@ -880,7 +882,9 @@
                         <div class="form-group">
                             <label>Período Mês/Ano</label>
                             <input type='text' placeholder="mm/aaaa ~ mm/aaaa"
-                                class='form-control mask monthyearrange onkeyup' />
+                                class='form-control mask monthyearrange monthyearrange onkeyup'
+                                data-invalidmessage="Digite um período de mês/ano válido! O primeiro período deve ser anterior ou igual ao segundo. 📆" />
+                            <div class="validation-status"></div>
                             <div class="code-buttons">
                                 <button type="button" class="code-btn" onclick="copyHTML(this)"
                                     title="Copiar HTML completo">
@@ -903,7 +907,9 @@
                         <div class="form-group">
                             <label>Período Mês/Ano Curto</label>
                             <input type='text' placeholder="mm/aa ~ mm/aa"
-                                class='form-control mask shortmonthyearrange onkeyup' />
+                                class='form-control mask shortmonthyearrange shortmonthyearrange onkeyup'
+                                data-invalidmessage="Digite um período de mês/ano curto válido! O primeiro período deve ser anterior ou igual ao segundo. 🗓️" />
+                            <div class="validation-status"></div>
                             <div class="code-buttons">
                                 <button type="button" class="code-btn" onclick="copyHTML(this)"
                                     title="Copiar HTML completo">
@@ -1708,6 +1714,10 @@
                 // Validações de data/hora
                 'date', 'data', 'time', 'timeshort', 'shorttime', 'datetime', 'datetimeshort',
                 'minutesecond', 'monthyear',
+
+                // Validações de período
+                'daterange', 'daterangereverse', 'monthyearrange', 'monthyearrangereverse',
+                'shortmonthyearrange', 'shortmonthyearrangereverse',
 
                 // Validações de comprimento
                 'len', 'minlen', 'maxlen', 'leadingzero',

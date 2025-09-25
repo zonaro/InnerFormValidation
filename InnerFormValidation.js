@@ -500,6 +500,138 @@ window.innerForm.parseDate = function (value) {
     return null;
 }
 
+/**
+ * Validates a date range string in format "DD/MM/YYYY ~ DD/MM/YYYY"
+ * @param {string} value - Date range string
+ * @returns {boolean} True if both dates are valid and first date <= second date
+ */
+window.innerForm.validDateRange = function (value) {
+    if (!value || typeof value !== 'string') return false;
+
+    var parts = value.split(' ~ ');
+    if (parts.length !== 2) return false;
+
+    var date1 = parts[0].trim();
+    var date2 = parts[1].trim();
+
+    // Validate both dates individually
+    if (!window.innerForm.validDate(date1) || !window.innerForm.validDate(date2)) {
+        return false;
+    }
+
+    // Parse both dates to compare
+    var parsedDate1 = window.innerForm.parseDate(date1);
+    var parsedDate2 = window.innerForm.parseDate(date2);
+
+    // First date should be <= second date
+    return parsedDate1 <= parsedDate2;
+}
+
+/**
+ * Validates a month/year range string in format "MM/YYYY ~ MM/YYYY"
+ * @param {string} value - Month/year range string
+ * @returns {boolean} True if both month/years are valid and first <= second
+ */
+window.innerForm.validMonthYearRange = function (value) {
+    if (!value || typeof value !== 'string') return false;
+
+    var parts = value.split(' ~ ');
+    if (parts.length !== 2) return false;
+
+    var monthYear1 = parts[0].trim();
+    var monthYear2 = parts[1].trim();
+
+    // Validate both month/years individually (add day 01 for validation)
+    var testDate1 = "01/" + monthYear1;
+    var testDate2 = "01/" + monthYear2;
+
+    if (!window.innerForm.validDate(testDate1) || !window.innerForm.validDate(testDate2)) {
+        return false;
+    }
+
+    // Parse both dates to compare (use day 1 for comparison)
+    var parsedDate1 = window.innerForm.parseDate(testDate1);
+    var parsedDate2 = window.innerForm.parseDate(testDate2);
+
+    // First month/year should be <= second month/year
+
+    return parsedDate1 <= parsedDate2;
+
+
+}
+
+
+window.innerForm.expandYear = function (year, pivot) {
+    pivot = pivot || 0;
+
+    if (!year || isNaN(year) || year < 0) {
+        return new Date().getFullYear();
+    }
+
+    if (year > 999) {
+        return year;
+    }
+
+    if (year > 99) {
+        return 1000 + year;
+    }
+
+    if (pivot >= 0) {
+        if (year >= pivot) {
+            return 1900 + year;
+        } else {
+            return 2000 + year;
+        }
+    } else {
+        const currentYear = new Date().getFullYear();
+        const century = Math.floor(currentYear / 100) * 100;
+        let candidate = century + twoDigits;
+
+        // Ajusta se estiver muito distante do ano atual
+        if (Math.abs(candidate - currentYear) > 50) {
+            if (candidate < currentYear) {
+                candidate += 100;
+            } else {
+                candidate -= 100;
+            }
+        }
+        return candidate;
+    }
+}
+
+
+
+
+
+/**
+ * Validates a short month/year range string in format "MM/YY ~ MM/YY"
+ * @param {string} value - Short month/year range string
+ * @returns {boolean} True if both month/years are valid and first <= second
+ */
+window.innerForm.validShortMonthYearRange = function (value) {
+    if (!value || typeof value !== 'string') return false;
+
+    var parts = value.split(' ~ ');
+    if (parts.length !== 2) return false;
+
+    var monthYear1 = parts[0].trim();
+    var monthYear2 = parts[1].trim();
+
+    //expannd years
+    var comp1 = monthYear1.split("/");
+    if (comp1.length != 2) return false;
+    comp1[1] = comp1[1].length == 2 ? window.innerForm.expandYear(parseInt(comp1[1], 10)) : comp1[1];
+    monthYear1 = comp1[0] + "/" + comp1[1];
+
+    var comp2 = monthYear2.split("/");
+    if (comp2.length != 2) return false;
+    comp2[1] = comp2[1].length == 2 ? window.innerForm.expandYear(parseInt(comp2[1], 10)) : comp2[1];
+    monthYear2 = comp2[0] + "/" + comp2[1];
+
+    return window.innerForm.validMonthYearRange(monthYear1 + " ~ " + monthYear2);
+
+}
+
 window.innerForm.applyNoSpaceMask = function (input = new HTMLInputElement()) {
     input.value = input.value
         .replace(/[ ]+/g, '');
@@ -688,33 +820,147 @@ window.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) 
 window.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
     // formato MM/AAAA ~ MM/AAAA
     var text = input.value || "";
-    text = text.replace(/\D/g, "");
-    text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
-    if (/^[\d]{2}\/[\d]{4} ~ [\d]{2}\/[\d]{4}$/g.test(text)) {
-        input.maxLength = text.length;
+    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+    text = text.replace(/\s+/g, " "); // Normalizar espaços
+
+    // Remover múltiplos tildes
+    text = text.replace(/~+/g, "~");
+
+    // Se não tem tilde ainda, adicionar quando necessário
+    if (!text.includes("~")) {
+        // Quando tiver 6 dígitos (MM/YYYY), adicionar o separador
+        if (text.length >= 6) {
+            var digits = text.replace(/\D/g, "");
+            if (digits.length >= 6) {
+                text = digits.substring(0, 2) + "/" + digits.substring(2, 6) + " ~ " +
+                    (digits.length > 6 ? digits.substring(6, 8) : "") +
+                    (digits.length > 8 ? "/" + digits.substring(8, 12) : "");
+            } else {
+                text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
+            }
+        } else {
+            text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
+        }
+    } else {
+        // Já tem tilde, formatar as duas partes
+        var parts = text.split("~");
+        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
+        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+
+        var formatted1 = part1.length >= 2 ? part1.substring(0, 2) + "/" + part1.substring(2, 6) : part1;
+        var formatted2 = part2.length >= 2 ? part2.substring(0, 2) + "/" + part2.substring(2, 6) : part2;
+
+        text = formatted1 + " ~ " + formatted2;
     }
+
+    // Limitar tamanho máximo
+    if (text.length > 19) text = text.substring(0, 19); // MM/YYYY ~ MM/YYYY
     input.value = text;
 }
 
 window.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
     // formato MM/AA ~ MM/AA
     var text = input.value || "";
-    text = text.replace(/\D/g, "");
-    text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
-    if (/^[\d]{2}\/[\d]{2} ~ [\d]{2}\/[\d]{2}$/g.test(text)) {
-        input.maxLength = text.length;
+    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+    text = text.replace(/\s+/g, " "); // Normalizar espaços
+
+    // Remover múltiplos tildes
+    text = text.replace(/~+/g, "~");
+
+    // Se não tem tilde ainda, adicionar quando necessário
+    if (!text.includes("~")) {
+        // Quando tiver 4 dígitos (MMAA), adicionar o separador
+        if (text.length >= 4) {
+            var digits = text.replace(/\D/g, "");
+            if (digits.length >= 4) {
+                text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + " ~ " +
+                    (digits.length > 4 ? digits.substring(4, 6) : "") +
+                    (digits.length > 6 ? "/" + digits.substring(6, 8) : "");
+            } else {
+                text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
+            }
+        } else {
+            text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
+        }
+    } else {
+        // Já tem tilde, formatar as duas partes
+        var parts = text.split("~");
+        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
+        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+
+        var formatted1 = part1.length >= 2 ? part1.substring(0, 2) + "/" + part1.substring(2, 4) : part1;
+        var formatted2 = part2.length >= 2 ? part2.substring(0, 2) + "/" + part2.substring(2, 4) : part2;
+
+        text = formatted1 + " ~ " + formatted2;
     }
+
+    // Limitar tamanho máximo
+    if (text.length > 13) text = text.substring(0, 13); // MM/AA ~ MM/AA
     input.value = text;
 }
 
 window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
     // formato DD/MM/AAAA ~ DD/MM/AAAA
     var text = input.value || "";
-    text = text.replace(/\D/g, "");
-    text = text.replace(/^(\d{2})(\d{1,2})(\d{4})/g, "$1/$2/$3");
-    if (/^[\d]{2}\/[\d]{2}\/[\d]{4} ~ [\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
-        input.maxLength = text.length;
+    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+    text = text.replace(/\s+/g, " "); // Normalizar espaços
+
+    // Remover múltiplos tildes
+    text = text.replace(/~+/g, "~");
+
+    // Se não tem tilde ainda, adicionar quando necessário
+    if (!text.includes("~")) {
+        // Quando tiver 8 dígitos (DDMMAAAA), adicionar o separador
+        if (text.length >= 8) {
+            var digits = text.replace(/\D/g, "");
+            if (digits.length >= 8) {
+                text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + "/" + digits.substring(4, 8) + " ~ " +
+                    (digits.length > 8 ? digits.substring(8, 10) : "") +
+                    (digits.length > 10 ? "/" + digits.substring(10, 12) : "") +
+                    (digits.length > 12 ? "/" + digits.substring(12, 16) : "");
+            } else {
+                text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
+            }
+        } else {
+            text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
+        }
+    } else {
+        // Já tem tilde, formatar as duas partes
+        var parts = text.split("~");
+        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
+        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+
+        var formatted1 = "";
+        if (part1.length >= 2) {
+            formatted1 = part1.substring(0, 2);
+            if (part1.length >= 4) {
+                formatted1 += "/" + part1.substring(2, 4);
+                if (part1.length >= 8) {
+                    formatted1 += "/" + part1.substring(4, 8);
+                }
+            }
+        } else {
+            formatted1 = part1;
+        }
+
+        var formatted2 = "";
+        if (part2.length >= 2) {
+            formatted2 = part2.substring(0, 2);
+            if (part2.length >= 4) {
+                formatted2 += "/" + part2.substring(2, 4);
+                if (part2.length >= 8) {
+                    formatted2 += "/" + part2.substring(4, 8);
+                }
+            }
+        } else {
+            formatted2 = part2;
+        }
+
+        text = formatted1 + " ~ " + formatted2;
     }
+
+    // Limitar tamanho máximo
+    if (text.length > 23) text = text.substring(0, 23); // DD/MM/AAAA ~ DD/MM/AAAA
     input.value = text;
 }
 
@@ -1216,6 +1462,27 @@ jQuery.fn.isValid = function () {
                         }
                         results.push(value.split("/").length == 3)
                         results.push(window.innerForm.validDate(value));
+                        break;
+                    case "daterange":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(window.innerForm.validDateRange(value));
+                        break;
+                    case "monthyearrange":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(window.innerForm.validMonthYearRange(value));
+                        break;
+                    case "shortmonthyearrange":
+                        if (jQuery.trim(value) === "") {
+                            results.push(true);
+                            break;
+                        }
+                        results.push(window.innerForm.validShortMonthYearRange(value));
                         break;
                     case "datetime":
                     case "dateshorttime":
