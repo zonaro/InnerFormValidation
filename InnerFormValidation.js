@@ -1313,30 +1313,13 @@ window.innerForm.searchViaCEP = function (CEPNumber, homeNumber, delay, callback
  * @param {Object} value any input value 
  */
 jQuery.fn.setOrReplaceVal = function (value) {
-
     let valor = jQuery.trim(jQuery(this).val() || "");
-    if (valor == "") {
+    if (valor == "" || jQuery(this).is(".noreplace") == false) {
         jQuery(this).val(value)
-    } else if (jQuery(this).is(".noreplace") == false) {
-        jQuery(this).val(value)
-    }
+    } 
     return jQuery(this);
-
 }
 
-/**
- * Check if given value is valid
- * @arguments The first argument is the value, the subsequent arguments are the validation classes
- * @return {Boolean} true if is valid, otherwise false
- */
-jQuery.isValid = function () {
-    let items = Array.prototype.slice.call(arguments);
-    if (items.length > 0) {
-        let v = items.shift();
-        return jQuery("<input value='" + v + "' class='" + items.join(" ") + "' />").isValid();
-    }
-    return false;
-}
 
 
 /**

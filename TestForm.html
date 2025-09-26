@@ -1777,7 +1777,7 @@
                                     automaticamente:</h5>
                                 <pre>
                                     <code class="css">
- /* Estados de Validação */
+        /* Estados de Validação */
         .success {
             border-color: #28a745 !important;        
         }
@@ -1807,13 +1807,26 @@
             border-color: #dc3545;
         }
 
-        /* Indicadores de força da senha */              
+        /* Indicadores de força da senha */  
+        [data-pwstrength="4"] {
+             border-left: 5px solid #28a745; /* Verde - Forte */
+        }
+
+        [data-pwstrength="3"] {
+            border-left: 5px solid #ffc107; /* Amarelo - Média */
+        }
+
+        [data-pwstrength="2"],
+        [data-pwstrength="1"] {
+            border-left: 5px solid #dc3545; /* Vermelho - Fraca */
+        }            
 
         [data-pwstrength="4"]::after {
             content: "💪 Senha Forte";
             color: #28a745;
             font-weight: bold;
         }
+        
 
         [data-pwstrength="3"]::after {
             content: "👍 Senha Média";
