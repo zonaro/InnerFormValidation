@@ -842,8 +842,8 @@ window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) 
     } else {
         // Já tem tilde, formatar as duas partes
         var parts = text.split("~");
-        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
-        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+        var part1 = parts[0] ? parts[0].trim() : "";
+        var part2 = parts[1] ? parts[1].trim() : "";
 
 
         var formatted1 = "";
