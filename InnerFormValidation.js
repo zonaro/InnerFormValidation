@@ -551,7 +551,6 @@ window.innerForm.validMonthYearRange = function (value) {
 
 
 window.innerForm.expandYear = function (year, pivot) {
-    pivot = pivot || 0;
 
     if (!year || isNaN(year) || year < 0) {
         return new Date().getFullYear();
@@ -565,6 +564,7 @@ window.innerForm.expandYear = function (year, pivot) {
         return 1000 + year;
     }
 
+    pivot = pivot || 0;
     if (pivot >= 0) {
         if (year >= pivot) {
             return 1900 + year;
@@ -574,8 +574,7 @@ window.innerForm.expandYear = function (year, pivot) {
     } else {
         const currentYear = new Date().getFullYear();
         const century = Math.floor(currentYear / 100) * 100;
-        let candidate = century + twoDigits;
-
+        let candidate = century + year;
         // Ajusta se estiver muito distante do ano atual
         if (Math.abs(candidate - currentYear) > 50) {
             if (candidate < currentYear) {
@@ -1316,7 +1315,7 @@ jQuery.fn.setOrReplaceVal = function (value) {
     let valor = jQuery.trim(jQuery(this).val() || "");
     if (valor == "" || jQuery(this).is(".noreplace") == false) {
         jQuery(this).val(value)
-    } 
+    }
     return jQuery(this);
 }
 
