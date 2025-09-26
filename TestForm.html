@@ -1920,7 +1920,7 @@
         // Função para copiar HTML completo do campo
         function copyHTML(button) {
             const formGroup = $(button).closest('.form-group');
-            const input = formGroup.find('input, textarea, select').first();
+            const input = formGroup.find('input, textarea, select').last();
 
             if (input.length) {
                 const outerHTML = input[0].outerHTML;
@@ -1990,7 +1990,7 @@
         // Função para copiar apenas classes de validação
         function copyClasses(button) {
             const formGroup = $(button).closest('.form-group');
-            const input = formGroup.find('input, textarea, select').first();
+            const input = formGroup.find('input, textarea, select').last();
 
             if (input.length) {
                 const validationClasses = getValidationClasses(input[0]);
@@ -2045,7 +2045,7 @@
         // Função para copiar atributos de validação
         function copyAttributes(button) {
             const formGroup = $(button).closest('.form-group');
-            const input = formGroup.find('input, textarea, select').first();
+            const input = formGroup.find('input, textarea, select').last();
 
             if (input.length) {
                 const validationAttrs = getValidationAttributes(input[0]);
