@@ -1747,6 +1747,85 @@
                     </div>
                 </div>
 
+                <!-- ========== SEÇÃO 13: TESTE DA FUNÇÃO EXPANDYEAR ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-calendar"></i> 13. Teste da Função expandYear</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Ano (2 ou 4 dígitos)
+                                <i class="fas fa-question-circle tooltip-help"
+                                    data-tooltip="Digite um ano de 2 dígitos (ex: 23) ou 4 dígitos (ex: 2023)"></i>
+                            </label>
+                            <input type='text' id="expandYearInput" placeholder="Digite um ano"
+                                class='form-control mask num onkeyup' maxlength="4" />
+                            <small class="text-muted">Ex: 23, 05, 2023, 1995</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Limite Anterior (em anos)
+                                <i class="fas fa-question-circle tooltip-help"
+                                    data-tooltip="Determina a faixa para escolher o século correto"></i>
+                            </label>
+                            <input type='text' id="centuryRangeInputPast" placeholder="25"
+                                class='form-control mask num onkeyup' maxlength="3" />
+                            <small class="text-muted">
+                                Quantos anos antes do ano atual considerar como século atual (padrão: início do século)
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Range do Século (padrão: 5)
+                                <i class="fas fa-question-circle tooltip-help"
+                                    data-tooltip="Determina a faixa para escolher o século correto"></i>
+                            </label>
+                            <input type='text' id="centuryRangeInputFuture" placeholder="5"
+                                class='form-control mask num onkeyup' maxlength="3" />
+                            <small class="text-muted">
+                                Quantos anos após o ano atual considerar como século atual (padrão: até 5 anos no
+                                futuro)
+
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Resultado</label>
+                            <div class="form-control" id="expandYearResult"
+                                style="background-color: #f8f9fa; min-height: 38px; padding: 8px 12px;">
+                                <span class="text-muted">Digite um ano para ver o resultado</span>
+                            </div>
+                            <small class="text-muted">Ano expandido pela função</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h6 class="card-title">💡 Como funciona a função expandYear:</h6>
+                                <p class="mb-2">A função <code>expandYear</code> converte anos de 2 dígitos em anos de 4
+                                    dígitos baseado no ano atual e no range configurado:</p>
+                                <ul class="list-unstyled mb-2">
+                                    <li><strong>Ano atual:</strong> <span id="currentYearDisplay"></span></li>
+                                    <li><strong>Século atual:</strong> <span id="currentCenturyDisplay"></span></li>
+                                    <li><strong>Lógica:</strong> Se o ano + range < ano atual, adiciona 100 anos</li>
+                                </ul>
+                                <p class="text-muted mb-0">
+                                    <strong>Exemplo:</strong> Com range 50 em 2025, o ano "24" vira "2024" (passado),
+                                    mas "26" vira "2026" (futuro próximo) e "75" vira "1975" (passado distante).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Botões de Ação -->
                 <div class="row mt-4">
                     <div class="col-md-12 text-center">
@@ -1922,6 +2001,14 @@
     <script>
         // Atualizar status de validação em tempo real
         $(document).ready(function () {
+            // Inicializar informações da função expandYear
+            updateExpandYearInfo();
+
+            // Eventos para testar a função expandYear
+            $('#expandYearInput, #centuryRangeInputPast, #centuryRangeInputFuture').on('input keyup', function () {
+                testExpandYear();
+            });
+
             // Atualizar campos quando qualquer campo mudar
             $('#mainForm').on('input change keyup blur', ':input', function () {
                 // Atualizar status individual do campo
@@ -1980,6 +2067,47 @@
             }
         `;
         document.head.appendChild(style);
+
+        // ========== FUNÇÕES PARA TESTAR EXPANDYEAR ==========
+
+        // Função para atualizar informações sobre o ano atual
+        function updateExpandYearInfo() {
+            const currentYear = new Date().getFullYear();
+            const currentCentury = Math.floor(currentYear / 100) * 100;
+
+            $('#currentYearDisplay').text(currentYear);
+            $('#currentCenturyDisplay').text(currentCentury + 'xx');
+        }
+
+        // Função para testar a função expandYear
+        function testExpandYear() {
+            const yearInput = $('#expandYearInput').val();
+            const centuryRangeInputPast = $('#centuryRangeInputPast').val();
+            const centuryRangeInputFuture = $('#centuryRangeInputFuture').val();
+            const resultDiv = $('#expandYearResult');
+
+            if (!yearInput) {
+                resultDiv.html('<span class="text-muted">Digite um ano para ver o resultado</span>');
+                return;
+            }
+
+            try {
+
+
+                // Verificar se a função expandYear está disponível
+                if (typeof window.innerForm !== 'undefined' && typeof window.innerForm.expandYear === 'function') {
+                    const expandedYear = window.innerForm.expandYear(yearInput, centuryRangeInputPast, centuryRangeInputFuture);
+
+                    resultDiv.html(`
+                        <strong class="text-success">${expandedYear}</strong>                      
+                    `);
+                } else {
+                    resultDiv.html('<span class="text-danger">Função expandYear não disponível</span>');
+                }
+            } catch (error) {
+                resultDiv.html(`<span class="text-danger">Erro: ${error.message}</span>`);
+            }
+        }
 
         // ========== FUNÇÕES PARA COPIAR CÓDIGO ==========
 

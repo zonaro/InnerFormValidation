@@ -479,7 +479,7 @@ window.innerForm.parseDate = function (value) {
     var d = 0;
     var m = 0;
     var y = 0;
-    var comp = value.split(" ")[0].split("/");
+    var comp = value.split(" ")[0].split("/") ?? value.split("/");
     if (comp.length == 3) {
         comp[2] = comp[2].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[2] : comp[2];
         d = parseInt(comp[0], 10);
@@ -550,80 +550,71 @@ window.innerForm.validMonthYearRange = function (value) {
 }
 
 /**
- * Expands a 2-digit or 3-digit year to a 4-digit year based on a pivot.
- * If the year is already 4 digits, it is returned as is.
- * @param {number|string} year - The year to expand (2, 3, or 4 digits).
- * @param {number} [pivot=0] - The pivot year for 2-digit years. If positive, years >= pivot are 1900s, else 2000s. If negative, uses current year to determine century.
+ * Expands a short year (YY) to a full year (YYYY) based on the current century.
+ * If the expanded year is outside the range of (currentYear - pastDistance) to (currentYear + futureDistance),
+ * it is adjusted to the previous century.
+ * @param {number} year - The short year to expand.
+ * @param {number} pastDistance - The number of years to consider for the past.
+ * @param {number} futureDistance - The number of years to consider for the future.
+ * @returns {number} - The expanded full year.
  */
-window.innerForm.expandYear = function (year, pivot) {
+window.innerForm.expandYear = function (year, pastDistance, futureDistance) {
+    const currentYear = new Date().getFullYear();
+    const century = Math.floor(currentYear / 100) * 100;
+    pastDistance = pastDistance || (currentYear - century);
+    futureDistance = futureDistance || 5;
 
-    if (!year || isNaN(year) || year < 0) {
-        return new Date().getFullYear();
+
+
+    if (window.innerForm.isNumber(pastDistance)) {
+        pastDistance = parseInt(pastDistance, 10);
+    } else {
+        pastDistance = currentYear - century;
     }
 
-    if (year > 999) {
+    if (window.innerForm.isNumber(futureDistance)) {
+        futureDistance = parseInt(futureDistance, 10);
+    } else {
+        futureDistance = 5;
+    }
+
+    if (window.innerForm.isNumber(year)) {
+        year = parseInt(year, 10);
+    } else {
+        window.innerForm.warn("Invalid year:", year);
+        year = new Date().getFullYear();
+    }
+
+    if (year < 0) year = -year;
+
+    if (year >= 1000) {
         return year;
     }
 
-    if (year > 99) {
-        return 1000 + year;
-    }
 
-    pivot = pivot || 0;
-    if (pivot >= 0) {
-        if (year >= pivot) {
-            return 1900 + year;
-        } else {
-            return 2000 + year;
-        }
+    if (year > 99 && year <= 999) {
+        year = century + year;
+        year -= 1000;
+        return year;
     } else {
-        const currentYear = new Date().getFullYear();
-        const century = Math.floor(currentYear / 100) * 100;
-        let candidate = century + year;
-        // Ajusta se estiver muito distante do ano atual
-        if (Math.abs(candidate - currentYear) > 50) {
-            if (candidate < currentYear) {
-                candidate += 100;
-            } else {
-                candidate -= 100;
-            }
-        }
-        return candidate;
+        year = century + year;
     }
-}
 
+    let limitBefore = (currentYear - pastDistance);
+    let limitAfter = (currentYear + futureDistance);
+    /// se o ano digitado estiver fora do range, então é do século anterior
+    if (year < limitBefore || year > limitAfter) {
+        year -= 100;
+    }
 
-
-
-
-/**
- * Validates a short month/year range string in format "MM/YY ~ MM/YY"
- * @param {string} value - Short month/year range string
- * @returns {boolean} True if both month/years are valid and first <= second
- */
-window.innerForm.validShortMonthYearRange = function (value) {
-    if (!value || typeof value !== 'string') return false;
-
-    var parts = value.split(' ~ ');
-    if (parts.length !== 2) return false;
-
-    var monthYear1 = parts[0].trim();
-    var monthYear2 = parts[1].trim();
-
-    //expannd years
-    var comp1 = monthYear1.split("/");
-    if (comp1.length != 2) return false;
-    comp1[1] = comp1[1].length == 2 ? window.innerForm.expandYear(parseInt(comp1[1], 10)) : comp1[1];
-    monthYear1 = comp1[0] + "/" + comp1[1];
-
-    var comp2 = monthYear2.split("/");
-    if (comp2.length != 2) return false;
-    comp2[1] = comp2[1].length == 2 ? window.innerForm.expandYear(parseInt(comp2[1], 10)) : comp2[1];
-    monthYear2 = comp2[0] + "/" + comp2[1];
-
-    return window.innerForm.validMonthYearRange(monthYear1 + " ~ " + monthYear2);
+    return year;
 
 }
+
+
+
+
+
 
 window.innerForm.applyNoSpaceMask = function (input = new HTMLInputElement()) {
     input.value = input.value
@@ -663,15 +654,20 @@ window.innerForm.applyLowerMask = function (input = new HTMLInputElement()) {
 
 window.innerForm.applyDateMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
-    text = text.replace(/\D/g, "");
-    text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
-    text = text.replace(/^(\d{2}\/\d{2})(\d{1,4})$/g, "$1/$2");
+    text = window.innerForm.formatDate(text);
     if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
         input.maxLength = text.length;
     }
     input.value = text;
 };
 
+window.innerForm.formatDate = function (text) {
+    text = text || "";
+    text = text.replace(/\D/g, "");
+    text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
+    text = text.replace(/^(\d{2}\/\d{2})(\d{1,4})$/g, "$1/$2");
+    return text;
+}
 
 jQuery.fn.dateMask = function () {
     window.innerForm.applyDateMask(this)
@@ -792,6 +788,16 @@ window.innerForm.applyCreditCardMask = function (input = new HTMLInputElement())
     input.value = text;
 };
 
+window.innerForm.isNumber = function (n) {
+    if (n === null || n === undefined) return false;
+    if (typeof n === "string") n = n.trim();
+    try {
+        n = parseFloat(n);
+        return !isNaN(n) && isFinite(n);
+    } catch (error) {
+        return false;
+    }
+}
 
 window.innerForm.applyNumberMask = function (input = new HTMLInputElement()) {
     var text = input.value || "";
@@ -817,65 +823,171 @@ window.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) 
 window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
     // formato DD/MM/AAAA ~ DD/MM/AAAA
     var text = input.value || "";
-    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+    // Manter apenas dígitos, barras, ~ e espaços
+    text = text.replace(/[^\d\/~\s]/g, "");
     text = text.replace(/\s+/g, " "); // Normalizar espaços
 
     // Remover múltiplos tildes
     text = text.replace(/~+/g, "~");
 
-    // Se não tem tilde ainda, adicionar quando necessário
-    if (!text.includes("~")) {
-        // Quando tiver 8 dígitos (DDMMAAAA), adicionar o separador
-        if (text.length >= 8) {
-            var digits = text.replace(/\D/g, "");
-            if (digits.length >= 8) {
-                text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + "/" + digits.substring(4, 8) + " ~ " +
-                    (digits.length > 8 ? digits.substring(8, 10) : "") +
-                    (digits.length > 10 ? "/" + digits.substring(10, 12) : "") +
-                    (digits.length > 12 ? "/" + digits.substring(12, 16) : "");
-            } else {
-                text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
-            }
-        } else {
-            text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
-        }
-    } else {
-        // Já tem tilde, formatar as duas partes
+    text = window.innerForm.parseDatePartial(text);
+
+    if (text.length > 23) text = text.substring(0, 23);
+
+    // se tiver o tilde, processa a segunda data
+    if (text.includes("~")) {
         var parts = text.split("~");
         var part1 = parts[0] ? parts[0].trim() : "";
         var part2 = parts[1] ? parts[1].trim() : "";
 
+        part2 = window.innerForm.parseDatePartial(part2);
 
-        var formatted1 = "";
-        var splitPart1 = part1.split("/");
-        if (splitPart1.length == 1) {
-            formatted1 = splitPart1[0] + "/";
-        } else if (splitPart1.length == 2) {
-            formatted1 = splitPart1[0] + "/" + splitPart1[1];
-        } else if (splitPart1.length == 3) {
-            formatted1 = splitPart1[0] + "/" + splitPart1[1] + "/" + splitPart1[2];
-        } else {
-            formatted1 = part1;
+
+        if (part1.length == 10 && part2.length == 10) {
+            debugger;
+            var date1 = window.innerForm.parseDate(part1);
+            var date2 = window.innerForm.parseDate(part2);
+            if (date1 && date2) {
+                if (date1 > date2) {
+                    const temp = part2;
+                    part2 = part1;
+                    part1 = temp;
+                }
+            }
         }
-
-        var formatted2 = "";
-        var splitPart2 = part2.split("/");
-        if (splitPart2.length == 1) {
-            formatted2 = splitPart2[0] + "/";
-        } else if (splitPart2.length == 2) {
-            formatted2 = splitPart2[0] + "/" + splitPart2[1];
-        } else if (splitPart2.length == 3) {
-            formatted2 = splitPart2[0] + "/" + splitPart2[1] + "/" + splitPart2[2];
-        } else {
-            formatted2 = part2;
-        }
-
-        text = formatted1 + " ~ " + formatted2;
+        text = part1 + " ~ " + part2;
     }
 
-    // Limitar tamanho máximo
-    if (text.length > 23) text = text.substring(0, 23); // DD/MM/AAAA ~ DD/MM/AAAA
     input.value = text;
+}
+
+/**
+ * Parses and formats a partial date string "DD/MM/YYYY" during input.
+ * @param {*} part 
+ * @returns 
+ */
+window.innerForm.parseDatePartial = function (part) {
+    part = part || "";
+
+    // remove tudo que nao for numero, barra ou espaco ou tilde
+    part = part.replace(/[^\d\/ ~]/g, "");
+
+    // normaliza os espacos
+    part = part.replace(/\s+/g, " ");
+
+    if (part.length > 23) part = part.substring(0, 23);
+
+    // primeiro digito
+    if (part.length == 1) {
+        if (part != "0" && part != "1" && part != "2" && part != "3") {
+            if (window.innerForm.isNumber(part)) {
+                part = "0" + part;
+            }
+        }
+    }
+
+    // segundo digito, limita a 31
+    if (part.length == 2) {
+        if (!window.innerForm.isNumber(part[1])) {
+            part = "0" + part[0];
+        }
+        if (parseInt(part) > 31) {
+            part = "31";
+        }
+        part = part + "/";
+    }
+
+    /// terceiro digito tem que ser uma barra, 0 ou 1, se for 0 ou 1 adiciona a barra antes dele
+    if (part.length == 3) {
+        if (part[2] == "0" || part[2] == "1") {
+            part = part.substring(0, 2) + "/" + part[2];
+        } else if (window.innerForm.isNumber(part[2])) {
+            part = "0" + part.substring(0, 2) + "/" + part[2];
+        } else {
+            part = part.substring(0, 2) + "/";
+        }
+
+    }
+
+    // quarto digito, mes, primeiro numero tem que ser 0 ou 1
+    if (part.length == 4) {
+        if (part[3] == "0" || part[3] == "1") {
+            //mantém
+        }
+        else if (window.innerForm.isNumber(part[3])) {
+            part = part.substring(0, 3) + "0" + part[3];
+        } else {
+            part = part.substring(0, 3);
+        }
+    }
+
+    // quinto digito, mes, segundo numero, limita a 12
+    if (part.length == 5) {
+        var m = part[3] + part[4];
+        if (!window.innerForm.isNumber(part[4])) {
+            part = part.substring(0, 4) + "0";
+        }
+        m = parseInt(m);
+        if (m > 12) {
+            part = part.substring(0, 3) + "12";
+        }
+        part = part + "/";
+    }
+
+    // sexto digito, tem que ser uma barra ou quanquer numero, se for numero adiciona a barra antes dele
+    if (part.length == 6) {
+        if (!window.innerForm.isNumber(part[5])) {
+            part = part.substring(0, 5) + "/" + part[5];
+        } else {
+            part = part.substring(0, 5) + "/";
+        }
+
+    }
+
+    // do setimo e oitavo digito, ano, aceita qualquer digito numerico
+    if (part.length == 7 || part.length == 8) {
+        if (!window.innerForm.isNumber(part[part.length - 1])) part = part.substring(0, part.length - 1);
+    }
+
+    // nona tem que ser 1 numero ou espaco. se for espaco adiciona 20 ou 19 antes dos 2 digitos do ano digitados
+    if (part.length == 9) {
+        if (part[8] == " ") {
+            var shortYear = part.substring(6, 8);
+            var fullYear = window.innerForm.expandYear(shortYear);
+            part = part.substring(0, 6) + fullYear;
+        }
+    }
+
+    // decima tem que ser 1 numero ou espaco. se for espaco adiciona 2 ou 1 antes dos 3 digitos do ano digitados
+    if (part.length == 10) {
+        if (part[9] == " ") {
+            var shortYear = part.substring(6, 9);
+            var fullYear = window.innerForm.expandYear(shortYear);
+            part = part.substring(0, 6) + fullYear;
+        }
+    }
+
+    // se o proximo digito for espaco ou tilde, ajusta par " ~ "
+    if (part.length == 11) {
+
+        if (window.innerForm.isNumber(part[10])) {
+            //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
+            part = part.substring(0, 10) + " ~ " + part[10];
+        } else if (part[10] == " " || part[10] == "~") {
+            part = part.substring(0, 10) + " ~ ";
+        } else {
+            part = part.substring(0, 10);
+        }
+    }
+
+    // se passou de 13 é porque começou uma segunda data
+    if (part.length >= 13) {
+        var part2 = part.substring(13, part.length);
+        part2 = window.innerForm.parseDatePartial(part2);
+        part = part.substring(0, 13) + part2;
+    }
+
+    return part;
 }
 
 /**
