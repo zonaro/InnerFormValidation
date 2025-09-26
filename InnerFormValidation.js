@@ -842,7 +842,7 @@ window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) 
             formatted1 = part1.substring(0, 2);
             if (part1.length >= 4) {
                 formatted1 += "/" + part1.substring(2, 4);
-                if (part1.length >= 8) {
+                if (part1.length >= 6) {
                     formatted1 += "/" + part1.substring(4, 8);
                 }
             }
@@ -855,7 +855,7 @@ window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) 
             formatted2 = part2.substring(0, 2);
             if (part2.length >= 4) {
                 formatted2 += "/" + part2.substring(2, 4);
-                if (part2.length >= 8) {
+                if (part2.length >= 6) {
                     formatted2 += "/" + part2.substring(4, 8);
                 }
             }
