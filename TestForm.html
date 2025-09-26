@@ -1781,7 +1781,7 @@
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label>Range do Século (padrão: 5)
+                            <label>Limite Futuro (padrão: 5)
                                 <i class="fas fa-question-circle tooltip-help"
                                     data-tooltip="Determina a faixa para escolher o século correto"></i>
                             </label>
@@ -1809,17 +1809,33 @@
                     <div class="col-md-12">
                         <div class="card mt-3">
                             <div class="card-body">
-                                <h6 class="card-title">💡 Como funciona a função expandYear:</h6>
-                                <p class="mb-2">A função <code>expandYear</code> converte anos de 2 dígitos em anos de 4
-                                    dígitos baseado no ano atual e no range configurado:</p>
+                                <h6 class="card-title">💡 Como funciona a função ExpandYear:</h6>
+                                <p class="mb-2">A função <code>expandYear</code> converte anos de 2 e 3 dígitos em anos
+                                    de 4
+                                    dígitos baseado no ano atual e no periodo configurado:</p>
                                 <ul class="list-unstyled mb-2">
                                     <li><strong>Ano atual:</strong> <span id="currentYearDisplay"></span></li>
                                     <li><strong>Século atual:</strong> <span id="currentCenturyDisplay"></span></li>
-                                    <li><strong>Lógica:</strong> Se o ano + range < ano atual, adiciona 100 anos</li>
+                                    <li><strong>Lógica:</strong>
+                                        Se o ano expandido estiver fora do range de (anoAtual -
+                                        limiteAnterior) até (anoAtual + limiteFuturo), ele é ajustado para o
+                                        século anterior.
+                                    </li>
                                 </ul>
                                 <p class="text-muted mb-0">
-                                    <strong>Exemplo:</strong> Com range 50 em 2025, o ano "24" vira "2024" (passado),
-                                    mas "26" vira "2026" (futuro próximo) e "75" vira "1975" (passado distante).
+                                    <strong>Exemplo:</strong>
+                                    Se o ano atual é 2025, limiteAnterior é 25 e limiteFuturo é 5:
+                                <ul>
+                                    <li>Ano 23 vira 2023</li>
+                                    <li>Ano 95 vira 1995</li>
+                                    <li>Ano 5 vira 2005</li>
+                                    <li>Ano 50 vira 2050</li>
+                                    <li>Ano 123 vira 1123</li>
+                                    <li>Ano 2021 mantém 2021</li>
+
+
+                                </ul>
+
                                 </p>
                             </div>
                         </div>
@@ -2076,7 +2092,7 @@
             const currentCentury = Math.floor(currentYear / 100) * 100;
 
             $('#currentYearDisplay').text(currentYear);
-            $('#currentCenturyDisplay').text(currentCentury + 'xx');
+            $('#currentCenturyDisplay').text(currentCentury);
         }
 
         // Função para testar a função expandYear
