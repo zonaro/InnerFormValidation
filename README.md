@@ -17,7 +17,8 @@
 7. [Autocompletar Endereços](#autocompletar-endereços)
 8. [Exemplos Práticos](#exemplos-práticos)
 9. [API JavaScript](#api-javascript)
-10. [Personalização Visual](#personalização-visual)
+10. [Funções do $.innerForm](#funções-do-windowinnerform)
+11. [Personalização Visual](#personalização-visual)
 
 ---
 
@@ -26,7 +27,7 @@
 ### CDN
 ```html
 <!-- Adicione antes do script principal para ver mensagens detalhadas no console -->
-<script>window.innerForm = { verbose: true }</script>
+<script>$.innerForm = { verbose: true }</script>
 <script src="https://cdn.jsdelivr.net/gh/innercodetech/innerformvalidation@master/InnerFormValidation.js"></script>
 ```
 
@@ -34,7 +35,7 @@
 1. Baixe o arquivo `InnerFormValidation.js`
 2. Inclua no seu projeto:
 ```html
-<script>window.innerForm = { verbose: true }</script>
+<script>$.innerForm = { verbose: true }</script>
 <script src="path/to/InnerFormValidation.js"></script>
 ```
 
@@ -60,7 +61,7 @@
 
 ### 3. Configuração Global
 ```javascript
-window.innerForm = {
+$.innerForm = {
     verbose: true,           // Exibir logs detalhados no console
     onTypeTimeout: 1000     // Delay para validação durante digitação (ms)
 };
@@ -102,15 +103,18 @@ window.innerForm = {
 
 ### **Validação de Data e Hora**
 
-| Classe                  | Formato             | Compatível com Máscara | Exemplo                              |
-| ----------------------- | ------------------- | ---------------------- | ------------------------------------ |
-| `date` `data`           | dd/MM/yyyy          | 🎭                      | `<input class="mask date">`          |
-| `time`                  | hh:mm:ss            | 🎭                      | `<input class="mask time">`          |
-| `timeshort` `shorttime` | hh:mm               | 🎭                      | `<input class="mask timeshort">`     |
-| `datetime`              | dd/MM/yyyy hh:mm:ss | 🎭                      | `<input class="mask datetime">`      |
-| `datetimeshort`         | dd/MM/yyyy hh:mm    | 🎭                      | `<input class="mask datetimeshort">` |
-| `minutesecond`          | mm:ss               | 🎭                      | `<input class="mask minutesecond">`  |
-| `monthyear`             | MM/yyyy             | 🎭                      | `<input class="mask monthyear">`     |
+| Classe                  | Formato                 | Compatível com Máscara | Exemplo                                    |
+| ----------------------- | ----------------------- | ---------------------- | ------------------------------------------ |
+| `date` `data`           | dd/MM/yyyy              | 🎭                      | `<input class="mask date">`                |
+| `time`                  | hh:mm:ss                | 🎭                      | `<input class="mask time">`                |
+| `timeshort` `shorttime` | hh:mm                   | 🎭                      | `<input class="mask timeshort">`           |
+| `datetime`              | dd/MM/yyyy hh:mm:ss     | 🎭                      | `<input class="mask datetime">`            |
+| `datetimeshort`         | dd/MM/yyyy hh:mm        | 🎭                      | `<input class="mask datetimeshort">`       |
+| `minutesecond`          | mm:ss                   | 🎭                      | `<input class="mask minutesecond">`        |
+| `monthyear`             | MM/yyyy                 | 🎭                      | `<input class="mask monthyear">`           |
+| `daterange`             | dd/MM/yyyy ~ dd/MM/yyyy | 🎭                      | `<input class="mask daterange">`           |
+| `monthyearrange`        | MM/yyyy ~ MM/yyyy       | 🎭                      | `<input class="mask monthyearrange">`      |
+| `shortmonthyearrange`   | MM/yy ~ MM/yy           | 🎭                      | `<input class="mask shortmonthyearrange">` |
 
 ### **Validação de Comprimento**
 
@@ -155,6 +159,15 @@ window.innerForm = {
 
 <!-- Mês/Ano: mm/aaaa -->
 <input class="form-control mask monthyear">
+
+<!-- Período de Datas: dd/mm/aaaa ~ dd/mm/aaaa -->
+<input class="form-control mask daterange">
+
+<!-- Período de Mês/Ano: mm/aaaa ~ mm/aaaa -->
+<input class="form-control mask monthyearrange">
+
+<!-- Período de Mês/Ano Abreviado: mm/aa ~ mm/aa -->
+<input class="form-control mask shortmonthyearrange">
 ```
 
 ### **Máscaras de Comunicação**
@@ -532,7 +545,7 @@ $('#cpf').cpfMask();
 ### **Busca de CEP Programática**
 
 ```javascript
-searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
+$.innerForm.searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
     console.log('Endereço encontrado:', dadosEndereco);
     // dadosEndereco contém: logradouro, bairro, localidade, uf, etc.
 });
@@ -552,6 +565,286 @@ $('#input').validateOnType(0);
 // Define valor apenas se campo estiver vazio
 // Se não estiver vazio, só substitui se não tiver classe 'noreplace'
 $('#campo').setOrReplaceVal('Novo valor');
+```
+
+---
+
+## 🛠️ Funções do $.innerForm
+
+A biblioteca expõe diversas funções utilitárias através do objeto `$.innerForm`. Abaixo estão documentadas as principais funções disponíveis:
+
+### **Funções de Logging e Debug**
+
+#### `log(...arguments)`
+Registra mensagens no console quando o modo verbose está ativo.
+```javascript
+$.innerForm.verbose = true;
+$.innerForm.log('Mensagem de debug', dados);
+```
+
+#### `error(...arguments)` 
+Registra mensagens de erro no console quando o modo verbose está ativo.
+```javascript
+$.innerForm.error('Erro encontrado:', erro);
+```
+
+#### `warn(...arguments)`
+Registra avisos no console quando o modo verbose está ativo.
+```javascript
+$.innerForm.warn('Aviso:', dados);
+```
+
+### **Funções Utilitárias**
+
+#### `addLeadingZeros(num, totalLength)`
+Adiciona zeros à esquerda para atingir o comprimento especificado.
+```javascript
+$.innerForm.addLeadingZeros(123, 5); // "00123"
+$.innerForm.addLeadingZeros(-45, 4);  // "-045"
+```
+
+#### `barcodeCheckSum(code)`
+Calcula o dígito verificador de códigos de barras usando algoritmos padrão.
+```javascript
+$.innerForm.barcodeCheckSum("1234567"); // Retorna número do checksum
+```
+
+#### `getAge(birthDate, fromDate)`
+Calcula a idade com base na data de nascimento e data de referência.
+```javascript
+$.innerForm.getAge("15/03/1990"); // Idade atual
+$.innerForm.getAge("15/03/1990", new Date("2025-01-01")); // Idade em 2025
+```
+
+#### `expandYear(year, pastDistance, futureDistance)`
+Expande um ano de 2 dígitos (YY) para 4 dígitos (YYYY) baseado no século atual.
+```javascript
+$.innerForm.expandYear(25, 20, 5); // 2025 (próximo de 2024)
+$.innerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
+```
+
+### **Funções de Validação**
+
+#### `validDate(value)`
+Valida se uma string representa uma data válida no formato DD/MM/YYYY.
+```javascript
+$.innerForm.validDate("31/12/2023"); // true
+$.innerForm.validDate("31/02/2023"); // false
+$.innerForm.validDate("15/03/90");   // true (ano expandido)
+```
+
+#### `parseDate(value)`
+Converte uma string de data em objeto Date.
+```javascript
+$.innerForm.parseDate("25/12/2023"); // Objeto Date
+$.innerForm.parseDate("12/2023");    // 01/12/2023
+$.innerForm.parseDate("25/12/23");   // 25/12/2023 (ano expandido)
+```
+
+#### `validDateRange(value)`
+Valida um período de datas no formato "DD/MM/YYYY ~ DD/MM/YYYY".
+```javascript
+$.innerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
+$.innerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (ordem)
+```
+
+#### `validMonthYearRange(value)`
+Valida um período de mês/ano no formato "MM/YYYY ~ MM/YYYY".
+```javascript
+$.innerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
+$.innerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false
+```
+
+#### `validShortMonthYearRange(value)`
+Valida um período de mês/ano abreviado no formato "MM/YY ~ MM/YY".
+```javascript
+$.innerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
+$.innerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false
+```
+
+#### `validateTime(value, minutesSeconds)`
+Valida formatos de tempo (HH:MM:SS, HH:MM ou MM:SS).
+```javascript
+$.innerForm.validateTime("14:30:45");        // true
+$.innerForm.validateTime("14:30");           // true  
+$.innerForm.validateTime("90:30", true);     // true (MM:SS)
+$.innerForm.validateTime("25:30");           // false
+```
+
+#### `validateEAN(value)`
+Valida códigos de barras EAN (European Article Number) com verificação de checksum.
+```javascript
+$.innerForm.validateEAN("1234567890123"); // Valida se o checksum está correto
+```
+
+#### `validateNotChar(value, chars)`
+Valida que uma string NÃO contém nenhum dos caracteres especificados.
+```javascript
+$.innerForm.validateNotChar("abc123", "xyz"); // true
+$.innerForm.validateNotChar("abc123", "abc"); // false
+```
+
+#### `validateAnyChar(value, chars)`
+Valida que uma string contém PELO MENOS UM dos caracteres especificados.
+```javascript
+$.innerForm.validateAnyChar("senha123", "123"); // true
+$.innerForm.validateAnyChar("senha", "123");    // false
+```
+
+#### `validateAllChar(value, chars)`
+Valida que uma string contém TODOS os caracteres especificados.
+```javascript
+$.innerForm.validateAllChar("senha123", "123"); // true
+$.innerForm.validateAllChar("senha12", "123");  // false
+```
+
+### **Funções de Máscara**
+
+#### `applyNoSpaceMask(input)`
+Aplica máscara que remove todos os espaços da entrada.
+```javascript
+$.innerForm.applyNoSpaceMask(document.getElementById('campo'));
+```
+
+#### `applyAlphaMask(input)`
+Aplica máscara que permite apenas letras e espaços.
+```javascript
+$.innerForm.applyAlphaMask(document.getElementById('nome'));
+```
+
+#### `applyAlphaNumericMask(input)`
+Aplica máscara que permite letras, números e espaços.
+```javascript
+$.innerForm.applyAlphaNumericMask(document.getElementById('codigo'));
+```
+
+#### `applyPhoneMask(input)`
+Aplica máscara de telefone brasileiro (formato automático).
+```javascript
+$.innerForm.applyPhoneMask(document.getElementById('telefone'));
+```
+
+#### `formatDate(text)`
+Formata uma string de dígitos como data (DD/MM/YYYY).
+```javascript
+$.innerForm.formatDate("25122023"); // "25/12/2023"
+```
+
+#### `applyDateTimeMask(input)`
+Aplica máscara de data e hora (DD/MM/YYYY HH:MM:SS).
+```javascript
+$.innerForm.applyDateTimeMask(document.getElementById('dataHora'));
+```
+
+#### `applyDateRangeMask(input)`
+Aplica máscara para período de datas (DD/MM/YYYY ~ DD/MM/YYYY).
+```javascript
+$.innerForm.applyDateRangeMask(document.getElementById('periodo'));
+```
+
+#### `applyMonthYearRangeMask(input)`
+Aplica máscara para período de mês/ano (MM/YYYY ~ MM/YYYY).
+```javascript
+$.innerForm.applyMonthYearRangeMask(document.getElementById('periodoMensal'));
+```
+
+#### `applyShortMonthYearRangeMask(input)`
+Aplica máscara para período de mês/ano abreviado (MM/YY ~ MM/YY).
+```javascript
+$.innerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev'));
+```
+
+### **Funções Especializadas**
+
+#### `checkLuhn(cardNumber)`
+Valida número de cartão de crédito usando o algoritmo de Luhn.
+```javascript
+$.innerForm.checkLuhn("4111111111111111"); // true (Visa válido)
+```
+
+#### `validateCardBrand(cardNumber)`
+Identifica a bandeira do cartão de crédito e valida o formato.
+```javascript
+$.innerForm.validateCardBrand("4111111111111111"); // "visa"
+$.innerForm.validateCardBrand("5555555555554444"); // "mastercard"
+```
+
+#### `validateCNPJ(CNPJNumber)`
+Valida CNPJ brasileiro com verificação de dígitos verificadores.
+```javascript
+$.innerForm.validateCNPJ("11.222.333/0001-81"); // true/false
+```
+
+#### `validatePassword(input)`
+Analisa a força de uma senha baseada em critérios múltiplos.
+```javascript
+$.innerForm.validatePassword("MinhaSenh@123"); 
+// Retorna objeto com: score, hasUpper, hasLower, hasNumber, hasSymbol
+```
+
+#### `searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction)`
+Busca dados de endereço na API ViaCEP e executa callback com os resultados.
+```javascript
+$.innerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
+    console.log("Logradouro:", dados.logradouro);
+    console.log("Bairro:", dados.bairro);
+    console.log("Cidade:", dados.localidade);
+    console.log("UF:", dados.uf);
+});
+```
+
+### **Configuração Global**
+
+#### Propriedades Configuráveis:
+```javascript
+// Ativar logs detalhados
+$.innerForm.verbose = true;
+
+// Timeout para validação durante digitação (ms)
+$.innerForm.onTypeTimeout = 900;
+```
+
+### **Uso Avançado**
+
+As funções podem ser usadas individualmente para validações customizadas ou integração com outros sistemas:
+
+```javascript
+// Validação customizada
+function validarFormularioCustomizado() {
+    let isValid = true;
+    
+    // Validar data
+    if (!$.innerForm.validDate($('#data').val())) {
+        isValid = false;
+        alert('Data inválida!');
+    }
+    
+    // Validar idade
+    if ($.innerForm.getAge($('#nascimento').val()) < 18) {
+        isValid = false;
+        alert('Menor de idade!');
+    }
+    
+    return isValid;
+}
+
+// Aplicar máscaras programaticamente
+$('#telefone').on('input', function() {
+    $.innerForm.applyPhoneMask(this);
+});
+
+// Buscar CEP com tratamento de erro
+$.innerForm.searchViaCEP(cep, num, 0, function(dados) {
+    if (dados.erro) {
+        console.warn('CEP não encontrado');
+        return;
+    }
+    
+    $('#endereco').val(dados.logradouro);
+    $('#bairro').val(dados.bairro);
+    $('#cidade').val(dados.localidade);
+    $('#uf').val(dados.uf);
+});
 ```
 
 ---
@@ -659,16 +952,16 @@ var bandeiraCartao = $('#cartao').attr('data-flagcard');
 ### **Ativar Logs Detalhados**
 ```html
 <script>
-window.innerForm = { 
+$.innerForm = { 
     verbose: true  // Ativa logs detalhados no console
 };
 </script>
 ```
 
 ### **Logs Disponíveis**
-- ✅ **Sucesso**: `window.innerForm.log()`
-- ⚠️ **Aviso**: `window.innerForm.warn()`  
-- ❌ **Erro**: `window.innerForm.error()`
+- ✅ **Sucesso**: `$.innerForm.log()`
+- ⚠️ **Aviso**: `$.innerForm.warn()`  
+- ❌ **Erro**: `$.innerForm.error()`
 
 ### **Exemplo de Debug**
 ```javascript

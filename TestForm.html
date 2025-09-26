@@ -29,7 +29,7 @@
 
     <!-- InnerFormValidation Configuration -->
     <script>
-        window.innerForm = {
+        $.innerForm = {
             verbose: true // Ativa logs detalhados no console
         }
     </script>
@@ -2111,8 +2111,8 @@
 
 
                 // Verificar se a função expandYear está disponível
-                if (typeof window.innerForm !== 'undefined' && typeof window.innerForm.expandYear === 'function') {
-                    const expandedYear = window.innerForm.expandYear(yearInput, centuryRangeInputPast, centuryRangeInputFuture);
+                if (typeof $.innerForm !== 'undefined' && typeof $.innerForm.expandYear === 'function') {
+                    const expandedYear = $.innerForm.expandYear(yearInput, centuryRangeInputPast, centuryRangeInputFuture);
 
                     resultDiv.html(`
                         <strong class="text-success">${expandedYear}</strong>                      
