@@ -1763,6 +1763,107 @@
 
             </form>
 
+            <!-- Personalização do CSS -->
+            <div class="mt-5">
+                <div class="section-header">
+                    <h3><i class="fas fa-info-circle"></i> Personalização do CSS</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">🚀 Utilize o CSS abaixo para ajustar visualmente seu formulário
+                                    automaticamente:</h5>
+                                <pre>
+                                    <code class="css">
+ /* Estados de Validação */
+        .success {
+            border-color: #28a745 !important;        
+        }
+
+        .error {
+            border-color: #dc3545 !important;    
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .has-error .form-control {
+            border-color: #dc3545;
+        }
+
+        /* Indicadores de força da senha */              
+
+        [data-pwstrength="4"]::after {
+            content: "💪 Senha Forte";
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        [data-pwstrength="3"]::after {
+            content: "👍 Senha Média";
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        [data-pwstrength="2"]::after,
+        [data-pwstrength="1"]::after {
+            content: "⚠️ Senha Fraca";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        [data-pwstrength="0"]::after {
+            content: "❌ Muito Fraca";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        /* Indicador de bandeira do cartão */
+      
+
+        [data-flagcard="visa"]::after {
+            content: "💳 Visa";
+            color: #1a1f71;
+        }
+
+        [data-flagcard="mastercard"]::after {
+            content: "💳 Mastercard";
+            color: #eb001b;
+        }
+
+        [data-flagcard="amex"]::after {
+            content: "💳 American Express";
+            color: #006fcf;
+        }
+
+        [data-flagcard="elo"]::after {
+            content: "💳 Elo";
+            color: #ffcb05;
+        }
+                                    </code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Informações Adicionais -->
             <div class="mt-5">
                 <div class="section-header">

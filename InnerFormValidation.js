@@ -1876,7 +1876,7 @@ jQuery.fn.isValid = function () {
                             results.push(true);
                             break;
                         }
-                        var idade = getAge(value);
+                        var idade = window.innerForm.getAge(value);
                         results.push(idade <= parseInt(valids[i + 1]));
                         break;
                     case "age":
