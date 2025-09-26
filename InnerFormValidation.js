@@ -1972,6 +1972,7 @@ jQuery.fn.startValidation = function () {
 
 }
 
+
 jQuery.fn.validateOnType = function (time) {
     time = time || window.innerForm.onTypeTimeout;
     let x = jQuery(this)
@@ -1990,23 +1991,31 @@ jQuery.fn.validateOnType = function (time) {
     return x;
 }
 
+/**
+ * Fires validation when the input loses focus
+ * @returns 
+ */
 jQuery.fn.validateOnBlur = function () {
+    return jQuery(this).validateOn("blur");
+}
+/**
+ * Fires validation on the given event
+ * @param {string} event 
+ * @returns 
+ */
+jQuery.fn.validateOn = function (event) {
     let x = jQuery(this)
-        .on("blur", function () {
+        .on(event, function () {
             jQuery(this).isValid();
         });
-    window.innerForm.log("InnerFormValidation:", "Validation on Blur started", x);
+    window.innerForm.log("InnerFormValidation:", "Validation on " + event + " started", x);
     return x;
 }
 
 jQuery.fn.validateOnChange = function () {
-    let x = jQuery(this)
-        .on("change", function () {
-            jQuery(this).isValid();
-        });
-    window.innerForm.log("InnerFormValidation:", "Validation on Change started", x);
-    return x;
+    return jQuery(this).validateOn("change");
 }
+
 
 jQuery.fn.phoneMask = function () {
     let x = jQuery(this).on("input", function () {
