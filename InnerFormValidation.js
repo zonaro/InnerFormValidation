@@ -806,88 +806,6 @@ window.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) 
 };
 
 
-window.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
-    // formato MM/AAAA ~ MM/AAAA
-    var text = input.value || "";
-    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
-    text = text.replace(/\s+/g, " "); // Normalizar espaços
-
-    // Remover múltiplos tildes
-    text = text.replace(/~+/g, "~");
-
-    // Se não tem tilde ainda, adicionar quando necessário
-    if (!text.includes("~")) {
-        // Quando tiver 6 dígitos (MM/YYYY), adicionar o separador
-        if (text.length >= 6) {
-            var digits = text.replace(/\D/g, "");
-            if (digits.length >= 6) {
-                text = digits.substring(0, 2) + "/" + digits.substring(2, 6) + " ~ " +
-                    (digits.length > 6 ? digits.substring(6, 8) : "") +
-                    (digits.length > 8 ? "/" + digits.substring(8, 12) : "");
-            } else {
-                text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
-            }
-        } else {
-            text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
-        }
-    } else {
-        // Já tem tilde, formatar as duas partes
-        var parts = text.split("~");
-        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
-        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
-
-        var formatted1 = part1.length >= 2 ? part1.substring(0, 2) + "/" + part1.substring(2, 6) : part1;
-        var formatted2 = part2.length >= 2 ? part2.substring(0, 2) + "/" + part2.substring(2, 6) : part2;
-
-        text = formatted1 + " ~ " + formatted2;
-    }
-
-    // Limitar tamanho máximo
-    if (text.length > 19) text = text.substring(0, 19); // MM/YYYY ~ MM/YYYY
-    input.value = text;
-}
-
-window.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
-    // formato MM/AA ~ MM/AA
-    var text = input.value || "";
-    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
-    text = text.replace(/\s+/g, " "); // Normalizar espaços
-
-    // Remover múltiplos tildes
-    text = text.replace(/~+/g, "~");
-
-    // Se não tem tilde ainda, adicionar quando necessário
-    if (!text.includes("~")) {
-        // Quando tiver 4 dígitos (MMAA), adicionar o separador
-        if (text.length >= 4) {
-            var digits = text.replace(/\D/g, "");
-            if (digits.length >= 4) {
-                text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + " ~ " +
-                    (digits.length > 4 ? digits.substring(4, 6) : "") +
-                    (digits.length > 6 ? "/" + digits.substring(6, 8) : "");
-            } else {
-                text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
-            }
-        } else {
-            text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
-        }
-    } else {
-        // Já tem tilde, formatar as duas partes
-        var parts = text.split("~");
-        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
-        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
-
-        var formatted1 = part1.length >= 2 ? part1.substring(0, 2) + "/" + part1.substring(2, 4) : part1;
-        var formatted2 = part2.length >= 2 ? part2.substring(0, 2) + "/" + part2.substring(2, 4) : part2;
-
-        text = formatted1 + " ~ " + formatted2;
-    }
-
-    // Limitar tamanho máximo
-    if (text.length > 13) text = text.substring(0, 13); // MM/AA ~ MM/AA
-    input.value = text;
-}
-
 window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
     // formato DD/MM/AAAA ~ DD/MM/AAAA
     var text = input.value || "";
@@ -951,6 +869,134 @@ window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) 
     // Limitar tamanho máximo
     if (text.length > 23) text = text.substring(0, 23); // DD/MM/AAAA ~ DD/MM/AAAA
     input.value = text;
+}
+
+window.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
+    // formato MM/AAAA ~ MM/AAAA
+    var text = input.value || "";
+    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+    text = text.replace(/\s+/g, " "); // Normalizar espaços
+
+    // Remover múltiplos tildes
+    text = text.replace(/~+/g, "~");
+
+    // Se não tem tilde ainda, adicionar quando necessário
+    if (!text.includes("~")) {
+        // Quando tiver 6 dígitos (MMAAAA), adicionar o separador
+        if (text.length >= 6) {
+            var digits = text.replace(/\D/g, "");
+            if (digits.length >= 6) {
+                text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + "/" + digits.substring(4, 6) + " ~ " +
+                    (digits.length > 6 ? digits.substring(6, 8) : "") +
+                    (digits.length > 8 ? "/" + digits.substring(8, 10) : "") +
+                    (digits.length > 10 ? "/" + digits.substring(10, 12) : "");
+            } else {
+                text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
+            }
+        } else {
+            text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
+        }
+    } else {
+        // Já tem tilde, formatar as duas partes
+        var parts = text.split("~");
+        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
+        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+
+        var formatted1 = "";
+        if (part1.length >= 2) {
+            formatted1 = part1.substring(0, 2);
+            if (part1.length >= 4) {
+                formatted1 += "/" + part1.substring(2, 4);
+                if (part1.length >= 6) {
+                    formatted1 += "/" + part1.substring(4, 6);
+                }
+            }
+        } else {
+            formatted1 = part1;
+        }
+
+        var formatted2 = "";
+        if (part2.length >= 2) {
+            formatted2 = part2.substring(0, 2);
+            if (part2.length >= 4) {
+                formatted2 += "/" + part2.substring(2, 4);
+                if (part2.length >= 6) {
+                    formatted2 += "/" + part2.substring(4, 6);
+                }
+            }
+        } else {
+            formatted2 = part2;
+        }
+
+        text = formatted1 + " ~ " + formatted2;
+    }
+
+    // Limitar tamanho máximo
+    if (text.length > 17) text = text.substring(0, 17); // MM/AAAA ~ MM/AAAA
+    input.value = text;
+}
+
+window.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
+    // formato MM/AA ~ MM/AA
+    var text = input.value || "";
+    text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+    text = text.replace(/\s+/g, " "); // Normalizar espaços
+
+    // Remover múltiplos tildes
+    text = text.replace(/~+/g, "~");
+
+    // Se não tem tilde ainda, adicionar quando necessário
+    if (!text.includes("~")) {
+        // Quando tiver 4 dígitos (MMAAAA), adicionar o separador
+        if (text.length >= 4) {
+            var digits = text.replace(/\D/g, "");
+            if (digits.length >= 4) {
+                text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + " ~ " +
+                    (digits.length > 4 ? digits.substring(4, 6) : "");
+            } else {
+                text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
+            }
+        } else {
+            text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
+        }
+    } else {
+        // Já tem tilde, formatar as duas partes
+        var parts = text.split("~");
+        var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
+        var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+
+        var formatted1 = "";
+        if (part1.length >= 2) {
+            formatted1 = part1.substring(0, 2);
+            if (part1.length >= 4) {
+                formatted1 += "/" + part1.substring(2, 4);
+                if (part1.length >= 6) {
+                    formatted1 += "/" + part1.substring(4, 6);
+                }
+            }
+        } else {
+            formatted1 = part1;
+        }
+
+        var formatted2 = "";
+        if (part2.length >= 2) {
+            formatted2 = part2.substring(0, 2);
+            if (part2.length >= 4) {
+                formatted2 += "/" + part2.substring(2, 4);
+                if (part2.length >= 6) {
+                    formatted2 += "/" + part2.substring(4, 6);
+                }
+            }
+        } else {
+            formatted2 = part2;
+        }
+        text = formatted1 + " ~ " + formatted2;
+    }
+
+    // Limitar tamanho máximo
+    if (text.length > 13) text = text.substring(0, 13); // MM/AA ~ MM/AA
+    input.value = text;
+
 }
 
 window.innerForm.checkLuhn = function (cardNumber) {
