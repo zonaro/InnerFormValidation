@@ -549,7 +549,12 @@ window.innerForm.validMonthYearRange = function (value) {
 
 }
 
-
+/**
+ * Expands a 2-digit or 3-digit year to a 4-digit year based on a pivot.
+ * If the year is already 4 digits, it is returned as is.
+ * @param {number|string} year - The year to expand (2, 3, or 4 digits).
+ * @param {number} [pivot=0] - The pivot year for 2-digit years. If positive, years >= pivot are 1900s, else 2000s. If negative, uses current year to determine century.
+ */
 window.innerForm.expandYear = function (year, pivot) {
 
     if (!year || isNaN(year) || year < 0) {
@@ -804,7 +809,11 @@ window.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) 
     input.value = text;
 };
 
-
+/**
+ * Apply a date range mask to an input field.
+ * The expected format is "DD/MM/YYYY ~ DD/MM/YYYY".
+ * @param {HTMLInputElement} input 
+ */
 window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
     // formato DD/MM/AAAA ~ DD/MM/AAAA
     var text = input.value || "";
@@ -836,28 +845,27 @@ window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) 
         var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
         var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
 
+
         var formatted1 = "";
-        if (part1.length >= 2) {
-            formatted1 = part1.substring(0, 2);
-            if (part1.length >= 4) {
-                formatted1 += "/" + part1.substring(2, 4);
-                if (part1.length >= 6) {
-                    formatted1 += "/" + part1.substring(4, 8);
-                }
-            }
+        var splitPart1 = part1.split("/");
+        if (splitPart1.length == 1) {
+            formatted1 = splitPart1[0] + "/";
+        } else if (splitPart1.length == 2) {
+            formatted1 = splitPart1[0] + "/" + splitPart1[1];
+        } else if (splitPart1.length == 3) {
+            formatted1 = splitPart1[0] + "/" + splitPart1[1] + "/" + splitPart1[2];
         } else {
             formatted1 = part1;
         }
 
         var formatted2 = "";
-        if (part2.length >= 2) {
-            formatted2 = part2.substring(0, 2);
-            if (part2.length >= 4) {
-                formatted2 += "/" + part2.substring(2, 4);
-                if (part2.length >= 6) {
-                    formatted2 += "/" + part2.substring(4, 8);
-                }
-            }
+        var splitPart2 = part2.split("/");
+        if (splitPart2.length == 1) {
+            formatted2 = splitPart2[0] + "/";
+        } else if (splitPart2.length == 2) {
+            formatted2 = splitPart2[0] + "/" + splitPart2[1];
+        } else if (splitPart2.length == 3) {
+            formatted2 = splitPart2[0] + "/" + splitPart2[1] + "/" + splitPart2[2];
         } else {
             formatted2 = part2;
         }
@@ -870,6 +878,11 @@ window.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) 
     input.value = text;
 }
 
+/**
+ * Apply a month/year range mask to an input field.
+ * The expected format is "MM/YYYY ~ MM/YYYY".
+ * @param {HTMLInputElement} input 
+ */
 window.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
     // formato MM/AAAA ~ MM/AAAA
     var text = input.value || "";
@@ -935,6 +948,11 @@ window.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElemen
     input.value = text;
 }
 
+
+/** * Apply a short month/year range mask to an input field.
+ * The expected format is "MM/YY ~ MM/YY".
+ * @param {HTMLInputElement} input 
+ */
 window.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
     // formato MM/AA ~ MM/AA
     var text = input.value || "";
