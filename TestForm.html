@@ -907,7 +907,7 @@
                         <div class="form-group">
                             <label>Período Mês/Ano Curto</label>
                             <input type='text' placeholder="mm/aa ~ mm/aa"
-                                class='form-control mask shortmonthyearrange shortmonthyearrange onkeyup'
+                                class='form-control mask shortmonthyearrange onkeyup'
                                 data-invalidmessage="Digite um período de mês/ano curto válido! O primeiro período deve ser anterior ou igual ao segundo. 🗓️" />
                             <div class="validation-status"></div>
                             <div class="code-buttons">
@@ -942,6 +942,20 @@
                                 class='form-control mask date minage 18 onkeyup obg'
                                 data-invalidmessage="Você deve ter pelo menos 18 anos! 🎂" />
                             <small class="text-muted">Deve ser maior de idade</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -951,6 +965,20 @@
                             <input type='text' placeholder="dd/mm/aaaa"
                                 class='form-control mask date before today onkeyup' />
                             <small class="text-muted">Apenas datas passadas</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -960,6 +988,20 @@
                             <input type='text' placeholder="dd/mm/aaaa"
                                 class='form-control mask date after today onkeyup' />
                             <small class="text-muted">Apenas datas futuras</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1052,6 +1094,20 @@
                                 class='form-control eq #strongPassword obg onkeyup'
                                 data-invalidmessage="As senhas devem ser idênticas! 🔐" />
                             <small class="text-muted">Deve ser idêntica à senha anterior</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1061,6 +1117,20 @@
                             <input type='password' placeholder="Senha média"
                                 class='form-control password medium minlen 4 onkeyup' />
                             <div class="password-strength"></div>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1070,6 +1140,20 @@
                             <input type='password' placeholder="2 de 4 critérios"
                                 class='form-control password 2 onkeyup' />
                             <div class="password-strength"></div>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1086,6 +1170,20 @@
                             <input type='text' placeholder="0000 0000 0000 0000"
                                 class='form-control mask creditcard onkeyup' />
                             <div class="card-flag"></div>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1096,6 +1194,20 @@
                                 class='form-control mask creditcard visa onkeyup' />
                             <div class="card-flag"></div>
                             <small class="text-muted">Apenas cartões Visa são aceitos</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1105,6 +1217,20 @@
                             <input type='text' placeholder="Visa ou Mastercard"
                                 class='form-control mask creditcard visa mastercard onkeyup' />
                             <div class="card-flag"></div>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1114,6 +1240,20 @@
                             <input type='text' placeholder="Cartão Elo"
                                 class='form-control mask creditcard elo onkeyup' />
                             <div class="card-flag"></div>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1130,6 +1270,20 @@
                             <input type='text' placeholder="Nome e Sobrenome"
                                 class='form-control contains _space onkeyup' />
                             <small class="text-muted">Deve ter pelo menos um espaço</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1182,6 +1336,20 @@
                             <label>Deve conter todos: ABC</label>
                             <input type='text' placeholder="ABCDEF" class='form-control containsallchar ABC onkeyup' />
                             <small class="text-muted">Deve conter A, B e C</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1191,6 +1359,20 @@
                             <input type='text' placeholder="Qualquer texto sem XYZ"
                                 class='form-control notcontainschar XYZ onkeyup' />
                             <small class="text-muted">Não pode conter X, Y ou Z</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1206,6 +1388,20 @@
                             <label>CEP (busca automática)</label>
                             <input type='text' placeholder="00000-000" class='form-control mask cep autocomplete obg' />
                             <small class="text-muted">Digite para buscar endereço</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1419,10 +1615,24 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Campo com Callback Visual</label>
+                            <input type="text" class="form-control" id="hiddenOK" value="OK" />
                             <input type='text' placeholder="Digite 'OK'" class='form-control obg eq #hiddenOK onkeyup'
                                 data-invalidcallback="$('#callbackDemo').removeClass('alert-success').addClass('alert-danger').text('❌ Campo inválido').show()"
                                 data-validcallback="$('#callbackDemo').removeClass('alert-danger').addClass('alert-success').text('✅ Campo válido!').show()" />
-                            <input type="hidden" id="hiddenOK" value="OK">
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1466,6 +1676,20 @@
                             <label>Código EAN (Código de Barras)</label>
                             <input type='text' placeholder="7891000053508" class='form-control mask num ean onkeyup' />
                             <small class="text-muted">Valida dígito verificador do código EAN</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -1474,6 +1698,20 @@
                             <label>Campo Igual a Valor Específico</label>
                             <input type='text' placeholder="Digite: ADMIN" class='form-control eqv ADMIN onkeyup' />
                             <small class="text-muted">Deve ser exatamente "ADMIN"</small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
                         </div>
                     </div>
 
