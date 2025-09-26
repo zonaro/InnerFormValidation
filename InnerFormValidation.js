@@ -15,6 +15,8 @@
      */
     $.innerForm.onTypeTimeout = 900;
 
+
+
     /**
      * Logs messages to the console when verbose mode is enabled.
      * @function log
