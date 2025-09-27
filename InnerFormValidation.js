@@ -486,9 +486,10 @@
      */
     $.innerForm.formatDate = function (text) {
         text = text || "";
-        text = text.replace(/\D/g, "");
-        text = text.replace(/^(\d{2})(\d+)/g, "$1/$2");
-        text = text.replace(/^(\d{2}\/\d{2})(\d{1,4})$/g, "$1/$2");
+        text = $.innerForm.parseDatePartial(text);
+        // remove tudo que nao for numero ou barra
+        text = text.replace(/[^\d\/]/g, "");
+        if (text.length > 10) text = text.substring(0, 10);
         return text;
     }
 
