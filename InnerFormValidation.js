@@ -15,7 +15,7 @@
      */
     $.innerForm.onTypeTimeout = 900;
 
-
+    $.innerForm.isDeleting = false;
 
     /**
      * Logs messages to the console when verbose mode is enabled.
@@ -429,6 +429,7 @@
         input.value = input.value
             .replace(/[!@#$%¨&*()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
             .replace(/[ ]+/g, ' ');
+
     };
 
     /**
@@ -441,6 +442,7 @@
         input.value = input.value
             .replace(/[!@#$%¨&*()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
             .replace(/[ ]+/g, ' ');
+
     };
 
     /**
@@ -458,6 +460,7 @@
         value = value.replace(/^(\d{2})(\d{5})(\d{1,4})$/g, "($1) $2-$3");
         input.maxLength = 15;
         input.value = value;
+
     };
 
     $.innerForm.applyUpperMask = function (input = new HTMLInputElement()) {
@@ -470,12 +473,16 @@
 
     $.innerForm.applyDateMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        text = $.innerForm.formatDate(text);
+        if ($.innerForm.isDeleting == false) {
+            text = $.innerForm.formatDate(text);
+        }
         if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
             input.maxLength = text.length;
         }
         input.value = text;
     };
+
+
 
     /**
      * Formats a date string by adding separators (DD/MM/YYYY format).
@@ -493,9 +500,7 @@
         return text;
     }
 
-    jQuery.fn.dateMask = function () {
-        $.innerForm.applyDateMask(this)
-    };
+
 
     /**
      * Applies a date-time mask (DD/MM/YYYY HH:MM:SS format).
@@ -512,6 +517,7 @@
         value = value.replace(/^(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2})(\d+)$/g, "$1:$2");
         input.value = value;
         input.maxLength = 19;
+
     };
 
     $.innerForm.applyDateShortMask = function (input = new HTMLInputElement()) {
@@ -522,6 +528,7 @@
         value = value.replace(/^(\d{2}\/\d{2}\/\d{4} \d{2})(\d+)$/g, "$1:$2");
         input.value = value;
         input.maxLength = 16;
+
     };
 
     $.innerForm.applyTimeMask = function (input = new HTMLInputElement()) {
@@ -529,12 +536,14 @@
         value = value.replace(/^(\d{2})(\d+)$/g, "$1:$2");
         input.value = value.replace(/^(\d{2}:\d{2})(\d{1,2})$/g, "$1:$2");
         input.maxLength = 8;
+
     };
 
     $.innerForm.applyShortTimeMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         input.value = value.replace(/^(\d{2})(\d{1,2})$/g, "$1:$2");
         input.maxLength = 5;
+
     };
 
 
@@ -554,6 +563,7 @@
         }
         input.value = value;
         input.maxLength = 18;
+
     };
 
 
@@ -567,6 +577,7 @@
             input.maxLength = text.length;
         }
         input.value = text;
+
     };
 
 
@@ -587,6 +598,7 @@
         // Define maxLength baseado no formato final esperado
         input.maxLength = 9; // "00000-000"
         input.value = text;
+
     };
 
 
@@ -603,6 +615,7 @@
             input.maxLength = text.length;
         }
         input.value = text;
+
     };
 
 
@@ -616,6 +629,7 @@
             input.maxLength = text.length;
         }
         input.value = text;
+
     };
 
     $.innerForm.isNumber = function (n) {
@@ -633,6 +647,7 @@
         var text = input.value || "";
         text = text.replace(/\D/g, "");
         input.value = text;
+
     };
 
     $.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
@@ -643,6 +658,7 @@
             input.maxLength = text.length;
         }
         input.value = text;
+
     };
 
     /**
@@ -651,6 +667,9 @@
      * @param {HTMLInputElement} input 
      */
     $.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
+        if ($.innerForm.isDeleting == true) {
+            return;
+        }
         // formato DD/MM/AAAA ~ DD/MM/AAAA
         var text = input.value || "";
         // Manter apenas dígitos, barras, ~ e espaços
@@ -674,7 +693,6 @@
 
 
             if (part1.length == 10 && part2.length == 10) {
-                debugger;
                 var date1 = $.innerForm.parseDate(part1);
                 var date2 = $.innerForm.parseDate(part2);
                 if (date1 && date2) {
@@ -688,7 +706,9 @@
             text = part1 + " ~ " + part2;
         }
 
+
         input.value = text;
+
     }
 
     /**
@@ -707,6 +727,11 @@
 
         if (part.length > 23) part = part.substring(0, 23);
 
+        // Se a string está vazia ou tem apenas separadores, retorna vazio
+        if (part === "" || /^[\/ ~]*$/.test(part)) {
+            return "";
+        }
+
         // primeiro digito
         if (part.length == 1) {
             if (part != "0" && part != "1" && part != "2" && part != "3") {
@@ -724,19 +749,24 @@
             if (parseInt(part) > 31) {
                 part = "31";
             }
-            part = part + "/";
+            // Só adiciona barra se ainda não termina com barra
+            if (!part.endsWith("/")) {
+                part = part + "/";
+            }
         }
 
         /// terceiro digito tem que ser uma barra, 0 ou 1, se for 0 ou 1 adiciona a barra antes dele
         if (part.length == 3) {
-            if (part[2] == "0" || part[2] == "1") {
+            if (part[2] == "/") {
+                // Se já tem barra, mantém
+                return part;
+            } else if (part[2] == "0" || part[2] == "1") {
                 part = part.substring(0, 2) + "/" + part[2];
             } else if ($.innerForm.isNumber(part[2])) {
                 part = "0" + part.substring(0, 2) + "/" + part[2];
             } else {
                 part = part.substring(0, 2) + "/";
             }
-
         }
 
         // quarto digito, mes, primeiro numero tem que ser 0 ou 1
@@ -761,17 +791,22 @@
             if (m > 12) {
                 part = part.substring(0, 3) + "12";
             }
-            part = part + "/";
+            // Só adiciona barra se ainda não termina com barra
+            if (!part.endsWith("/")) {
+                part = part + "/";
+            }
         }
 
-        // sexto digito, tem que ser uma barra ou quanquer numero, se for numero adiciona a barra antes dele
+        // sexto digito, tem que ser uma barra ou qualquer numero, se for numero adiciona a barra antes dele
         if (part.length == 6) {
-            if (!$.innerForm.isNumber(part[5])) {
+            if (part[5] == "/") {
+                // Se já tem barra, mantém
+                return part;
+            } else if (!$.innerForm.isNumber(part[5])) {
                 part = part.substring(0, 5) + "/" + part[5];
             } else {
                 part = part.substring(0, 5) + "/";
             }
-
         }
 
         // do setimo e oitavo digito, ano, aceita qualquer digito numerico
@@ -797,14 +832,16 @@
             }
         }
 
-        // se o proximo digito for espaco ou tilde, ajusta par " ~ "
+        // se o proximo digito for espaco ou tilde, ajusta para " ~ "
         if (part.length == 11) {
-
             if ($.innerForm.isNumber(part[10])) {
                 //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
                 part = part.substring(0, 10) + " ~ " + part[10];
             } else if (part[10] == " " || part[10] == "~") {
-                part = part.substring(0, 10) + " ~ ";
+                // Se já tem espaço ou tilde, verifica se deve expandir para " ~ "
+                if (!part.endsWith(" ~ ")) {
+                    part = part.substring(0, 10) + " ~ ";
+                }
             } else {
                 part = part.substring(0, 10);
             }
@@ -888,6 +925,7 @@
         // Limitar tamanho máximo
         if (text.length > 17) text = text.substring(0, 17); // MM/AAAA ~ MM/AAAA
         input.value = text;
+
     }
 
 
@@ -1863,7 +1901,18 @@
         }
     };
 
+
+
+
     jQuery(document).ready(function () {
+        jQuery(document).on("keydown", ":input", function (e) {
+            if (e.key === "Backspace" || e.key === "Delete") {
+                $.innerForm.isDeleting = true;
+            } else {
+                $.innerForm.isDeleting = false;
+            }
+
+        });
         jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
         jQuery(":input").each(function () {
             jQuery(this).focus(function () {
@@ -2109,6 +2158,7 @@
             );
         });
         $.innerForm.log("InnerFormValidation:", "Autocomplete for CEP started", x);
+        return x;
     }
 
     jQuery.fn.timeMask = function () {
