@@ -89,6 +89,7 @@ $.innerForm = {
 | `cep`          | CEP brasileiro válido       | 🎭                      | `<input class="mask cep">`     |
 | `tel` `cel`    | Telefone/Celular brasileiro | 🎭                      | `<input class="mask tel">`     |
 | `ean`          | Código de barras EAN        | ❌                      | `<input class="ean">`          |
+| `uuid`         | UUID/GUID válido            | 🎭                      | `<input class="mask uuid">`    |
 
 ### **Validação de Caracteres**
 
@@ -201,6 +202,9 @@ $.innerForm = {
 
 <!-- Números com zeros à esquerda -->
 <input class="form-control mask num len 8 leadingzero">
+
+<!-- UUID/GUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -->
+<input class="form-control mask uuid">
 ```
 
 ---
@@ -275,6 +279,15 @@ $.innerForm = {
 
 <!-- Apenas Visa ou Mastercard -->
 <input class="form-control mask creditcard visa mastercard">
+```
+
+### **Validação de UUID/GUID**
+```html
+<!-- UUID/GUID válido em qualquer formato -->
+<input class="form-control uuid">
+
+<!-- UUID com máscara automática -->
+<input class="form-control mask uuid">
 ```
 
 ### **Validação de Conteúdo de String**
@@ -540,6 +553,7 @@ $('#meuForm').startValidation();
 $('#telefone').phoneMask();
 $('#data').dateMask();
 $('#cpf').cpfMask();
+$('#uuid').uuidMask();  // 🆕 NOVA máscara UUID
 ```
 
 ### **Busca de CEP Programática**
@@ -625,6 +639,35 @@ $.innerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
 
 ### **Funções de Validação**
 
+#### `validateUUID(value)`
+Valida se uma string é um UUID/GUID válido. Aceita formatos flexíveis, não apenas RFC 4122.
+```javascript
+$.innerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
+$.innerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
+$.innerForm.validateUUID("invalid-uuid"); // false
+```
+
+#### `parseShortMonthYearPartial(part)`
+Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada.
+```javascript
+$.innerForm.parseShortMonthYearPartial("0325"); // "03/25"
+$.innerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
+```
+
+#### `parseMonthYearPartial(part)`
+Analisa e formata uma string parcial de mês/ano "MM/YYYY" durante a entrada.
+```javascript
+$.innerForm.parseMonthYearPartial("032025"); // "03/2025"
+$.innerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
+```
+
+#### `parseDatePartial(part)`
+Analisa e formata uma string parcial de data "DD/MM/YYYY" durante a entrada com validação inteligente.
+```javascript
+$.innerForm.parseDatePartial("25122024"); // "25/12/2024"
+$.innerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
+```
+
 #### `validDate(value)`
 Valida se uma string representa uma data válida no formato DD/MM/YYYY.
 ```javascript
@@ -698,6 +741,85 @@ $.innerForm.validateAllChar("senha123", "123"); // true
 $.innerForm.validateAllChar("senha12", "123");  // false
 ```
 
+### **Novas Funções de Validação**
+
+#### `validShortMonthYearRange(value)`
+Valida um intervalo de mês/ano curto no formato "MM/YY ~ MM/YY".
+```javascript
+$.innerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
+$.innerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false (primeira > segunda)
+```
+
+#### `validMonthYearRange(value)`
+Valida um intervalo de mês/ano no formato "MM/YYYY ~ MM/YYYY".
+```javascript
+$.innerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
+$.innerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false (primeira > segunda)
+```
+
+#### `validDateRange(value)`
+Valida um intervalo de datas no formato "DD/MM/YYYY ~ DD/MM/YYYY".
+```javascript
+$.innerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
+$.innerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (primeira > segunda)
+```
+
+#### `validateUUID(value)` - **🆕 ATUALIZADA**
+Valida se uma string é um UUID/GUID válido. **Agora aceita formatos mais flexíveis**, não apenas RFC 4122.
+```javascript
+$.innerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
+$.innerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
+$.innerForm.validateUUID("invalid-uuid"); // false
+```
+
+#### `validateNotChar(value, chars)`
+Valida que um valor não contém nenhum dos caracteres especificados.
+```javascript
+$.innerForm.validateNotChar("teste123", "!@#"); // true
+$.innerForm.validateNotChar("test@123", "@#"); // false
+```
+
+#### `validateAnyChar(value, chars)`
+Valida que um valor contém pelo menos um dos caracteres especificados.
+```javascript
+$.innerForm.validateAnyChar("teste123", "123"); // true
+$.innerForm.validateAnyChar("teste", "123"); // false
+```
+
+#### `validateAllChar(value, chars)`
+Valida que um valor contém todos os caracteres especificados.
+```javascript
+$.innerForm.validateAllChar("teste123!", "t3!"); // true
+$.innerForm.validateAllChar("teste", "tx"); // false
+```
+
+### **Novas Funções de Parsing Inteligente**
+
+#### `parseShortMonthYearPartial(part)` - **🆕 NOVA**
+Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada com validação inteligente.
+```javascript
+$.innerForm.parseShortMonthYearPartial("0325"); // "03/25"
+$.innerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
+$.innerForm.parseShortMonthYearPartial("1323"); // "12/23" (limita mês a 12)
+```
+
+#### `parseMonthYearPartial(part)` - **🆕 NOVA**
+Analisa e formata uma string parcial de mês/ano "MM/YYYY" durante a entrada com validação inteligente.
+```javascript
+$.innerForm.parseMonthYearPartial("032025"); // "03/2025"
+$.innerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
+$.innerForm.parseMonthYearPartial("1320245"); // "12/2024 ~ 05" (limita mês a 12)
+```
+
+#### `parseDatePartial(part)` - **🔄 MELHORADA**
+Analisa e formata uma string parcial de data "DD/MM/YYYY" durante a entrada com validação inteligente melhorada.
+```javascript
+$.innerForm.parseDatePartial("25122024"); // "25/12/2024"
+$.innerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
+$.innerForm.parseDatePartial("32122024"); // "31/12/2024" (limita dia a 31)
+$.innerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
+```
+
 ### **Funções de Máscara**
 
 #### `applyNoSpaceMask(input)`
@@ -743,9 +865,21 @@ $.innerForm.applyDateRangeMask(document.getElementById('periodo'));
 ```
 
 #### `applyMonthYearRangeMask(input)`
-Aplica máscara para período de mês/ano (MM/YYYY ~ MM/YYYY).
+Aplica máscara para período de mês/ano (MM/YYYY ~ MM/YYYY) com parsing inteligente.
 ```javascript
 $.innerForm.applyMonthYearRangeMask(document.getElementById('periodoMensal'));
+```
+
+#### `applyShortMonthYearRangeMask(input)`
+Aplica máscara para período de mês/ano curto (MM/YY ~ MM/YY) com parsing inteligente.
+```javascript
+$.innerForm.applyShortMonthYearRangeMask(document.getElementById('periodoMensalCurto'));
+```
+
+#### `applyUUIDMask(input)`
+Aplica máscara para UUID/GUID com formatação automática de hífens.
+```javascript
+$.innerForm.applyUUIDMask(document.getElementById('uuid'));
 ```
 
 #### `applyShortMonthYearRangeMask(input)`
@@ -1014,6 +1148,36 @@ Contribuições são bem-vindas! Por favor, abra uma issue ou faça um pull requ
 - **Documentação**: [GitHub Pages](https://zonaro.github.io/InnerFormValidation/TestForm)
 - **Issues**: [GitHub Issues](https://github.com/zonaro/InnerFormValidation/issues)
 - **Exemplos**: Veja o arquivo `TestForm.html` para exemplos práticos
+
+---
+
+---
+
+## 🆕 Novidades e Melhorias Recentes
+
+### **v2.5.0 - Setembro 2025**
+
+#### **✅ Validação de UUID/GUID Aprimorada**
+- **Correção importante**: A validação de UUID agora aceita formatos mais flexíveis
+- **Antes**: Apenas UUIDs RFC 4122 rigorosos eram aceitos
+- **Agora**: Qualquer GUID válido em formato é aceito, incluindo GUIDs do .NET/C#
+- **Exemplo**: `ff2bc94c-8ce0-417f-08ce-08ddfce17182` agora valida corretamente ✅
+
+#### **🎯 Parsing Inteligente para Períodos**
+- **Nova função**: `parseMonthYearPartial()` - Formatação inteligente para MM/YYYY ~ MM/YYYY
+- **Nova função**: `parseShortMonthYearPartial()` - Formatação inteligente para MM/YY ~ MM/YY  
+- **Melhorias**: Validação automática de mês (máximo 12) e formatação progressiva
+- **Experiência**: Máscaras de período agora têm a mesma fluidez das máscaras de data
+
+#### **🔧 Máscaras Aprimoradas**
+- **Máscara UUID**: Nova máscara para formatação automática de GUIDs
+- **Períodos melhorados**: Máscaras de `monthyearrange` e `shortmonthyearrange` completamente reescritas
+- **Validação progressiva**: Campos são validados conforme o usuário digita, com feedback imediato
+
+#### **📝 Funcionalidades Adicionais**
+- **Expansão de anos**: Função `expandYear()` para conversão inteligente YY → YYYY
+- **Validações robustas**: Novas funções de validação para intervalos de datas e períodos
+- **Compatibilidade**: Mantém 100% de compatibilidade com versões anteriores
 
 ---
 

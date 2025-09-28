@@ -57,7 +57,7 @@
      */
     $.innerForm.addLeadingZeros = function (num, totalLength) {
         num = num || ""
-        num = jQuery.trim(num);
+        num = jQuery.trim(`${num}`);
         if (!isNaN(num) && num < 0) {
             const withoutMinus = String(num).slice(1);
             return '-' + withoutMinus.padStart(totalLength, '0');
@@ -161,7 +161,7 @@
      */
     $.innerForm.getAge = function (birthDate, fromDate) {
         fromDate = fromDate || new Date();
-        return Math.floor((fromDate - $.innerForm.parseDate(birthDate)) / 3.15576e+10);
+        return Math.floor((fromDate - $.innerForm.parseDateInt(birthDate)) / 3.15576e+10);
     };
 
     /**
@@ -180,6 +180,22 @@
             }
         }
         return true;
+    };
+
+    /**
+     * Validates if a value is a valid UUID (Universally Unique Identifier).
+     * Accepts both RFC 4122 compliant UUIDs and more flexible GUID formats.
+     * @function validateUUID
+     * @memberof $.innerForm
+     * @param {string} value - The UUID string to validate
+     * @returns {boolean} True if the value is a valid UUID, false otherwise
+     */
+    $.innerForm.validateUUID = function (value) {
+        value = value || "";
+        // More flexible UUID pattern that accepts any hexadecimal characters
+        // Format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        return value != "00000000-0000-0000-0000-000000000000" && uuidPattern.test(value);
     };
 
     /**
@@ -228,31 +244,31 @@
      * @returns {boolean} True if the date is valid, false otherwise
      */
     $.innerForm.validDate = function (value) {
-        var datenumber = $.innerForm.parseDate(value);
+        var datenumber = $.innerForm.parseDateInt(value);
         return datenumber != null && !isNaN(datenumber);
     }
 
     /**
-     * Parses a date string and returns a Date object.
+     * Parses a date string and returns a int object.
      * @function parseDate
      * @memberof $.innerForm
      * @param {string} value - The date string to parse (DD/MM/YYYY or MM/YYYY format)
      * @returns {Date|null} The parsed Date object or null if invalid
      */
-    $.innerForm.parseDate = function (value) {
+    $.innerForm.parseDateInt = function (value) {
         var dt = 0;
         var d = 0;
         var m = 0;
         var y = 0;
         var comp = value.split(" ")[0].split("/") ?? value.split("/");
         if (comp.length == 3) {
-            comp[2] = comp[2].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[2] : comp[2];
+            comp[2] = comp[2].length == 2 ? $.innerForm.expandYear(comp[2]) : comp[2];
             d = parseInt(comp[0], 10);
             m = parseInt(comp[1], 10) - 1;
             y = parseInt(comp[2], 10);
         }
         if (comp.length == 2) {
-            comp[1] = comp[1].length == 2 ? new Date().getFullYear().toString().substring(0, 2) + comp[1] : comp[1];
+            comp[1] = comp[1].length == 2 ? $.innerForm.expandYear(comp[1]) : comp[1];
             d = 1
             m = parseInt(comp[0], 10) - 1;
             y = parseInt(comp[1], 10);
@@ -264,7 +280,21 @@
         if (dt > 0) { return dt * 1 };
         return null;
     }
-
+    /**
+     * Parses a date string and returns a Date object.
+     * @function parseDate
+     * @memberof $.innerForm
+     * @param {string} value - The date string to parse (DD/MM/YYYY or MM/YYYY format)
+     * @returns {Date|null} The parsed Date object or null if invalid
+     */
+    $.innerForm.parseDate = function (value) {
+        value = value || "";
+        var datenumber = $.innerForm.parseDateInt(value);
+        if (datenumber != null) {
+            return new Date(datenumber);
+        }
+        return null;
+    }
     /**
      * Validates a date range string in format "DD/MM/YYYY ~ DD/MM/YYYY"
      * @param {string} value - Date range string
@@ -285,8 +315,8 @@
         }
 
         // Parse both dates to compare
-        var parsedDate1 = $.innerForm.parseDate(date1);
-        var parsedDate2 = $.innerForm.parseDate(date2);
+        var parsedDate1 = $.innerForm.parseDateInt(date1);
+        var parsedDate2 = $.innerForm.parseDateInt(date2);
 
         // First date should be <= second date
         return parsedDate1 <= parsedDate2;
@@ -406,6 +436,24 @@
 
         return year;
 
+    }
+
+    /**
+     * Applies a UUID mask to an input field, formatting it as a standard UUID.
+     * @function applyUUIDMask
+     * @memberof $.innerForm
+     * @param {HTMLInputElement} [input] - The input element to apply the mask to
+     */
+    $.innerForm.applyUUIDMask = function (input = new HTMLInputElement()) {
+        var text = input.value || "";
+        text = text.replace(/[^a-zA-Z0-9]/g, '');
+        /// add dashes during type
+        text = text.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
+        if (text.length > 36) {
+            text = text.substring(0, 36);
+            input.maxLength = 36;
+        }
+        input.value = text;
     }
 
     /**
@@ -551,7 +599,6 @@
         var value = input.value;
         value = value.replace(/\D/g, "");
         if (value.length <= 11) {
-            $.innerForm.log(value.length);
             value = value.replace(/^(\d{3})(\d+)$/g, "$1.$2");
             value = value.replace(/^(\d{3}\.\d{3})(\d+)$/g, "$1.$2");
             value = value.replace(/^(\d{3}\.\d{3}\.\d{3})(\d{1,2})$/g, "$1-$2");
@@ -652,9 +699,10 @@
 
     $.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        text = text.replace(/\D/g, "");
-        text = text.replace(/^(\d{2})(\d{1,4})/g, "$1/$2");
-        if (/^[\d]{2}\/[\d]{4}$/g.test(text)) {
+        if ($.innerForm.isDeleting == false) {
+            text = $.innerForm.parseMonthYearPartial(text);
+        }
+        if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
             input.maxLength = text.length;
         }
         input.value = text;
@@ -689,26 +737,218 @@
             var part1 = parts[0] ? parts[0].trim() : "";
             var part2 = parts[1] ? parts[1].trim() : "";
 
-            part2 = $.innerForm.parseDatePartial(part2);
 
+            var date1 = $.innerForm.parseDate(part1);
+            var date2 = $.innerForm.parseDate(part2);
 
-            if (part1.length == 10 && part2.length == 10) {
-                var date1 = $.innerForm.parseDate(part1);
-                var date2 = $.innerForm.parseDate(part2);
-                if (date1 && date2) {
-                    if (date1 > date2) {
-                        const temp = part2;
-                        part2 = part1;
-                        part1 = temp;
-                    }
+            if (date1 && date2) {
+                if (date1 > date2) {
+                    part1 = `${date2.getDate().toString().padStart(2, '0')}/${(date2.getMonth() + 1).toString().padStart(2, '0')}/${date2.getFullYear()}`;
+                    part2 = `${date1.getDate().toString().padStart(2, '0')}/${(date1.getMonth() + 1).toString().padStart(2, '0')}/${date1.getFullYear()}`;
                 }
             }
+
             text = part1 + " ~ " + part2;
         }
 
 
         input.value = text;
 
+    }
+
+    /**
+     * Parses and formats a partial short month/year string "MM/YY" during input.
+     * @param {string} part - The partial short month/year string to parse
+     * @returns {string} The formatted short month/year string
+     */
+    $.innerForm.parseShortMonthYearPartial = function (part) {
+        part = part || "";
+
+        // remove tudo que nao for numero, barra ou espaco ou tilde
+        part = part.replace(/[^\d\/ ~]/g, "");
+
+        // normaliza os espacos
+        part = part.replace(/\s+/g, " ");
+
+        if (part.length > 13) part = part.substring(0, 13); // "MM/YY ~ MM/YY"
+
+        // Se a string está vazia ou tem apenas separadores, retorna vazio
+        if (part === "" || /^[\/ ~]*$/.test(part)) {
+            return "";
+        }
+
+        // primeiro digito do mes, deve ser 0 ou 1
+        if (part.length == 1) {
+            if (part != "0" && part != "1") {
+                if ($.innerForm.isNumber(part)) {
+                    part = "0" + part;
+                }
+            }
+        }
+
+        // segundo digito do mes, limita a 12
+        if (part.length == 2) {
+            if (!$.innerForm.isNumber(part[1])) {
+                part = "0" + part[0];
+            }
+            var month = parseInt(part);
+            if (month > 12) {
+                part = "12";
+            }
+            // Só adiciona barra se ainda não termina com barra
+            if (!part.endsWith("/")) {
+                part = part + "/";
+            }
+        }
+
+        // terceiro digito tem que ser uma barra ou numero, se for numero adiciona a barra antes dele
+        if (part.length == 3) {
+            if (part[2] == "/") {
+                // Se já tem barra, mantém
+                return part;
+            } else if ($.innerForm.isNumber(part[2])) {
+                part = part.substring(0, 2) + "/" + part[2];
+            } else {
+                part = part.substring(0, 2) + "/";
+            }
+        }
+
+        // quarto e quinto digito, ano (YY), aceita qualquer digito numerico
+        if (part.length == 4 || part.length == 5) {
+            if (!$.innerForm.isNumber(part[part.length - 1])) {
+                part = part.substring(0, part.length - 1);
+            }
+        }
+
+        // se o proximo digito for espaco ou tilde, ajusta para " ~ "
+        if (part.length == 6) {
+            if ($.innerForm.isNumber(part[5])) {
+                //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
+                part = part.substring(0, 5) + " ~ " + part[5];
+            } else if (part[5] == " " || part[5] == "~") {
+                // Se já tem espaço ou tilde, verifica se deve expandir para " ~ "
+                if (!part.endsWith(" ~ ")) {
+                    part = part.substring(0, 5) + " ~ ";
+                }
+            } else {
+                part = part.substring(0, 5);
+            }
+        }
+
+        // se passou de 8 é porque começou uma segunda data
+        if (part.length >= 8) {
+            var part2 = part.substring(8, part.length);
+            part2 = $.innerForm.parseShortMonthYearPartial(part2);
+            part = part.substring(0, 8) + part2;
+        }
+
+        return part;
+    }
+
+    /**
+     * Parses and formats a partial month/year string "MM/YYYY" during input.
+     * @param {string} part - The partial month/year string to parse
+     * @returns {string} The formatted month/year string
+     */
+    $.innerForm.parseMonthYearPartial = function (part) {
+        part = part || "";
+
+        // remove tudo que nao for numero, barra ou espaco ou tilde
+        part = part.replace(/[^\d\/ ~]/g, "");
+
+        // normaliza os espacos
+        part = part.replace(/\s+/g, " ");
+
+        if (part.length > 17) part = part.substring(0, 17); // "MM/YYYY ~ MM/YYYY"
+
+        // Se a string está vazia ou tem apenas separadores, retorna vazio
+        if (part === "" || /^[\/ ~]*$/.test(part)) {
+            return "";
+        }
+
+        // primeiro digito do mes, deve ser 0 ou 1
+        if (part.length == 1) {
+            if (part != "0" && part != "1") {
+                if ($.innerForm.isNumber(part)) {
+                    part = "0" + part;
+                }
+            }
+        }
+
+        // segundo digito do mes, limita a 12
+        if (part.length == 2) {
+            if (!$.innerForm.isNumber(part[1])) {
+                part = "0" + part[0];
+            }
+            var month = parseInt(part);
+            if (month > 12) {
+                part = "12";
+            }
+            // Só adiciona barra se ainda não termina com barra
+            if (!part.endsWith("/")) {
+                part = part + "/";
+            }
+        }
+
+        // terceiro digito tem que ser uma barra ou numero, se for numero adiciona a barra antes dele
+        if (part.length == 3) {
+            if (part[2] == "/") {
+                // Se já tem barra, mantém
+                return part;
+            } else if ($.innerForm.isNumber(part[2])) {
+                part = part.substring(0, 2) + "/" + part[2];
+            } else {
+                part = part.substring(0, 2) + "/";
+            }
+        }
+
+        // do quarto e quinto digito, ano, aceita qualquer digito numerico
+        if (part.length == 4 || part.length == 5) {
+            if (!$.innerForm.isNumber(part[part.length - 1])) {
+                part = part.substring(0, part.length - 1);
+            }
+        }
+        // sexto tem que ser 1 numero ou espaco. se for espaco adiciona 20 ou 19 antes dos 2 digitos do ano digitados
+        if (part.length == 6) {
+            if (part[5] == " ") {
+                var shortYear = part.substring(3, 5);
+                var fullYear = $.innerForm.expandYear(shortYear);
+                part = part.substring(0, 3) + fullYear;
+            }
+        }
+
+        // setimo tem que ser 1 numero ou espaco. se for espaco adiciona 2 ou 1 antes dos 3 digitos do ano digitados
+        if (part.length == 7) {
+            if (part[6] == " ") {
+                var shortYear = part.substring(3, 5);
+                var fullYear = $.innerForm.expandYear(shortYear);
+                part = part.substring(0, 3) + fullYear;
+            }
+        }
+
+        // se o proximo digito for espaco ou tilde, ajusta para " ~ "
+        if (part.length == 8) {
+            if ($.innerForm.isNumber(part[7])) {
+                //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
+                part = part.substring(0, 7) + " ~ " + part[7];
+            } else if (part[7] == " " || part[7] == "~") {
+                // Se já tem espaço ou tilde, verifica se deve expandir para " ~ "
+                if (!part.endsWith(" ~ ")) {
+                    part = part.substring(0, 7) + " ~ ";
+                }
+            } else {
+                part = part.substring(0, 7);
+            }
+        }
+
+        // se passou de 10 é porque começou uma segunda data
+        if (part.length >= 10) {
+            var part2 = part.substring(10, part.length);
+            part2 = $.innerForm.parseMonthYearPartial(part2);
+            part = part.substring(0, 10) + part2;
+        }
+
+        return part;
     }
 
     /**
@@ -857,76 +1097,55 @@
         return part;
     }
 
+
+
     /**
      * Apply a month/year range mask to an input field.
      * The expected format is "MM/YYYY ~ MM/YYYY".
      * @param {HTMLInputElement} input 
      */
     $.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
+        if ($.innerForm.isDeleting == true) {
+            return;
+        }
         // formato MM/AAAA ~ MM/AAAA
         var text = input.value || "";
-        text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+        // Manter apenas dígitos, barras, ~ e espaços
+        text = text.replace(/[^\d\/~\s]/g, "");
         text = text.replace(/\s+/g, " "); // Normalizar espaços
 
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
 
-        // Se não tem tilde ainda, adicionar quando necessário
-        if (!text.includes("~")) {
-            // Quando tiver 6 dígitos (MMAAAA), adicionar o separador
-            if (text.length >= 6) {
-                var digits = text.replace(/\D/g, "");
-                if (digits.length >= 6) {
-                    text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + "/" + digits.substring(4, 6) + " ~ " +
-                        (digits.length > 6 ? digits.substring(6, 8) : "") +
-                        (digits.length > 8 ? "/" + digits.substring(8, 10) : "") +
-                        (digits.length > 10 ? "/" + digits.substring(10, 12) : "");
-                } else {
-                    text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
-                }
-            } else {
-                text = text.replace(/^(\d{2})(\d{1,2})(\d{1,4})/g, "$1/$2/$3");
-            }
-        } else {
-            // Já tem tilde, formatar as duas partes
+        text = $.innerForm.parseMonthYearPartial(text);
+
+        if (text.length > 17) text = text.substring(0, 17);
+
+        // se tiver o tilde, processa a segunda data
+        if (text.includes("~")) {
             var parts = text.split("~");
-            var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
-            var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+            var part1 = parts[0] ? parts[0].trim() : "";
+            var part2 = parts[1] ? parts[1].trim() : "";
 
-            var formatted1 = "";
-            if (part1.length >= 2) {
-                formatted1 = part1.substring(0, 2);
-                if (part1.length >= 4) {
-                    formatted1 += "/" + part1.substring(2, 4);
-                    if (part1.length >= 6) {
-                        formatted1 += "/" + part1.substring(4, 6);
-                    }
+
+            var date1 = $.innerForm.parseDate(part1);
+            var date2 = $.innerForm.parseDate(part2);
+
+            if (date1 && date2) {
+                if (date1 > date2) {
+
+                    part2 = `${$.innerForm.addLeadingZeros(date1.getMonth() + 1, 2)}/${date1.getFullYear()}`;
+                    part1 = `${$.innerForm.addLeadingZeros(date2.getMonth() + 1, 2)}/${date2.getFullYear()}`;
                 }
-            } else {
-                formatted1 = part1;
             }
 
-            var formatted2 = "";
-            if (part2.length >= 2) {
-                formatted2 = part2.substring(0, 2);
-                if (part2.length >= 4) {
-                    formatted2 += "/" + part2.substring(2, 4);
-                    if (part2.length >= 6) {
-                        formatted2 += "/" + part2.substring(4, 6);
-                    }
-                }
-            } else {
-                formatted2 = part2;
-            }
-
-            text = formatted1 + " ~ " + formatted2;
+            text = part1 + " ~ " + part2;
         }
 
-        // Limitar tamanho máximo
-        if (text.length > 17) text = text.substring(0, 17); // MM/AAAA ~ MM/AAAA
         input.value = text;
 
     }
+
 
 
     /** * Apply a short month/year range mask to an input field.
@@ -934,66 +1153,41 @@
      * @param {HTMLInputElement} input 
      */
     $.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
+        if ($.innerForm.isDeleting == true) {
+            return;
+        }
         // formato MM/AA ~ MM/AA
         var text = input.value || "";
-        text = text.replace(/[^\d~\s]/g, ""); // Manter apenas dígitos, ~ e espaços
+        // Manter apenas dígitos, barras, ~ e espaços
+        text = text.replace(/[^\d\/~\s]/g, "");
         text = text.replace(/\s+/g, " "); // Normalizar espaços
 
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
 
-        // Se não tem tilde ainda, adicionar quando necessário
-        if (!text.includes("~")) {
-            // Quando tiver 4 dígitos (MMAAAA), adicionar o separador
-            if (text.length >= 4) {
-                var digits = text.replace(/\D/g, "");
-                if (digits.length >= 4) {
-                    text = digits.substring(0, 2) + "/" + digits.substring(2, 4) + " ~ " +
-                        (digits.length > 4 ? digits.substring(4, 6) : "");
-                } else {
-                    text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
-                }
-            } else {
-                text = text.replace(/^(\d{2})(\d{1,2})/g, "$1/$2");
-            }
-        } else {
-            // Já tem tilde, formatar as duas partes
+        text = $.innerForm.parseShortMonthYearPartial(text);
+
+        if (text.length > 13) text = text.substring(0, 13);
+
+        // se tiver o tilde, processa a segunda data
+        if (text.includes("~")) {
             var parts = text.split("~");
-            var part1 = parts[0] ? parts[0].trim().replace(/\D/g, "") : "";
-            var part2 = parts[1] ? parts[1].trim().replace(/\D/g, "") : "";
+            var part1 = parts[0] ? parts[0].trim() : "";
+            var part2 = parts[1] ? parts[1].trim() : "";
 
-            var formatted1 = "";
-            if (part1.length >= 2) {
-                formatted1 = part1.substring(0, 2);
-                if (part1.length >= 4) {
-                    formatted1 += "/" + part1.substring(2, 4);
-                    if (part1.length >= 6) {
-                        formatted1 += "/" + part1.substring(4, 6);
-                    }
-                }
-            } else {
-                formatted1 = part1;
-            }
+            var date1 = $.innerForm.parseDate(part1);
+            var date2 = $.innerForm.parseDate(part2);
 
-            var formatted2 = "";
-            if (part2.length >= 2) {
-                formatted2 = part2.substring(0, 2);
-                if (part2.length >= 4) {
-                    formatted2 += "/" + part2.substring(2, 4);
-                    if (part2.length >= 6) {
-                        formatted2 += "/" + part2.substring(4, 6);
-                    }
+            if (date1 && date2) {
+                if (date1 > date2) {
+                    part2 = `${$.innerForm.addLeadingZeros(date1.getMonth() + 1, 2)}/${date1.getFullYear().toString().substring(2, 4)}`;
+                    part1 = `${$.innerForm.addLeadingZeros(date2.getMonth() + 1, 2)}/${date2.getFullYear().toString().substring(2, 4)}`;
                 }
-            } else {
-                formatted2 = part2;
             }
-            text = formatted1 + " ~ " + formatted2;
+            text = part1 + " ~ " + part2;
         }
 
-        // Limitar tamanho máximo
-        if (text.length > 13) text = text.substring(0, 13); // MM/AA ~ MM/AA
         input.value = text;
-
     }
 
     $.innerForm.checkLuhn = function (cardNumber) {
@@ -1018,14 +1212,14 @@
         var cards = {
             visa: /^4[0-9]{12}(?:[0-9]{3})/,
             mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/,
+            elo: /^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})/,
+            maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
             diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}/,
             amex: /^3[47][0-9]{13}/,
             discover: /^6(?:011|5[0-9]{2})[0-9]{12}/,
             hiper: /^(606282\d{10}(\d{3})?)|(3841\d{15})/,
-            elo: /^((((636368)|(438935)|(504175)|(451416)|(636297))\d{0,10})|((5067)|(4576)|(4011))\d{0,12})/,
             jcb: /^(?:2131|1800|35\d{3})\d{11}/,
             aura: /^(5078\d{2})(\d{2})(\d{11})$/,
-            maestro: /^(5018|5020|5038|6304|6759|6761|6763)[0-9]{8,15}$/,
             laser: /^(6304|6706|6709|6771)[0-9]{12,15}$/,
             blanche: /^389[0-9]{11}$/,
             switch: /^(4903|4905|4911|4936|6333|6759)[0-9]{12}|(4903|4905|4911|4936|6333|6759)[0-9]{14}|(4903|4905|4911|4936|6333|6759)[0-9]{15}|564182[0-9]{10}|564182[0-9]{12}|564182[0-9]{13}|633110[0-9]{10}|633110[0-9]{12}|633110[0-9]{13}$/,
@@ -1045,6 +1239,51 @@
 
         return false;
     };
+
+    $.innerForm.validateCPF = function (CPFNumber) {
+        CPFNumber = CPFNumber.replace(/\D/g, "");
+        CPFNumber = CPFNumber.replace(/\D/g, "");
+
+        // Elimina CPFS invalidos conhecidos
+        if (
+            CPFNumber == "00000000000" ||
+            CPFNumber == "11111111111" ||
+            CPFNumber == "22222222222" ||
+            CPFNumber == "33333333333" ||
+            CPFNumber == "44444444444" ||
+            CPFNumber == "55555555555" ||
+            CPFNumber == "66666666666" ||
+            CPFNumber == "77777777777" ||
+            CPFNumber == "88888888888" ||
+            CPFNumber == "99999999999" ||
+            CPFNumber.length !== 11
+        ) {
+            return false;
+        }
+
+        var Soma = 0;
+        var Resto = 0;
+
+        for (x = 1; x <= 9; x++)
+            Soma = Soma + parseInt(CPFNumber.substring(x - 1, x)) * (11 - x);
+        Resto = (Soma * 10) % 11;
+
+        if (Resto == 10 || Resto == 11) Resto = 0;
+        if (Resto != parseInt(CPFNumber.substring(9, 10))) {
+            return false;
+        }
+
+        Soma = 0;
+        for (x = 1; x <= 10; x++)
+            Soma = Soma + parseInt(CPFNumber.substring(x - 1, x)) * (12 - x);
+        Resto = (Soma * 10) % 11;
+
+        if (Resto == 10 || Resto == 11) Resto = 0;
+        if (Resto != parseInt(CPFNumber.substring(10, 11))) {
+            return false;
+        }
+        return true;
+    }
 
     $.innerForm.validateCNPJ = function (CNPJNumber) {
         CNPJNumber = CNPJNumber.replace(/\D/g, "");
@@ -1095,6 +1334,7 @@
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(1))
             return false;
+
 
         return true;
     };
@@ -1394,7 +1634,7 @@
                                 results.push(true);
                                 break;
                             }
-                            results.push(validateEAN(value));
+                            results.push($.innerForm.validateEAN(value));
                             break;
                         case "upper":
                             if (jQuery.trim(value) === "") {
@@ -1559,68 +1799,24 @@
                             break;
                         case "cpfcnpj":
                         case "cnpjcpf":
-                            if (jQuery.trim(value) === "") {
-                                results.push(true);
-                                break;
-                            }
-                            results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));
-                            break;
                         case "cnpj":
-                            if (jQuery.trim(value) === "") {
-                                results.push(true);
-                                break;
-                            }
-                            results.push($.innerForm.validateCNPJ(value));
-                            break;
                         case "cpf":
+                            jQuery(this).removeAttr('data-doc');
                             if (jQuery.trim(value) === "") {
                                 results.push(true);
                                 break;
                             }
-                            value = value.replace(/\D/g, "");
-
-                            // Elimina CPFS invalidos conhecidos
-                            if (
-                                value == "00000000000" ||
-                                value == "11111111111" ||
-                                value == "22222222222" ||
-                                value == "33333333333" ||
-                                value == "44444444444" ||
-                                value == "55555555555" ||
-                                value == "66666666666" ||
-                                value == "77777777777" ||
-                                value == "88888888888" ||
-                                value == "99999999999" ||
-                                value.length !== 11
-                            ) {
-                                results.push(false);
-                                break;
+                            if (currentValid == "cpf") {
+                                const validCpf = $.innerForm.validateCPF(value);
+                                results.push(validCpf);
+                                if (validCpf) jQuery(this).attr('data-doc', 'cpf');
+                            } else if (currentValid == "cnpj") {
+                                const validCnpj = $.innerForm.validateCNPJ(value);
+                                results.push(validCnpj);
+                                if (validCnpj) jQuery(this).attr('data-doc', 'cnpj');
+                            } else {
+                                results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));
                             }
-
-                            var Soma = 0;
-                            var Resto = 0;
-
-                            for (x = 1; x <= 9; x++)
-                                Soma = Soma + parseInt(value.substring(x - 1, x)) * (11 - x);
-                            Resto = (Soma * 10) % 11;
-
-                            if (Resto == 10 || Resto == 11) Resto = 0;
-                            if (Resto != parseInt(value.substring(9, 10))) {
-                                results.push(false);
-                                break;
-                            }
-
-                            Soma = 0;
-                            for (x = 1; x <= 10; x++)
-                                Soma = Soma + parseInt(value.substring(x - 1, x)) * (12 - x);
-                            Resto = (Soma * 10) % 11;
-
-                            if (Resto == 10 || Resto == 11) Resto = 0;
-                            if (Resto != parseInt(value.substring(10, 11))) {
-                                results.push(false);
-                                break;
-                            }
-                            results.push(true);
                             break;
                         case "debitcard":
                         case "creditcard":
@@ -1666,9 +1862,16 @@
                                 case "medium":
                                     strenght = 3;
                                     break;
+                                case "weak":
+                                    strenght = 2;
+                                    break;
+                                case "veryweak":
+                                    strenght = 1;
                                 default:
                                     if (isNaN(strenght)) {
                                         strenght = 3;
+                                    } else {
+                                        strenght = parseInt(strenght);
                                     }
                                     break;
                             }
@@ -1690,11 +1893,11 @@
 
                             var num = valids[i + 1] || "0";
                             if ((num.indexOf("today") || num.indexOf("/")) && $.innerForm.validDate(value)) {
-                                value = $.innerForm.parseDate(value);
+                                value = $.innerForm.parseDateInt(value);
                                 if (num == "today") {
                                     num = Date.now();
                                 } else {
-                                    num = $.innerForm.parseDate(num);
+                                    num = $.innerForm.parseDateInt(num);
                                 }
                             }
                             if (valids[i] == "after") {
@@ -1758,8 +1961,9 @@
                                 break;
                             }
 
-                            var valor1 = jQuery(this).val();
-                            if (valor2.toLowerCase() == "_space") {
+                            var valor1 = jQuery(this).val() || "";
+                            valor1 = valor1.toString().replace("&nbsp;", " ");
+                            if (valor2.toLowerCase() == "_space" || valor2.toLowerCase() == "_espaco" || valor2.toLowerCase() == "&nbsp;") {
                                 valor2 = " ";
                             }
 
@@ -1867,6 +2071,14 @@
                             var idade = $.innerForm.getAge(value);
                             results.push(idade == parseInt(valids[i + 1]));
                             break;
+                        case "uuid":
+                        case "guid":
+                            if (jQuery.trim(value) === "") {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateUUID(value));
+                            break;
                         default:
                             results.push(true);
                             break;
@@ -1949,6 +2161,7 @@
         jQuery(this).find(".mask.daterange").dateRangeMask();
         jQuery(this).find(".mask.monthyearrange").monthYearRangeMask();
         jQuery(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
+        jQuery(this).find(".mask.uuid").uuidMask();
 
     }
 
@@ -2216,6 +2429,14 @@
             $.innerForm.applyNoSpaceMask(this);
         });
         $.innerForm.log("InnerFormValidation:", "NoSpaceMask started", x);
+        return x;
+    }
+
+    jQuery.fn.uuidMask = function () {
+        let x = jQuery(this).on("input", function () {
+            $.innerForm.applyUUIDMask(this);
+        });
+        $.innerForm.log("InnerFormValidation:", "UUIDMask started", x);
         return x;
     }
 

@@ -1264,6 +1264,27 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Deve ser um UUID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)</label>
+                            <input type='text' placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                                class='form-control mask uuid onkeyup' />
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Deve conter espaço</label>
