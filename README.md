@@ -80,17 +80,19 @@ $.innerForm = {
 
 ### **Validação de Formato**
 
-| Classe         | Descrição                   | Compatível com Máscara | Exemplo                        |
-| -------------- | --------------------------- | ---------------------- | ------------------------------ |
-| `email` `mail` | Email válido                | ❌                      | `<input class="email">`        |
-| `url` `link`   | URL válida                  | 🎭                      | `<input class="mask url">`     |
-| `cpf`          | CPF brasileiro válido       | 🎭                      | `<input class="mask cpf">`     |
-| `cnpj`         | CNPJ brasileiro válido      | 🎭                      | `<input class="mask cnpj">`    |
-| `cpfcnpj`      | CPF ou CNPJ válido          | 🎭                      | `<input class="mask cpfcnpj">` |
-| `cep`          | CEP brasileiro válido       | 🎭                      | `<input class="mask cep">`     |
-| `tel` `cel`    | Telefone/Celular brasileiro | 🎭                      | `<input class="mask tel">`     |
-| `ean`          | Código de barras EAN        | ❌                      | `<input class="ean">`          |
-| `uuid`         | UUID/GUID válido            | 🎭                      | `<input class="mask uuid">`    |
+| Classe                   | Descrição                   | Compatível com Máscara | Exemplo                          |
+| ------------------------ | --------------------------- | ---------------------- | -------------------------------- |
+| `email` `mail`           | Email válido                | ❌                      | `<input class="email">`          |
+| `url` `link`             | URL válida                  | 🎭                      | `<input class="mask url">`       |
+| `cpf`                    | CPF brasileiro válido       | 🎭                      | `<input class="mask cpf">`       |
+| `cnpj`                   | CNPJ brasileiro válido      | 🎭                      | `<input class="mask cnpj">`      |
+| `cpfcnpj`                | CPF ou CNPJ válido          | 🎭                      | `<input class="mask cpfcnpj">`   |
+| `cep`                    | CEP brasileiro válido       | 🎭                      | `<input class="mask cep">`       |
+| `tel` `cel`              | Telefone/Celular brasileiro | 🎭                      | `<input class="mask tel">`       |
+| `ean`                    | Código de barras EAN        | ❌                      | `<input class="ean">`            |
+| `uuid`                   | UUID/GUID válido            | 🎭                      | `<input class="mask uuid">`      |
+| `latitude` `lat`         | Coordenada de latitude      | 🌍                      | `<input class="mask latitude">`  |
+| `longitude` `long` `lng` | Coordenada de longitude     | 🌍                      | `<input class="mask longitude">` |
 
 ### **Validação de Caracteres**
 
@@ -369,6 +371,8 @@ O InnerFormValidation inclui integração com a API **ViaCEP** para autocompleta
 | `autocomplete ddd`                  | Código DDD da região              | `<input class="autocomplete ddd">`          |
 | `autocomplete ibge`                 | Código IBGE                       | `<input class="autocomplete ibge">`         |
 | `autocomplete gia`                  | Código GIA                        | `<input class="autocomplete gia">`          |
+| `autocomplete latitude` `lat`       | Recebe latitude automaticamente   | `<input class="autocomplete latitude">`     |
+| `autocomplete longitude` `long`     | Recebe longitude automaticamente  | `<input class="autocomplete longitude">`    |
 | `autocomplete siafi`                | Código SIAFI                      | `<input class="autocomplete siafi">`        |
 
 ### **Exemplo Completo de Endereço**
@@ -484,6 +488,50 @@ A função retorna um objeto rico com informações de localização:
     // Informações formatadas para exibição
     coordinates: "-23.550500, -46.633300",  // Coordenadas formatadas
 }
+```
+
+### **AutoComplete de Geolocalização**
+
+**Preenchimento Automático de Coordenadas**
+
+Os campos com classes de geolocalização são automaticamente preenchidos quando uma localização é obtida:
+
+```html
+<!-- Campos preenchidos automaticamente -->
+<input type="text" class="form-control autocomplete latitude" readonly>
+<input type="text" class="form-control autocomplete longitude" readonly>
+
+<!-- Versões abreviadas -->
+<input type="text" class="form-control autocomplete lat" readonly>
+<input type="text" class="form-control autocomplete long" readonly>
+
+<!-- Elementos não-input também são preenchidos -->
+<div class="autocomplete latitude">Aguardando localização...</div>
+<span class="autocomplete longitude">-</span>
+```
+
+**Comportamento do AutoComplete:**
+- 🔄 **Automático**: Preenchido toda vez que `getLocation()` ou `watchLocation()` retorna uma posição
+- 📝 **Campos editáveis**: Se o campo não tem `readonly`, usa `.setOrReplaceVal()` (só preenche se vazio ou sem `.noreplace`)
+- 🔗 **Elementos não-input**: Divs, spans, etc. têm seu `text()` atualizado
+- ⚡ **Tempo real**: No monitoramento contínuo, os campos são atualizados a cada mudança de posição
+
+**Exemplo de Uso:**
+
+```javascript
+// Quando esta função é chamada, os campos .autocomplete.latitude 
+// e .autocomplete.longitude são automaticamente preenchidos!
+$.innerForm.getLocation().then(function(location) {
+    console.log('Campos preenchidos automaticamente!');
+    // location.latitude -> .autocomplete.latitude
+    // location.longitude -> .autocomplete.longitude
+});
+
+// No monitoramento, os campos são atualizados em tempo real
+var watchId = $.innerForm.watchLocation(function(location) {
+    // Campos atualizados automaticamente a cada mudança
+    console.log('Posição atualizada:', location.coordinates);
+});
 ```
 
 ### **Monitoramento Contínuo de Localização**
@@ -912,6 +960,33 @@ $.innerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
 $.innerForm.validateUUID("invalid-uuid"); // false
 ```
 
+#### `validateLatitude(value)` - **🆕 NOVA**
+Valida se um valor é uma coordenada de latitude válida (-90 a +90 graus).
+```javascript
+$.innerForm.validateLatitude("-23.550520"); // true
+$.innerForm.validateLatitude("45.5");       // true
+$.innerForm.validateLatitude("91");         // false (fora do limite)
+$.innerForm.validateLatitude("-90.5");      // false (fora do limite)
+```
+
+#### `validateLongitude(value)` - **🆕 NOVA**
+Valida se um valor é uma coordenada de longitude válida (-180 a +180 graus).
+```javascript
+$.innerForm.validateLongitude("-46.633308"); // true
+$.innerForm.validateLongitude("180");        // true
+$.innerForm.validateLongitude("181");        // false (fora do limite)
+$.innerForm.validateLongitude("-180.1");     // false (fora do limite)
+```
+
+#### `validateCoordinate(value)` - **🆕 NOVA**
+Valida se um valor contém um par de coordenadas válido em vários formatos.
+```javascript
+$.innerForm.validateCoordinate("-23.550520,-46.633308"); // true
+$.innerForm.validateCoordinate("-23.5 -46.6");           // true
+$.innerForm.validateCoordinate("45;90");                 // true
+$.innerForm.validateCoordinate("91,200");                // false (coordenadas inválidas)
+```
+
 #### `parseShortMonthYearPartial(part)`
 Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada.
 ```javascript
@@ -1145,6 +1220,22 @@ $.innerForm.applyShortMonthYearRangeMask(document.getElementById('periodoMensalC
 Aplica máscara para UUID/GUID com formatação automática de hífens.
 ```javascript
 $.innerForm.applyUUIDMask(document.getElementById('uuid'));
+```
+
+#### `applyLatitudeMask(input)` - **🆕 NOVA**
+Aplica máscara para coordenadas de latitude com validação de limites (-90 a +90).
+```javascript
+$.innerForm.applyLatitudeMask(document.getElementById('latitude'));
+// Suporte a classe 'precision' para limitar casas decimais
+// Exemplo: <input class="mask latitude precision 6">
+```
+
+#### `applyLongitudeMask(input)` - **🆕 NOVA**
+Aplica máscara para coordenadas de longitude com validação de limites (-180 a +180).
+```javascript
+$.innerForm.applyLongitudeMask(document.getElementById('longitude'));
+// Suporte a classe 'precision' para limitar casas decimais
+// Exemplo: <input class="mask longitude precision 4">
 ```
 
 #### `applyShortMonthYearRangeMask(input)`
@@ -1493,11 +1584,27 @@ $.innerForm = {
 
 ## 🚀 Changelog
 
+### V2.8.0 - Máscaras e Validações de Coordenadas 🌍
+- ✅ **Máscaras para coordenadas** `.mask.latitude` e `.mask.longitude`
+- ✅ **Validações de coordenadas** `.latitude`, `.longitude`, `.coordinate`
+- ✅ **Suporte a precisão** com classe `precision <número>`
+- ✅ **Validação automática de limites** (-90/+90 para latitude, -180/+180 para longitude)
+- ✅ **Máscaras inteligentes** que aceitam vírgula ou ponto decimal
+- ✅ **Classes abreviadas** `.lat`, `.long`, `.lng` para economia de código
+
+### V2.7.0 - AutoComplete de Geolocalização ✨
+- ✅ **AutoComplete automático** para coordenadas de geolocalização
+- ✅ **Preenchimento automático** de campos `.autocomplete.latitude` e `.autocomplete.longitude` 
+- ✅ **Suporte a classes abreviadas** `.autocomplete.lat` e `.autocomplete.long`
+- ✅ **Exemplo dedicado** com `ExemploAutoComplete.html`
+- ✅ **Integração perfeita** com funções de geolocalização existentes
+
 ### Funcionalidades Principais:
 - ✅ **Máscaras automatizadas** para 30+ tipos de dados
 - ✅ **Validações em tempo real** configuráveis  
 - ✅ **Sistema de callbacks** robusto
 - ✅ **Autocompletar endereços** via ViaCEP
+- ✅ **Autocompletar coordenadas** via Geolocalização
 - ✅ **Sistema de geolocalização** completo e moderno
 - ✅ **Validação de cartões de crédito** com 15+ bandeiras
 - ✅ **Validação de senhas** com critérios configuráveis

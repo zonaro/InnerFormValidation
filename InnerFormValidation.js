@@ -199,6 +199,83 @@
     };
 
     /**
+     * Validates latitude coordinate values.
+     * @function validateLatitude
+     * @memberof $.innerForm
+     * @param {string} value - The latitude value to validate
+     * @returns {boolean} True if the value is a valid latitude (-90 to +90), false otherwise
+     */
+    $.innerForm.validateLatitude = function (value) {
+        value = value || "";
+
+        // Remove espaços e substitui vírgula por ponto
+        value = value.trim().replace(',', '.');
+
+        // Verifica se é um número válido
+        var numValue = parseFloat(value);
+
+        // Valida se é um número e está dentro dos limites da latitude
+        return !isNaN(numValue) && numValue >= -90 && numValue <= 90;
+    };
+
+    /**
+     * Validates longitude coordinate values.
+     * @function validateLongitude
+     * @memberof $.innerForm
+     * @param {string} value - The longitude value to validate
+     * @returns {boolean} True if the value is a valid longitude (-180 to +180), false otherwise
+     */
+    $.innerForm.validateLongitude = function (value) {
+        value = value || "";
+
+        // Remove espaços e substitui vírgula por ponto
+        value = value.trim().replace(',', '.');
+
+        // Verifica se é um número válido
+        var numValue = parseFloat(value);
+
+        // Valida se é um número e está dentro dos limites da longitude
+        return !isNaN(numValue) && numValue >= -180 && numValue <= 180;
+    };
+
+    /**
+     * Validates coordinate pairs in various formats.
+     * @function validateCoordinate
+     * @memberof $.innerForm
+     * @param {string} value - The coordinate value to validate (e.g., "lat,lng" or "lat lng")
+     * @returns {boolean} True if the value contains valid coordinates, false otherwise
+     */
+    $.innerForm.validateCoordinate = function (value) {
+        value = value || "";
+
+        // Remove espaços extras e substitui vírgulas por pontos nos decimais
+        value = value.trim();
+
+        // Tenta diferentes formatos de separação
+        var coords = [];
+        if (value.includes(',')) {
+            coords = value.split(',');
+        } else if (value.includes(' ')) {
+            coords = value.split(/\s+/);
+        } else if (value.includes(';')) {
+            coords = value.split(';');
+        } else {
+            return false; // Formato não reconhecido
+        }
+
+        // Deve ter exatamente 2 coordenadas
+        if (coords.length !== 2) {
+            return false;
+        }
+
+        var lat = coords[0].trim().replace(',', '.');
+        var lng = coords[1].trim().replace(',', '.');
+
+        // Valida ambas as coordenadas
+        return $.innerForm.validateLatitude(lat) && $.innerForm.validateLongitude(lng);
+    };
+
+    /**
      * Validates that a value contains at least one of the specified characters.
      * @function validateAnyChar
      * @memberof $.innerForm
@@ -455,6 +532,114 @@
         }
         input.value = text;
     }
+
+    /**
+     * Applies a latitude mask to format and validate latitude coordinates.
+     * @function applyLatitudeMask
+     * @memberof $.innerForm
+     * @param {HTMLInputElement} [input] - The input element to apply the mask to
+     */
+    $.innerForm.applyLatitudeMask = function (input = new HTMLInputElement()) {
+        var text = input.value || "";
+
+        // Remove caracteres inválidos, mantendo apenas números, ponto, vírgula e sinal de menos
+        text = text.replace(/[^0-9.,-]/g, '');
+
+        // Substitui vírgula por ponto
+        text = text.replace(',', '.');
+
+        // Garante apenas um sinal de menos no início
+        if (text.indexOf('-') > 0) {
+            text = text.replace(/-/g, '');
+        }
+        if (text.split('-').length > 2) {
+            text = text.substring(0, text.lastIndexOf('-'));
+        }
+
+        // Garante apenas um ponto decimal
+        var dotIndex = text.indexOf('.');
+        if (dotIndex !== -1) {
+            text = text.substring(0, dotIndex + 1) + text.substring(dotIndex + 1).replace(/\./g, '');
+        }
+
+        // Limita casas decimais baseado na classe 'precision'
+        var classes = (input.className || '').split(' ');
+        var precisionIndex = classes.indexOf('precision');
+        var precision = 6; // padrão
+        if (precisionIndex !== -1 && classes[precisionIndex + 1]) {
+            precision = parseInt(classes[precisionIndex + 1]) || 6;
+        }
+
+        if (dotIndex !== -1 && text.length > dotIndex + precision + 1) {
+            text = text.substring(0, dotIndex + precision + 1);
+        }
+
+        // Valida limites de latitude (-90 a +90)
+        var numValue = parseFloat(text);
+        if (!isNaN(numValue)) {
+            if (numValue > 90) {
+                text = "90";
+            } else if (numValue < -90) {
+                text = "-90";
+            }
+        }
+
+        input.value = text;
+    };
+
+    /**
+     * Applies a longitude mask to format and validate longitude coordinates.
+     * @function applyLongitudeMask
+     * @memberof $.innerForm
+     * @param {HTMLInputElement} [input] - The input element to apply the mask to
+     */
+    $.innerForm.applyLongitudeMask = function (input = new HTMLInputElement()) {
+        var text = input.value || "";
+
+        // Remove caracteres inválidos, mantendo apenas números, ponto, vírgula e sinal de menos
+        text = text.replace(/[^0-9.,-]/g, '');
+
+        // Substitui vírgula por ponto
+        text = text.replace(',', '.');
+
+        // Garante apenas um sinal de menos no início
+        if (text.indexOf('-') > 0) {
+            text = text.replace(/-/g, '');
+        }
+        if (text.split('-').length > 2) {
+            text = text.substring(0, text.lastIndexOf('-'));
+        }
+
+        // Garante apenas um ponto decimal
+        var dotIndex = text.indexOf('.');
+        if (dotIndex !== -1) {
+            text = text.substring(0, dotIndex + 1) + text.substring(dotIndex + 1).replace(/\./g, '');
+        }
+
+        // Limita casas decimais baseado na classe 'precision'
+        var classes = (input.className || '').split(' ');
+        var precisionIndex = classes.indexOf('precision');
+        var precision = 6; // padrão
+        if (precisionIndex !== -1 && classes[precisionIndex + 1]) {
+            precision = parseInt(classes[precisionIndex + 1]) || 6;
+        }
+
+        if (dotIndex !== -1 && text.length > dotIndex + precision + 1) {
+            text = text.substring(0, dotIndex + precision + 1);
+        }
+
+        // Valida limites de longitude (-180 a +180)
+        var numValue = parseFloat(text);
+        if (!isNaN(numValue)) {
+            if (numValue > 180) {
+                text = "180";
+            } else if (numValue < -180) {
+                text = "-180";
+            }
+        }
+
+        input.value = text;
+    };
 
     /**
      * Applies a mask that removes all spaces from the input.
@@ -2071,6 +2256,32 @@
                             var idade = $.innerForm.getAge(value);
                             results.push(idade == parseInt(valids[i + 1]));
                             break;
+                        case "latitude":
+                        case "lat":
+                            if (jQuery.trim(value) === "") {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateLatitude(value));
+                            break;
+                        case "longitude":
+                        case "long":
+                        case "lng":
+                            if (jQuery.trim(value) === "") {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateLongitude(value));
+                            break;
+                        case "coordinate":
+                        case "coordinates":
+                        case "coord":
+                            if (jQuery.trim(value) === "") {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateCoordinate(value));
+                            break;
                         case "uuid":
                         case "guid":
                             if (jQuery.trim(value) === "") {
@@ -2162,6 +2373,8 @@
         jQuery(this).find(".mask.monthyearrange").monthYearRangeMask();
         jQuery(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
         jQuery(this).find(".mask.uuid").uuidMask();
+        jQuery(this).find(".mask.latitude, .mask.lat").latitudeMask();
+        jQuery(this).find(".mask.longitude, .mask.long, .mask.lng").longitudeMask();
 
     }
 
@@ -2440,6 +2653,22 @@
         return x;
     }
 
+    jQuery.fn.latitudeMask = function () {
+        let x = jQuery(this).on("input", function () {
+            $.innerForm.applyLatitudeMask(this);
+        });
+        $.innerForm.log("InnerFormValidation:", "LatitudeMask started", x);
+        return x;
+    }
+
+    jQuery.fn.longitudeMask = function () {
+        let x = jQuery(this).on("input", function () {
+            $.innerForm.applyLongitudeMask(this);
+        });
+        $.innerForm.log("InnerFormValidation:", "LongitudeMask started", x);
+        return x;
+    }
+
     jQuery.fn.maxLenMask = function () {
         let x = jQuery(this).on("input", function () {
             var array = jQuery(this)
@@ -2548,6 +2777,22 @@
                     accuracyFormatted: Math.round(coords.accuracy) + ' metros'
                 };
 
+                // Preenche automaticamente os campos de latitude e longitude
+                jQuery(".autocomplete.latitude:input, .autocomplete.lat:input")
+                    .setOrReplaceVal(coords.latitude)
+                    .change().focus();
+                jQuery(".autocomplete.longitude:input, .autocomplete.long:input")
+                    .setOrReplaceVal(coords.longitude)
+                    .change().focus();
+
+                // Preenche elementos não-input também
+                jQuery(".autocomplete.latitude, .autocomplete.lat")
+                    .not(":input")
+                    .text(coords.latitude);
+                jQuery(".autocomplete.longitude, .autocomplete.long")
+                    .not(":input")
+                    .text(coords.longitude);
+
                 $.innerForm.log('Localização obtida com sucesso:', locationData);
                 resolve(locationData);
             }
@@ -2634,6 +2879,22 @@
                 coordinates: coords.latitude.toFixed(6) + ', ' + coords.longitude.toFixed(6),
                 accuracyFormatted: Math.round(coords.accuracy) + ' metros'
             };
+
+            // Preenche automaticamente os campos de latitude e longitude
+            jQuery(".autocomplete.latitude:input, .autocomplete.lat:input")
+                .setOrReplaceVal(coords.latitude)
+                .change().focus();
+            jQuery(".autocomplete.longitude:input, .autocomplete.long:input")
+                .setOrReplaceVal(coords.longitude)
+                .change().focus();
+
+            // Preenche elementos não-input também
+            jQuery(".autocomplete.latitude, .autocomplete.lat")
+                .not(":input")
+                .text(coords.latitude);
+            jQuery(".autocomplete.longitude, .autocomplete.long")
+                .not(":input")
+                .text(coords.longitude);
 
             callback(locationData);
         }

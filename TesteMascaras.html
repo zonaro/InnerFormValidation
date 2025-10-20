@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Máscaras e Validações de Coordenadas</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 2rem 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            border: none;
+            text-align: center;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e3f2fd;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+        }
+
+        .form-control.error {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .form-control.success {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.8rem;
+        }
+
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #4facfe;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-valid {
+            background-color: #28a745;
+        }
+
+        .status-invalid {
+            background-color: #dc3545;
+        }
+
+        .status-neutral {
+            background-color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0"><i class="fas fa-compass"></i> Teste de Máscaras e Validações de Coordenadas
+                        </h3>
+                        <p class="mb-0">Demonstração das novas funcionalidades para latitude e longitude</p>
+                    </div>
+                    <div class="card-body">
+
+                        <form class="validate">
+                            <!-- Seção 1: Máscaras Básicas -->
+                            <div class="test-section">
+                                <h5><i class="fas fa-tools"></i> 1. Máscaras Básicas</h5>
+                                <p class="text-muted">Máscaras que formatam e limitam automaticamente os valores</p>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Latitude com Máscara <span class="status-indicator status-neutral"
+                                                    id="status-lat1"></span></label>
+                                            <input type="text" class="form-control mask latitude onkeyup"
+                                                placeholder="Digite uma latitude (-90 a +90)"
+                                                data-validcallback="$('#status-lat1').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lat1').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.mask.latitude</code></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Longitude com Máscara <span class="status-indicator status-neutral"
+                                                    id="status-lng1"></span></label>
+                                            <input type="text" class="form-control mask longitude onkeyup"
+                                                placeholder="Digite uma longitude (-180 a +180)"
+                                                data-validcallback="$('#status-lng1').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lng1').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.mask.longitude</code></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção 2: Máscaras com Precisão -->
+                            <div class="test-section">
+                                <h5><i class="fas fa-crosshairs"></i> 2. Máscaras com Controle de Precisão</h5>
+                                <p class="text-muted">Controle do número de casas decimais</p>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Latitude (2 casas) <span class="status-indicator status-neutral"
+                                                    id="status-lat2"></span></label>
+                                            <input type="text" class="form-control mask lat precision 2 onkeyup"
+                                                placeholder="XX.XX"
+                                                data-validcallback="$('#status-lat2').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lat2').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.mask.lat.precision.2</code></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Longitude (4 casas) <span class="status-indicator status-neutral"
+                                                    id="status-lng2"></span></label>
+                                            <input type="text" class="form-control mask long precision 4 onkeyup"
+                                                placeholder="XXX.XXXX"
+                                                data-validcallback="$('#status-lng2').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lng2').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe:
+                                                <code>.mask.long.precision.4</code></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Longitude (6 casas) <span class="status-indicator status-neutral"
+                                                    id="status-lng3"></span></label>
+                                            <input type="text" class="form-control mask lng precision 6 onkeyup"
+                                                placeholder="XXX.XXXXXX"
+                                                data-validcallback="$('#status-lng3').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lng3').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.mask.lng.precision.6</code></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção 3: Validações -->
+                            <div class="test-section">
+                                <h5><i class="fas fa-check-circle"></i> 3. Validações de Coordenadas</h5>
+                                <p class="text-muted">Validações sem máscara, apenas verificação de formato e limites
+                                </p>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Só Validação Latitude <span class="status-indicator status-neutral"
+                                                    id="status-lat3"></span></label>
+                                            <input type="text" class="form-control latitude obg onkeyup"
+                                                placeholder="Apenas validação"
+                                                data-validcallback="$('#status-lat3').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lat3').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.latitude.obg</code></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Só Validação Longitude <span class="status-indicator status-neutral"
+                                                    id="status-lng4"></span></label>
+                                            <input type="text" class="form-control long obg onkeyup"
+                                                placeholder="Apenas validação"
+                                                data-validcallback="$('#status-lng4').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lng4').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.long.obg</code></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Par de Coordenadas <span class="status-indicator status-neutral"
+                                                    id="status-coord"></span></label>
+                                            <input type="text" class="form-control coordinate obg onkeyup"
+                                                placeholder="lat,lng ou lat lng"
+                                                data-validcallback="$('#status-coord').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-coord').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classe: <code>.coordinate.obg</code></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção 4: Combinado com AutoComplete -->
+                            <div class="test-section">
+                                <h5><i class="fas fa-magic"></i> 4. AutoComplete + Máscara + Validação</h5>
+                                <p class="text-muted">Campos que são preenchidos automaticamente e têm máscara e
+                                    validação</p>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Latitude Completa <span class="status-indicator status-neutral"
+                                                    id="status-lat4"></span></label>
+                                            <input type="text"
+                                                class="form-control autocomplete latitude mask latitude obg onkeyup"
+                                                placeholder="AutoComplete + Máscara + Validação"
+                                                data-validcallback="$('#status-lat4').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lat4').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classes:
+                                                <code>.autocomplete.latitude.mask.latitude.obg</code></small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Longitude Completa <span class="status-indicator status-neutral"
+                                                    id="status-lng5"></span></label>
+                                            <input type="text"
+                                                class="form-control autocomplete longitude mask longitude precision 4 obg onkeyup"
+                                                placeholder="AutoComplete + Máscara + Validação"
+                                                data-validcallback="$('#status-lng5').removeClass('status-invalid status-neutral').addClass('status-valid')"
+                                                data-invalidcallback="$('#status-lng5').removeClass('status-valid status-neutral').addClass('status-invalid')">
+                                            <small class="text-muted">Classes:
+                                                <code>.autocomplete.longitude.mask.longitude.precision.4.obg</code></small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-primary btn-block"
+                                            onclick="obterLocalizacao()">
+                                            <i class="fas fa-map-marker-alt"></i> Obter Localização
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="button" class="btn btn-warning btn-block"
+                                            onclick="testarCoordenadas()">
+                                            <i class="fas fa-vials"></i> Testar com Coordenadas de SP
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção 5: Teste de Limites -->
+                            <div class="test-section">
+                                <h5><i class="fas fa-exclamation-triangle"></i> 5. Teste de Limites</h5>
+                                <p class="text-muted">Teste os limites das coordenadas</p>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-info">
+                                            <h6><i class="fas fa-info-circle"></i> Valores para Teste:</h6>
+                                            <ul class="mb-0">
+                                                <li><strong>Latitude válida:</strong> -90, -23.5505, 0, 45.5, 90</li>
+                                                <li><strong>Latitude inválida:</strong> -91, 90.1, 100, -100</li>
+                                                <li><strong>Longitude válida:</strong> -180, -46.6333, 0, 120.5, 180
+                                                </li>
+                                                <li><strong>Longitude inválida:</strong> -181, 180.1, 200, -200</li>
+                                                <li><strong>Coordenadas válidas:</strong> "-23.5505,-46.6333", "45.5
+                                                    120.3", "0;0"</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botão de Submissão -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-check"></i> Validar Formulário Completo
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery e InnerFormValidation -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="InnerFormValidation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function obterLocalizacao() {
+            if (typeof $.innerForm.getLocation === 'function') {
+                $.innerForm.getLocation()
+                    .then(function (location) {
+                        alert('Localização obtida e campos preenchidos automaticamente!\n' +
+                            'Latitude: ' + location.latitude + '\n' +
+                            'Longitude: ' + location.longitude);
+                    })
+                    .catch(function (error) {
+                        alert('Erro ao obter localização: ' + (error.userMessage || error.message));
+                    });
+            } else {
+                alert('Função de geolocalização não está disponível. Verifique se o InnerFormValidation.js foi carregado.');
+            }
+        }
+
+        function testarCoordenadas() {
+            // Preenche com coordenadas de São Paulo para teste
+            $('.autocomplete.latitude').val('-23.550520').trigger('input').trigger('change');
+            $('.autocomplete.longitude').val('-46.633308').trigger('input').trigger('change');
+
+            alert('Coordenadas de São Paulo inseridas para teste!\nLatitude: -23.550520\nLongitude: -46.633308');
+        }
+
+        // Inicialização
+        $(document).ready(function () {
+            console.log('Teste de Máscaras e Validações de Coordenadas carregado!');
+
+            // Log das funções disponíveis
+            console.log('Funções disponíveis:');
+            console.log('- $.innerForm.validateLatitude()');
+            console.log('- $.innerForm.validateLongitude()');
+            console.log('- $.innerForm.validateCoordinate()');
+            console.log('- $.innerForm.applyLatitudeMask()');
+            console.log('- $.innerForm.applyLongitudeMask()');
+        });
+    </script>
+</body>
+
+</html>
