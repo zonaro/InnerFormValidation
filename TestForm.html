@@ -1627,9 +1627,132 @@
                     </div>
                 </div>
 
-                <!-- ========== SEÇÃO 11: CALLBACKS E EVENTOS ========== -->
+                <!-- ========== SEÇÃO 11: GEOLOCALIZAÇÃO ========== -->
                 <div class="section-header">
-                    <h3><i class="fas fa-bolt"></i> 11. Sistema de Callbacks</h3>
+                    <h3><i class="fas fa-map-marker-alt"></i> 11. Geolocalização</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> Sobre a Geolocalização</h5>
+                            <p class="mb-2">A função <code>$.innerForm.getLocation()</code> utiliza a API de
+                                Geolocalização do navegador para obter a localização atual do usuário.</p>
+                            <p class="mb-0"><strong>Nota:</strong> O navegador solicitará permissão ao usuário antes de
+                                compartilhar a localização.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Obter Localização Atual</label>
+                            <button type="button" class="btn btn-primary btn-block" onclick="getLocationDemo()">
+                                <i class="fas fa-map-marker-alt"></i> Obter Minha Localização
+                            </button>
+                            <small class="text-muted">Clique para obter sua localização atual</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Monitorar Localização</label>
+                            <button type="button" class="btn btn-success btn-block" id="watchLocationBtn"
+                                onclick="toggleLocationWatch()">
+                                <i class="fas fa-eye"></i> Iniciar Monitoramento
+                            </button>
+                            <small class="text-muted">Monitora mudanças na localização</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Resultado da Localização</label>
+                            <div id="locationResult" class="card">
+                                <div class="card-body text-center text-muted">
+                                    <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
+                                    <p>Clique em "Obter Minha Localização" para ver suas coordenadas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Latitude (preenchida automaticamente)</label>
+                            <input type="text" id="latitudeField" class="form-control autocomplete latitude" readonly
+                                placeholder="Latitude aparecerá aqui" />
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Longitude (preenchida automaticamente)</label>
+                            <input type="text" id="longitudeField" class="form-control autocomplete longitude" readonly
+                                placeholder="Longitude aparecerá aqui" />
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Exemplo de Código JavaScript</label>
+                            <pre class="bg-light p-3 rounded"><code>// Obter localização única
+$.innerForm.getLocation()
+    .then(function(location) {
+        console.log('Latitude:', location.latitude);
+        console.log('Longitude:', location.longitude);
+        console.log('Precisão:', location.accuracy + ' metros');
+    })
+    .catch(function(error) {
+        console.error('Erro:', error.userMessage);
+    });
+
+// Monitorar localização continuamente
+var watchId = $.innerForm.watchLocation(
+    function(location) {
+        console.log('Nova posição:', location.coordinates);
+    },
+    function(error) {
+        console.error('Erro no monitoramento:', error.userMessage);
+    }
+);
+
+// Parar monitoramento
+$.innerForm.clearLocationWatch(watchId);</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SEÇÃO 12: CALLBACKS E EVENTOS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-bolt"></i> 12. Sistema de Callbacks</h3>
                 </div>
 
                 <div class="row">
@@ -1686,9 +1809,9 @@
                     </div>
                 </div>
 
-                <!-- ========== SEÇÃO 12: VALIDAÇÕES ESPECIAIS ========== -->
+                <!-- ========== SEÇÃO 13: VALIDAÇÕES ESPECIAIS ========== -->
                 <div class="section-header">
-                    <h3><i class="fas fa-star"></i> 12. Validações Especiais</h3>
+                    <h3><i class="fas fa-star"></i> 13. Validações Especiais</h3>
                 </div>
 
                 <div class="row">
@@ -1768,9 +1891,9 @@
                     </div>
                 </div>
 
-                <!-- ========== SEÇÃO 13: TESTE DA FUNÇÃO EXPANDYEAR ========== -->
+                <!-- ========== SEÇÃO 14: TESTE DA FUNÇÃO EXPANDYEAR ========== -->
                 <div class="section-header">
-                    <h3><i class="fas fa-calendar"></i> 13. Teste da Função expandYear</h3>
+                    <h3><i class="fas fa-calendar"></i> 14. Teste da Função expandYear</h3>
                 </div>
 
                 <div class="row">
@@ -2351,6 +2474,179 @@
         }
 
         // ========== FIM DAS FUNÇÕES DE CÓDIGO ==========
+
+        // ========== FUNÇÕES DE GEOLOCALIZAÇÃO ==========
+
+        let locationWatchId = null;
+        let isWatching = false;
+
+        // Função para demonstrar a obtenção de localização
+        function getLocationDemo() {
+            // Verificar se a função está disponível
+            if (typeof $.innerForm === 'undefined' || typeof $.innerForm.getLocation !== 'function') {
+                showLocationError('A função de geolocalização não está disponível. Verifique se o InnerFormValidation.js foi carregado corretamente.');
+                return;
+            }
+
+            // Mostrar loading
+            $('#locationResult').html(`
+                <div class="card-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Carregando...</span>
+                    </div>
+                    <p class="mt-3 mb-0">Obtendo sua localização...</p>
+                    <small class="text-muted">Permita o acesso à localização quando solicitado</small>
+                </div>
+            `);
+
+            // Obter localização
+            $.innerForm.getLocation({
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 300000
+            })
+                .then(function (location) {
+                    displayLocationResult(location);
+
+                    // Preencher campos automáticos
+                    $('#latitudeField').val(location.latitude);
+                    $('#longitudeField').val(location.longitude);
+
+                    showToast('✅ Localização obtida com sucesso!');
+                })
+                .catch(function (error) {
+                    showLocationError(error.userMessage || error.message);
+                    showToast('❌ ' + (error.userMessage || error.message), true);
+                });
+        }
+
+        // Função para alternar monitoramento de localização
+        function toggleLocationWatch() {
+            if (!isWatching) {
+                startLocationWatch();
+            } else {
+                stopLocationWatch();
+            }
+        }
+
+        // Função para iniciar monitoramento
+        function startLocationWatch() {
+            // Verificar se a função está disponível
+            if (typeof $.innerForm === 'undefined' || typeof $.innerForm.watchLocation !== 'function') {
+                showLocationError('A função de monitoramento de localização não está disponível.');
+                return;
+            }
+
+            locationWatchId = $.innerForm.watchLocation(
+                function (location) {
+                    displayLocationResult(location, true);
+
+                    // Atualizar campos automáticos
+                    $('#latitudeField').val(location.latitude);
+                    $('#longitudeField').val(location.longitude);
+                },
+                function (error) {
+                    showLocationError(error.userMessage || error.message);
+                    stopLocationWatch();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 5000
+                }
+            );
+
+            if (locationWatchId !== null) {
+                isWatching = true;
+                $('#watchLocationBtn')
+                    .removeClass('btn-success')
+                    .addClass('btn-danger')
+                    .html('<i class="fas fa-eye-slash"></i> Parar Monitoramento');
+
+                showToast('📍 Monitoramento de localização iniciado');
+            }
+        }
+
+        // Função para parar monitoramento
+        function stopLocationWatch() {
+            if (locationWatchId !== null && $.innerForm && $.innerForm.clearLocationWatch) {
+                $.innerForm.clearLocationWatch(locationWatchId);
+                locationWatchId = null;
+            }
+
+            isWatching = false;
+            $('#watchLocationBtn')
+                .removeClass('btn-danger')
+                .addClass('btn-success')
+                .html('<i class="fas fa-eye"></i> Iniciar Monitoramento');
+
+            showToast('⏹️ Monitoramento de localização parado');
+        }
+
+        // Função para exibir resultado da localização
+        function displayLocationResult(location, isWatching = false) {
+            const watchingBadge = isWatching ? '<span class="badge badge-success">Monitorando</span>' : '';
+
+            $('#locationResult').html(`
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-map-marker-alt text-primary"></i> Coordenadas ${watchingBadge}</h6>
+                            <p><strong>Latitude:</strong> ${location.latitude}</p>
+                            <p><strong>Longitude:</strong> ${location.longitude}</p>
+                            <p><strong>Coordenadas:</strong> ${location.coordinates}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-crosshairs text-info"></i> Precisão</h6>
+                            <p><strong>Precisão:</strong> ${location.accuracyFormatted}</p>
+                            ${location.altitude !== null ? `<p><strong>Altitude:</strong> ${location.altitude}m</p>` : ''}
+                            ${location.speed !== null ? `<p><strong>Velocidade:</strong> ${Math.round(location.speed * 3.6)} km/h</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <h6><i class="fas fa-clock text-secondary"></i> Informações Temporais</h6>
+                            <p><strong>Obtido em:</strong> ${location.formattedTime}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <a href="${location.googleMapsUrl}" target="_blank" class="btn btn-outline-primary btn-sm btn-block">
+                                <i class="fab fa-google"></i> Ver no Google Maps
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="${location.osmUrl}" target="_blank" class="btn btn-outline-info btn-sm btn-block">
+                                <i class="fas fa-map"></i> Ver no OpenStreetMap
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        // Função para exibir erros de localização
+        function showLocationError(message) {
+            $('#locationResult').html(`
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <h5 class="text-danger">Erro ao obter localização</h5>
+                    <p class="text-muted">${message}</p>
+                    <small class="text-muted">
+                        Certifique-se de que:
+                        <ul class="list-unstyled mt-2">
+                            <li>• Você permitiu o acesso à localização</li>
+                            <li>• Está usando HTTPS (necessário para geolocalização)</li>
+                            <li>• Seu dispositivo tem GPS habilitado</li>
+                        </ul>
+                    </small>
+                </div>
+            `);
+        }
+
+        // ========== FIM DAS FUNÇÕES DE GEOLOCALIZAÇÃO ==========
     </script>
 </body>
 

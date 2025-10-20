@@ -2483,5 +2483,206 @@
         return x;
     }
 
+    /**
+     * Obtém a localização atual do usuário usando a API de Geolocalização do navegador
+     * @function getLocation
+     * @memberof $.innerForm
+     * @param {Object} [options] - Opções para a geolocalização
+     * @param {number} [options.timeout=10000] - Tempo limite em milissegundos
+     * @param {number} [options.maximumAge=60000] - Idade máxima aceitável para uma posição em cache (ms)
+     * @param {boolean} [options.enableHighAccuracy=true] - Solicitar alta precisão
+     * @returns {Promise} Promise que resolve com objeto contendo informações de localização
+     */
+    $.innerForm.getLocation = function (options) {
+        return new Promise(function (resolve, reject) {
+            // Verifica se a API de geolocalização está disponível
+            if (!navigator.geolocation) {
+                reject({
+                    error: 'GEOLOCATION_NOT_SUPPORTED',
+                    message: 'A geolocalização não é suportada neste navegador.'
+                });
+                return;
+            }
+
+            // Opções padrão
+            var defaultOptions = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            };
+
+            // Mescla as opções fornecidas com as padrão
+            var geoOptions = $.extend({}, defaultOptions, options || {});
+
+            $.innerForm.log('Obtendo localização do usuário...', geoOptions);
+
+            // Função de sucesso
+            function onSuccess(position) {
+                var coords = position.coords;
+                var locationData = {
+                    // Coordenadas principais
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+
+                    // Precisão
+                    accuracy: coords.accuracy,
+                    altitudeAccuracy: coords.altitudeAccuracy,
+
+                    // Altitude (pode ser null)
+                    altitude: coords.altitude,
+
+                    // Direção e velocidade (podem ser null)
+                    heading: coords.heading,
+                    speed: coords.speed,
+
+                    // Informações temporais
+                    timestamp: position.timestamp,
+                    formattedTime: new Date(position.timestamp).toLocaleString(),
+
+                    // URLs úteis para mapas
+                    googleMapsUrl: 'https://www.google.com/maps?q=' + coords.latitude + ',' + coords.longitude,
+                    osmUrl: 'https://www.openstreetmap.org/?mlat=' + coords.latitude + '&mlon=' + coords.longitude + '&zoom=15',
+
+                    // Informações formatadas para exibição
+                    coordinates: coords.latitude.toFixed(6) + ', ' + coords.longitude.toFixed(6),
+                    accuracyFormatted: Math.round(coords.accuracy) + ' metros'
+                };
+
+                $.innerForm.log('Localização obtida com sucesso:', locationData);
+                resolve(locationData);
+            }
+
+            // Função de erro
+            function onError(error) {
+                var errorInfo = {
+                    code: error.code,
+                    message: error.message
+                };
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorInfo.error = 'PERMISSION_DENIED';
+                        errorInfo.userMessage = 'Permissão negada pelo usuário para acessar a localização.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorInfo.error = 'POSITION_UNAVAILABLE';
+                        errorInfo.userMessage = 'Informações de localização não estão disponíveis.';
+                        break;
+                    case error.TIMEOUT:
+                        errorInfo.error = 'TIMEOUT';
+                        errorInfo.userMessage = 'Tempo limite excedido ao tentar obter a localização.';
+                        break;
+                    default:
+                        errorInfo.error = 'UNKNOWN_ERROR';
+                        errorInfo.userMessage = 'Erro desconhecido ao obter a localização.';
+                        break;
+                }
+
+                $.innerForm.error('Erro ao obter localização:', errorInfo);
+                reject(errorInfo);
+            }
+
+            // Solicita a posição atual
+            navigator.geolocation.getCurrentPosition(onSuccess, onError, geoOptions);
+        });
+    };
+
+    /**
+     * Monitora continuamente a localização do usuário
+     * @function watchLocation
+     * @memberof $.innerForm  
+     * @param {Function} callback - Função chamada a cada atualização de posição
+     * @param {Function} [errorCallback] - Função chamada em caso de erro
+     * @param {Object} [options] - Opções para a geolocalização
+     * @returns {number} ID do watcher que pode ser usado para parar o monitoramento
+     */
+    $.innerForm.watchLocation = function (callback, errorCallback, options) {
+        if (!navigator.geolocation) {
+            if (errorCallback) {
+                errorCallback({
+                    error: 'GEOLOCATION_NOT_SUPPORTED',
+                    message: 'A geolocalização não é suportada neste navegador.'
+                });
+            }
+            return null;
+        }
+
+        var defaultOptions = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 5000 // Para monitoramento, queremos dados mais frescos
+        };
+
+        var geoOptions = $.extend({}, defaultOptions, options || {});
+
+        $.innerForm.log('Iniciando monitoramento de localização...', geoOptions);
+
+        function onSuccess(position) {
+            var coords = position.coords;
+            var locationData = {
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                accuracy: coords.accuracy,
+                altitudeAccuracy: coords.altitudeAccuracy,
+                altitude: coords.altitude,
+                heading: coords.heading,
+                speed: coords.speed,
+                timestamp: position.timestamp,
+                formattedTime: new Date(position.timestamp).toLocaleString(),
+                googleMapsUrl: 'https://www.google.com/maps?q=' + coords.latitude + ',' + coords.longitude,
+                osmUrl: 'https://www.openstreetmap.org/?mlat=' + coords.latitude + '&mlon=' + coords.longitude + '&zoom=15',
+                coordinates: coords.latitude.toFixed(6) + ', ' + coords.longitude.toFixed(6),
+                accuracyFormatted: Math.round(coords.accuracy) + ' metros'
+            };
+
+            callback(locationData);
+        }
+
+        function onError(error) {
+            if (errorCallback) {
+                var errorInfo = {
+                    code: error.code,
+                    message: error.message
+                };
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorInfo.error = 'PERMISSION_DENIED';
+                        errorInfo.userMessage = 'Permissão negada pelo usuário para acessar a localização.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorInfo.error = 'POSITION_UNAVAILABLE';
+                        errorInfo.userMessage = 'Informações de localização não estão disponíveis.';
+                        break;
+                    case error.TIMEOUT:
+                        errorInfo.error = 'TIMEOUT';
+                        errorInfo.userMessage = 'Tempo limite excedido ao tentar obter a localização.';
+                        break;
+                    default:
+                        errorInfo.error = 'UNKNOWN_ERROR';
+                        errorInfo.userMessage = 'Erro desconhecido ao obter a localização.';
+                        break;
+                }
+
+                errorCallback(errorInfo);
+            }
+        }
+
+        return navigator.geolocation.watchPosition(onSuccess, onError, geoOptions);
+    };
+
+    /**
+     * Para o monitoramento de localização
+     * @function clearLocationWatch
+     * @memberof $.innerForm
+     * @param {number} watchId - ID retornado por watchLocation
+     */
+    $.innerForm.clearLocationWatch = function (watchId) {
+        if (watchId && navigator.geolocation) {
+            navigator.geolocation.clearWatch(watchId);
+            $.innerForm.log('Monitoramento de localização parado:', watchId);
+        }
+    };
+
     $.innerForm.log('InnerFormValidation Loaded');
 })(jQuery);

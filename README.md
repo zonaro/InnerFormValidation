@@ -15,10 +15,11 @@
 5. [Validações Avançadas](#validações-avançadas)
 6. [Sistema de Callbacks](#sistema-de-callbacks)
 7. [Autocompletar Endereços](#autocompletar-endereços)
-8. [Exemplos Práticos](#exemplos-práticos)
-9. [API JavaScript](#api-javascript)
-10. [Funções do $.innerForm](#funções-do-windowinnerform)
-11. [Personalização Visual](#personalização-visual)
+8. [Geolocalização](#geolocalização)
+9. [Exemplos Práticos](#exemplos-práticos)
+10. [API JavaScript](#api-javascript)
+11. [Funções do $.innerForm](#funções-do-windowinnerform)
+12. [Personalização Visual](#personalização-visual)
 
 ---
 
@@ -400,16 +401,233 @@ O InnerFormValidation inclui integração com a API **ViaCEP** para autocompleta
 </div>
 ```
 
-### **Configurações de Timeout**
-```html
-<!-- Timeout customizado para busca (padrão: 0ms) -->
-<input class="form-control mask cep autocomplete" data-timeout="500">
-```
-
 ### **Controlando Substituição de Valores**
 ```html
 <!-- Não substituir valor se já preenchido -->
 <input class="form-control autocomplete address noreplace">
+```
+
+---
+
+## 📍 Geolocalização
+
+O InnerFormValidation inclui funções avançadas de geolocalização que utilizam a API nativa do navegador para obter informações de localização do usuário.
+
+### **Função Principal: `$.innerForm.getLocation()`**
+
+Obtém a localização atual do usuário de forma assíncrona usando Promises.
+
+```javascript
+// Uso básico
+$.innerForm.getLocation()
+    .then(function(location) {
+        console.log('Latitude:', location.latitude);
+        console.log('Longitude:', location.longitude);
+        console.log('Precisão:', location.accuracyFormatted);
+        
+        // Preencher campos do formulário
+        $('#latitude').val(location.latitude);
+        $('#longitude').val(location.longitude);
+    })
+    .catch(function(error) {
+        console.error('Erro:', error.userMessage);
+        alert('Erro ao obter localização: ' + error.userMessage);
+    });
+
+// Uso com opções customizadas
+$.innerForm.getLocation({
+    enableHighAccuracy: true,  // Alta precisão
+    timeout: 15000,           // Timeout de 15 segundos
+    maximumAge: 60000         // Cache de 60 segundos
+})
+.then(function(location) {
+    // Localização obtida com sucesso
+    console.log('Coordenadas:', location.coordinates);
+    console.log('Google Maps:', location.googleMapsUrl);
+})
+.catch(function(error) {
+    // Tratar erro
+    console.error('Erro de geolocalização:', error);
+});
+```
+
+### **Objeto de Resposta da Localização**
+
+A função retorna um objeto rico com informações de localização:
+
+```javascript
+{
+    // Coordenadas principais
+    latitude: -23.5505,
+    longitude: -46.6333,
+    
+    // Precisão
+    accuracy: 65.0,                    // Em metros
+    accuracyFormatted: "65 metros",    // Formatado para exibição
+    altitudeAccuracy: 12.0,            // Precisão da altitude
+    
+    // Altitude (pode ser null)
+    altitude: 760.5,                   // Em metros
+    
+    // Direção e velocidade (podem ser null)
+    heading: 180.5,                    // Direção em graus
+    speed: 2.5,                        // Velocidade em m/s
+    
+    // Informações temporais
+    timestamp: 1704067200000,          // Timestamp
+    formattedTime: "01/01/2024 10:00:00", // Data/hora formatada
+    
+    // URLs úteis para mapas
+    googleMapsUrl: "https://www.google.com/maps?q=-23.5505,-46.6333",
+    osmUrl: "https://www.openstreetmap.org/?mlat=-23.5505&mlon=-46.6333&zoom=15",
+    
+    // Informações formatadas para exibição
+    coordinates: "-23.550500, -46.633300",  // Coordenadas formatadas
+}
+```
+
+### **Monitoramento Contínuo de Localização**
+
+Para aplicações que precisam acompanhar mudanças na localização:
+
+```javascript
+// Iniciar monitoramento
+var watchId = $.innerForm.watchLocation(
+    function(location) {
+        // Callback chamado a cada atualização de posição
+        console.log('Nova posição:', location.coordinates);
+        
+        // Atualizar interface
+        $('#latitude').val(location.latitude);
+        $('#longitude').val(location.longitude);
+        $('#lastUpdate').text(location.formattedTime);
+    },
+    function(error) {
+        // Callback de erro
+        console.error('Erro no monitoramento:', error.userMessage);
+        
+        // Parar monitoramento em caso de erro
+        $.innerForm.clearLocationWatch(watchId);
+    },
+    {
+        enableHighAccuracy: true,
+        timeout: 10000,           // Timeout menor para monitoramento
+        maximumAge: 5000          // Cache menor para dados mais frescos
+    }
+);
+
+// Parar monitoramento quando necessário
+$.innerForm.clearLocationWatch(watchId);
+```
+
+### **Integração com Formulários**
+
+Exemplo prático de integração com campos de formulário:
+
+```html
+<form class="validate">
+    <div class="row">
+        <div class="col-md-6">
+            <label>Latitude</label>
+            <input type="text" id="latitude" class="form-control autocomplete latitude" readonly>
+        </div>
+        <div class="col-md-6">
+            <label>Longitude</label>
+            <input type="text" id="longitude" class="form-control autocomplete longitude" readonly>
+        </div>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary" onclick="obterLocalizacao()">
+                📍 Obter Minha Localização
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+function obterLocalizacao() {
+    // Mostrar loading
+    $('#latitude').val('Obtendo...');
+    $('#longitude').val('Obtendo...');
+    
+    $.innerForm.getLocation()
+        .then(function(location) {
+            // Preencher campos
+            $('#latitude').val(location.latitude);
+            $('#longitude').val(location.longitude);
+            
+            // Feedback visual
+            $('#latitude, #longitude').addClass('success');
+        })
+        .catch(function(error) {
+            // Limpar campos em caso de erro
+            $('#latitude').val('');
+            $('#longitude').val('');
+            
+            alert('Erro: ' + error.userMessage);
+        });
+}
+</script>
+```
+
+### **Tratamento de Erros**
+
+A API de geolocalização pode falhar por diversos motivos. A biblioteca fornece mensagens amigáveis:
+
+```javascript
+$.innerForm.getLocation()
+    .catch(function(error) {
+        switch (error.error) {
+            case 'PERMISSION_DENIED':
+                alert('Você precisa permitir o acesso à localização');
+                break;
+            case 'POSITION_UNAVAILABLE':
+                alert('Localização não disponível no momento');
+                break;
+            case 'TIMEOUT':
+                alert('Tempo limite excedido. Tente novamente');
+                break;
+            case 'GEOLOCATION_NOT_SUPPORTED':
+                alert('Seu navegador não suporta geolocalização');
+                break;
+            default:
+                alert('Erro desconhecido: ' + error.message);
+        }
+    });
+```
+
+### **Opções de Configuração**
+
+| Opção                | Tipo    | Padrão | Descrição                                    |
+| -------------------- | ------- | ------ | -------------------------------------------- |
+| `enableHighAccuracy` | boolean | true   | Solicita alta precisão (GPS quando possível) |
+| `timeout`            | number  | 10000  | Tempo limite em milissegundos                |
+| `maximumAge`         | number  | 60000  | Idade máxima aceitável do cache (ms)         |
+
+### **Requisitos e Limitações**
+
+1. **HTTPS Obrigatório**: A geolocalização só funciona em sites HTTPS (ou localhost)
+2. **Permissão do Usuário**: O navegador sempre solicitará permissão
+3. **Precisão Variável**: Depende do dispositivo (GPS, WiFi, torres de celular)
+4. **Compatibilidade**: Funciona em navegadores modernos com suporte à API de Geolocalização
+
+### **Exemplos Práticos**
+
+Veja os arquivos de exemplo incluídos:
+- `ExemploSimples.html` - Implementação básica
+- `ExemploGeolocalizacao.html` - Interface completa com monitoramento
+- `TestForm.html` - Seção dedicada com todos os recursos
+
+### **API de Geolocalização Completa**
+
+```javascript
+// Função principal - obter localização única
+$.innerForm.getLocation(options) // Retorna Promise
+
+// Monitoramento contínuo
+$.innerForm.watchLocation(successCallback, errorCallback, options) // Retorna watchId
+
+// Parar monitoramento  
+$.innerForm.clearLocationWatch(watchId)
 ```
 
 ---
@@ -579,6 +797,53 @@ $('#input').validateOnType(0);
 // Define valor apenas se campo estiver vazio
 // Se não estiver vazio, só substitui se não tiver classe 'noreplace'
 $('#campo').setOrReplaceVal('Novo valor');
+```
+
+### **API de Geolocalização**
+
+```javascript
+// Obter localização única
+$.innerForm.getLocation()
+    .then(function(location) {
+        $('#latitude').val(location.latitude);
+        $('#longitude').val(location.longitude);
+        console.log('Precisão:', location.accuracyFormatted);
+    })
+    .catch(function(error) {
+        console.error('Erro:', error.userMessage);
+    });
+
+// Obter localização com opções customizadas
+$.innerForm.getLocation({
+    enableHighAccuracy: true,
+    timeout: 15000,
+    maximumAge: 60000
+})
+.then(function(location) {
+    // Usar dados de localização
+    window.open(location.googleMapsUrl, '_blank');
+});
+
+// Monitorar localização continuamente
+var watchId = $.innerForm.watchLocation(
+    function(location) {
+        // Callback de sucesso - chamado a cada atualização
+        $('#coordenadas').text(location.coordinates);
+        $('#precisao').text(location.accuracyFormatted);
+    },
+    function(error) {
+        // Callback de erro
+        console.error('Erro no monitoramento:', error.userMessage);
+    },
+    {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 5000
+    }
+);
+
+// Parar monitoramento
+$.innerForm.clearLocationWatch(watchId);
 ```
 
 ---
@@ -927,6 +1192,115 @@ $.innerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
 });
 ```
 
+### **Funções de Geolocalização - 🆕 NOVAS**
+
+#### `getLocation(options)`
+Obtém a localização atual do usuário usando a API de Geolocalização do navegador.
+```javascript
+// Uso básico
+$.innerForm.getLocation()
+    .then(function(location) {
+        console.log('Latitude:', location.latitude);
+        console.log('Longitude:', location.longitude);
+        console.log('Precisão:', location.accuracyFormatted);
+        console.log('Google Maps:', location.googleMapsUrl);
+    })
+    .catch(function(error) {
+        console.error('Erro:', error.userMessage);
+    });
+
+// Com opções customizadas
+$.innerForm.getLocation({
+    enableHighAccuracy: true,   // Alta precisão (GPS)
+    timeout: 15000,            // Timeout de 15 segundos
+    maximumAge: 60000          // Cache de 60 segundos
+});
+```
+
+**Objeto de resposta:**
+```javascript
+{
+    latitude: -23.5505,                // Latitude
+    longitude: -46.6333,              // Longitude
+    accuracy: 65.0,                   // Precisão em metros
+    accuracyFormatted: "65 metros",   // Precisão formatada
+    altitude: 760.5,                  // Altitude (pode ser null)
+    altitudeAccuracy: 12.0,           // Precisão da altitude
+    heading: 180.5,                   // Direção em graus (pode ser null)
+    speed: 2.5,                       // Velocidade em m/s (pode ser null)
+    timestamp: 1704067200000,         // Timestamp
+    formattedTime: "01/01/2024 10:00:00", // Data/hora formatada
+    coordinates: "-23.550500, -46.633300", // Coordenadas formatadas
+    googleMapsUrl: "https://www.google.com/maps?q=-23.5505,-46.6333",
+    osmUrl: "https://www.openstreetmap.org/?mlat=-23.5505&mlon=-46.6333&zoom=15"
+}
+```
+
+#### `watchLocation(successCallback, errorCallback, options)`
+Monitora continuamente a localização do usuário, chamando o callback a cada atualização.
+```javascript
+var watchId = $.innerForm.watchLocation(
+    function(location) {
+        // Callback de sucesso - chamado a cada nova posição
+        console.log('Nova posição:', location.coordinates);
+        $('#latitude').val(location.latitude);
+        $('#longitude').val(location.longitude);
+    },
+    function(error) {
+        // Callback de erro
+        console.error('Erro no monitoramento:', error.userMessage);
+        alert('Erro: ' + error.userMessage);
+    },
+    {
+        enableHighAccuracy: true,
+        timeout: 10000,           // Timeout menor para monitoramento
+        maximumAge: 5000          // Cache menor para dados mais frescos
+    }
+);
+
+// Retorna ID do watcher para controle
+console.log('Watch ID:', watchId);
+```
+
+#### `clearLocationWatch(watchId)`
+Para o monitoramento de localização ativo.
+```javascript
+// Parar monitoramento específico
+$.innerForm.clearLocationWatch(watchId);
+
+// Em aplicações SPA, sempre pare o monitoramento ao trocar de página
+window.addEventListener('beforeunload', function() {
+    $.innerForm.clearLocationWatch(watchId);
+});
+```
+
+**Tratamento de erros:**
+```javascript
+// Erros possíveis:
+// - PERMISSION_DENIED: Usuário negou permissão
+// - POSITION_UNAVAILABLE: Localização indisponível
+// - TIMEOUT: Tempo limite excedido
+// - GEOLOCATION_NOT_SUPPORTED: Navegador não suporta
+// - UNKNOWN_ERROR: Erro desconhecido
+
+$.innerForm.getLocation()
+    .catch(function(error) {
+        switch (error.error) {
+            case 'PERMISSION_DENIED':
+                alert('Permissão negada. Habilite a localização no navegador.');
+                break;
+            case 'POSITION_UNAVAILABLE':
+                alert('Localização não disponível no momento.');
+                break;
+            case 'TIMEOUT':
+                alert('Tempo limite excedido. Tente novamente.');
+                break;
+            default:
+                alert('Erro: ' + error.userMessage);
+        }
+    });
+```
+
 ### **Configuração Global**
 
 #### Propriedades Configuráveis:
@@ -1124,6 +1498,7 @@ $.innerForm = {
 - ✅ **Validações em tempo real** configuráveis  
 - ✅ **Sistema de callbacks** robusto
 - ✅ **Autocompletar endereços** via ViaCEP
+- ✅ **Sistema de geolocalização** completo e moderno
 - ✅ **Validação de cartões de crédito** com 15+ bandeiras
 - ✅ **Validação de senhas** com critérios configuráveis
 - ✅ **Suporte completo** a documentos brasileiros
@@ -1154,6 +1529,23 @@ Contribuições são bem-vindas! Por favor, abra uma issue ou faça um pull requ
 ---
 
 ## 🆕 Novidades e Melhorias Recentes
+
+### **v2.6.0 - Outubro 2025**
+
+#### **🌍 Sistema de Geolocalização Completo - NOVO!**
+- **Nova função**: `$.innerForm.getLocation()` - Obtém localização atual do usuário
+- **Nova função**: `$.innerForm.watchLocation()` - Monitoramento contínuo de localização  
+- **Nova função**: `$.innerForm.clearLocationWatch()` - Para monitoramento ativo
+- **Recursos avançados**: 
+  - Promise-based API moderna
+  - Objeto de resposta rico com coordenadas, precisão, altitude, velocidade
+  - URLs automáticas para Google Maps e OpenStreetMap
+  - Tratamento inteligente de erros com mensagens amigáveis
+  - Suporte a opções de alta precisão e cache configurável
+- **Exemplos incluídos**: 
+  - `ExemploSimples.html` - Implementação básica
+  - `ExemploGeolocalizacao.html` - Interface completa
+  - Seção dedicada no `TestForm.html`
 
 ### **v2.5.0 - Setembro 2025**
 

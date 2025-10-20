@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>InnerFormValidation - Exemplo de Geolocalização</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <!-- InnerFormValidation Library -->
+    <script src="InnerFormValidation.js"></script>
+
+    <script>
+        // Ativar logs para debug
+        $.innerForm = {
+            verbose: true
+        };
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+        }
+
+        .btn-custom {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="text-center mb-4">
+            <h1 class="text-white">
+                📍 Exemplo de Geolocalização
+            </h1>
+            <p class="text-white-50">Demonstração das funções $.innerForm.getLocation()</p>
+        </div>
+
+        <!-- Card Principal -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">🌍 Teste de Geolocalização</h4>
+            </div>
+            <div class="card-body">
+                <!-- Botões de Ação -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <button class="btn btn-custom btn-block" onclick="obterLocalizacao()">
+                            📍 Obter Localização Atual
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-success btn-block" id="monitorBtn" onclick="alternarMonitoramento()">
+                            👁️ Iniciar Monitoramento
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Área de Resultado -->
+                <div id="resultado" class="result-box">
+                    <p class="text-muted text-center mb-0">
+                        Clique em "Obter Localização Atual" para começar
+                    </p>
+                </div>
+
+                <!-- Formulário de Exemplo -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Latitude:</label>
+                            <input type="text" id="latitude" class="form-control" placeholder="Latitude aparecerá aqui"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Longitude:</label>
+                            <input type="text" id="longitude" class="form-control"
+                                placeholder="Longitude aparecerá aqui" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Código de Exemplo -->
+                <div class="mt-4">
+                    <h5>📝 Código de Exemplo:</h5>
+                    <pre class="bg-dark text-light p-3 rounded"><code>// Obter localização única
+$.innerForm.getLocation()
+    .then(function(localizacao) {
+        console.log('Latitude:', localizacao.latitude);
+        console.log('Longitude:', localizacao.longitude);
+        console.log('Precisão:', localizacao.accuracyFormatted);
+        
+        // Preencher campos do formulário
+        $('#latitude').val(localizacao.latitude);
+        $('#longitude').val(localizacao.longitude);
+    })
+    .catch(function(erro) {
+        console.error('Erro:', erro.userMessage);
+        alert('Erro: ' + erro.userMessage);
+    });
+
+// Monitorar localização continuamente
+var watchId = $.innerForm.watchLocation(
+    function(localizacao) {
+        // Callback de sucesso - chamado a cada atualização
+        console.log('Nova posição:', localizacao.coordinates);
+    },
+    function(erro) {
+        // Callback de erro
+        console.error('Erro no monitoramento:', erro.userMessage);
+    },
+    {
+        enableHighAccuracy: true,  // Alta precisão
+        timeout: 10000,           // Timeout de 10 segundos
+        maximumAge: 5000          // Cache de 5 segundos
+    }
+);
+
+// Parar o monitoramento
+$.innerForm.clearLocationWatch(watchId);</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações Adicionais -->
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">ℹ️ Informações Importantes</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>Permissão necessária:</strong> O navegador solicitará permissão para acessar sua
+                        localização</li>
+                    <li><strong>HTTPS obrigatório:</strong> A geolocalização só funciona em sites com HTTPS (ou
+                        localhost)</li>
+                    <li><strong>Precisão:</strong> A precisão varia dependendo do dispositivo e método (GPS, WiFi,
+                        Celular)</li>
+                    <li><strong>Timeout:</strong> Por padrão, a função aguarda até 10 segundos pela localização</li>
+                    <li><strong>Cache:</strong> Utiliza cache de 60 segundos para melhor performance</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let watchId = null;
+        let estaMonitorando = false;
+
+        // Função para obter localização única
+        function obterLocalizacao() {
+            // Verificar se a função está disponível
+            if (!$.innerForm || !$.innerForm.getLocation) {
+                alert('Erro: A função $.innerForm.getLocation() não está disponível. Verifique se o InnerFormValidation.js foi carregado.');
+                return;
+            }
+
+            // Mostrar loading
+            document.getElementById('resultado').innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Carregando...</span>
+                    </div>
+                    <p class="mt-2 mb-0">Obtendo sua localização...</p>
+                    <small class="text-muted">Permita o acesso quando solicitado pelo navegador</small>
+                </div>
+            `;
+
+            // Obter localização com configurações customizadas
+            $.innerForm.getLocation({
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 60000
+            })
+                .then(function (localizacao) {
+                    // Sucesso - exibir informações
+                    mostrarResultado(localizacao);
+
+                    // Preencher campos do formulário
+                    document.getElementById('latitude').value = localizacao.latitude;
+                    document.getElementById('longitude').value = localizacao.longitude;
+
+                    console.log('Localização obtida:', localizacao);
+                })
+                .catch(function (erro) {
+                    // Erro - exibir mensagem
+                    document.getElementById('resultado').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6>❌ Erro ao obter localização</h6>
+                        <p class="mb-0">${erro.userMessage || erro.message}</p>
+                    </div>
+                `;
+
+                    console.error('Erro de geolocalização:', erro);
+                });
+        }
+
+        // Função para alternar monitoramento
+        function alternarMonitoramento() {
+            if (!estaMonitorando) {
+                iniciarMonitoramento();
+            } else {
+                pararMonitoramento();
+            }
+        }
+
+        // Função para iniciar monitoramento
+        function iniciarMonitoramento() {
+            if (!$.innerForm || !$.innerForm.watchLocation) {
+                alert('Erro: A função de monitoramento não está disponível.');
+                return;
+            }
+
+            watchId = $.innerForm.watchLocation(
+                function (localizacao) {
+                    // Callback de sucesso
+                    mostrarResultado(localizacao, true);
+
+                    // Atualizar campos
+                    document.getElementById('latitude').value = localizacao.latitude;
+                    document.getElementById('longitude').value = localizacao.longitude;
+                },
+                function (erro) {
+                    // Callback de erro
+                    document.getElementById('resultado').innerHTML = `
+                        <div class="alert alert-danger">
+                            <h6>❌ Erro no monitoramento</h6>
+                            <p class="mb-0">${erro.userMessage || erro.message}</p>
+                        </div>
+                    `;
+                    pararMonitoramento();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 5000
+                }
+            );
+
+            if (watchId !== null) {
+                estaMonitorando = true;
+                document.getElementById('monitorBtn').textContent = '⏹️ Parar Monitoramento';
+                document.getElementById('monitorBtn').className = 'btn btn-danger btn-block';
+            }
+        }
+
+        // Função para parar monitoramento
+        function pararMonitoramento() {
+            if (watchId !== null && $.innerForm && $.innerForm.clearLocationWatch) {
+                $.innerForm.clearLocationWatch(watchId);
+                watchId = null;
+            }
+
+            estaMonitorando = false;
+            document.getElementById('monitorBtn').textContent = '👁️ Iniciar Monitoramento';
+            document.getElementById('monitorBtn').className = 'btn btn-success btn-block';
+        }
+
+        // Função para mostrar resultado
+        function mostrarResultado(localizacao, monitorando = false) {
+            const badge = monitorando ? '<span class="badge badge-success">Monitorando</span>' : '<span class="badge badge-info">Obtido</span>';
+
+            document.getElementById('resultado').innerHTML = `
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <h6>📍 Sua Localização ${badge}</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Latitude:</strong> ${localizacao.latitude}</p>
+                        <p><strong>Longitude:</strong> ${localizacao.longitude}</p>
+                        <p><strong>Coordenadas:</strong> ${localizacao.coordinates}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Precisão:</strong> ${localizacao.accuracyFormatted}</p>
+                        <p><strong>Obtido em:</strong> ${localizacao.formattedTime}</p>
+                        ${localizacao.altitude ? `<p><strong>Altitude:</strong> ${localizacao.altitude}m</p>` : ''}
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <a href="${localizacao.googleMapsUrl}" target="_blank" class="btn btn-outline-primary btn-sm mr-2">
+                            🗺️ Google Maps
+                        </a>
+                        <a href="${localizacao.osmUrl}" target="_blank" class="btn btn-outline-info btn-sm">
+                            🌍 OpenStreetMap
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Parar monitoramento ao sair da página
+        window.addEventListener('beforeunload', function () {
+            if (estaMonitorando) {
+                pararMonitoramento();
+            }
+        });
+    </script>
+</body>
+
+</html>
