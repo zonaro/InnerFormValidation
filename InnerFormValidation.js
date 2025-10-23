@@ -1651,6 +1651,7 @@
                     jQuery(".autocomplete.city:input").each(function () {
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
                             let val = obj.localidade || "";
+                            $.innerForm.log("Setting city select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
@@ -1662,6 +1663,7 @@
                     jQuery(".autocomplete.state:input").each(function () {
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
                             let val = obj.uf || "";
+                            $.innerForm.log("Setting state select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
@@ -1672,6 +1674,7 @@
                     jQuery(".autocomplete.ibge:input").each(function () {
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
                             let val = obj.ibge || "";
+                            $.innerForm.log("Setting ibge select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
@@ -1682,6 +1685,7 @@
                     jQuery(".autocomplete.citystate:input").each(function () {
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
                             let val = (obj.localidade || "") + " - " + (obj.uf || "");
+                            $.innerForm.log("Setting citystate select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
