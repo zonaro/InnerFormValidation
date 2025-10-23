@@ -1663,6 +1663,8 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
+                            //fire change to update any dependent selects
+                            jQuery(this).val(val).change().focus();
                         }
                     });
 
@@ -1672,6 +1674,7 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
+                            jQuery(this).val(val).change().focus();
                         }
                     });
 
@@ -1681,6 +1684,7 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
+                            jQuery(this).val(val).change().focus();
                         }
                     });
 
