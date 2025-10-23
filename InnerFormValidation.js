@@ -1664,8 +1664,8 @@
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
                             //fire change to update any dependent selects
-                            jQuery(this).val(val).change().focus();
                         }
+                        jQuery(this).val(val).change().focus();
                     });
 
                     jQuery(".autocomplete.state:input").each(function () {
@@ -1674,8 +1674,8 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
-                            jQuery(this).val(val).change().focus();
                         }
+                        jQuery(this).setOrReplaceVal(val).change().focus();
                     });
 
                     jQuery(".autocomplete.ibge:input").each(function () {
@@ -1684,8 +1684,8 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
-                            jQuery(this).val(val).change().focus();
                         }
+                        jQuery(this).setOrReplaceVal(val).change().focus();
                     });
 
                     jQuery(".autocomplete.citystate:input").each(function () {
@@ -1694,8 +1694,8 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
-                            jQuery(this).val(val).change().focus();
                         }
+                        jQuery(this).setOrReplaceVal(val).change().focus();
                     });
 
                     jQuery(".autocomplete.address")
