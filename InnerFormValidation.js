@@ -1643,7 +1643,7 @@
                         .change().focus();
                     jQuery(".autocomplete.fulladdress:input")
                         .setOrReplaceVal(
-                            obj.logradouro +
+                            obj.logradouro + ', ' +
                             homeNumber +
                             " " +
                             obj.complemento +
@@ -1733,7 +1733,7 @@
                     jQuery(".autocomplete.fulladdress")
                         .not(":input")
                         .text(
-                            obj.logradouro +
+                            obj.logradouro + ', ' +
                             homeNumber +
                             " - " +
                             obj.bairro +
