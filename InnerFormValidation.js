@@ -1562,7 +1562,7 @@
         delay = delay || 0;
         callbackFunction = callbackFunction || function (o) { $.innerForm.log('No callback defined', o); }
         $.innerForm.log('Searching CEP', CEPNumber, homeNumber, delay);
- 
+
 
         if (
             (CEPNumber.length == 9 && CEPNumber.includes("-")) ||
@@ -1640,8 +1640,8 @@
 
                     /// verifica se cidade ou estado são selects e se nao existe a opcao, adiciona
                     jQuery(".autocomplete.city:input").each(function () {
+                        let val = obj.localidade || "";
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            let val = obj.localidade || "";
                             $.innerForm.log("Setting city select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
@@ -1652,8 +1652,8 @@
                     });
 
                     jQuery(".autocomplete.state:input").each(function () {
+                        let val = obj.uf || "";
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            let val = obj.uf || "";
                             $.innerForm.log("Setting state select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
@@ -1663,8 +1663,8 @@
                     });
 
                     jQuery(".autocomplete.ibge:input").each(function () {
+                        let val = obj.ibge || "";
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            let val = obj.ibge || "";
                             $.innerForm.log("Setting ibge select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
@@ -1674,8 +1674,8 @@
                     });
 
                     jQuery(".autocomplete.citystate:input").each(function () {
+                        let val = (obj.localidade || "") + " - " + (obj.uf || "");
                         if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            let val = (obj.localidade || "") + " - " + (obj.uf || "");
                             $.innerForm.log("Setting citystate select to", val);
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
