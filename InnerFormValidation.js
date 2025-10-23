@@ -1694,6 +1694,7 @@
                             if (!jQuery(this).find("option[value='" + val + "']").length) {
                                 jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
+                            jQuery(this).val(val).change().focus();
                         }
                     });
 
