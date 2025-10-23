@@ -1596,9 +1596,13 @@
                     jQuery(".autocomplete.siafi").prop("disabled", true);
                 },
                 success: function (obj) {
-                    obj["numero"] = homeNumber;
+                    obj["numero"] = obj["numero"] || "";
                     if (homeNumber != "") {
-                        homeNumber = ", " + homeNumber;
+                        if (obj["numero"] == "") {
+                            obj["numero"] = homeNumber;
+                        } else {
+                            obj["numero"] = ", " + homeNumber;
+                        }
                     }
 
                     $.innerForm.log("ViaCEP Response", obj);
