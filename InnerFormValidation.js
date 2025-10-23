@@ -1584,16 +1584,7 @@
                 crossorigin: true,
                 beforeSend: function () {
                     $.innerForm.log("Getting info from ViaCEP...")
-                    jQuery(".autocomplete.address").prop("disabled", true);
-                    jQuery(".autocomplete.complement").prop("disabled", true);
-                    jQuery(".autocomplete.neighborhood").prop("disabled", true);
-                    jQuery(".autocomplete.city").prop("disabled", true);
-                    jQuery(".autocomplete.state").prop("disabled", true);
-                    jQuery(".autocomplete.fulladdress").prop("disabled", true);
-                    jQuery(".autocomplete.ibge").prop("disabled", true);
-                    jQuery(".autocomplete.gia").prop("disabled", true);
-                    jQuery(".autocomplete.ddd").prop("disabled", true);
-                    jQuery(".autocomplete.siafi").prop("disabled", true);
+
                 },
                 success: function (obj) {
                     obj["numero"] = obj["numero"] || "";
@@ -1770,16 +1761,7 @@
                     }, delay);
                 },
                 complete: function () {
-                    jQuery(".autocomplete.address").prop("disabled", address);
-                    jQuery(".autocomplete.complement").prop("disabled", complement);
-                    jQuery(".autocomplete.neighborhood").prop("disabled", neighborhood);
-                    jQuery(".autocomplete.city").prop("disabled", city);
-                    jQuery(".autocomplete.state").prop("disabled", state);
-                    jQuery(".autocomplete.fulladdress").prop("disabled", fulladdress);
-                    jQuery(".autocomplete.gia").prop("disabled", gia);
-                    jQuery(".autocomplete.ddd").prop("disabled", ddd);
-                    jQuery(".autocomplete.siafi").prop("disabled", siafi);
-                    jQuery(".autocomplete.ibge").prop("disabled", ibge);
+                    $.innerForm.log("VIACEP request completed");
                 }
             });
         } else {
@@ -1794,7 +1776,7 @@
     jQuery.fn.setOrReplaceVal = function (value) {
         let valor = jQuery.trim(jQuery(this).val() || "");
         if (valor == "" || jQuery(this).is(".noreplace") == false) {
-            jQuery(this).val(value)
+            jQuery(this).val(value).change();
         }
         return jQuery(this);
     }
