@@ -1634,7 +1634,13 @@
                     jQuery(".autocomplete.siafi:input")
                         .setOrReplaceVal(obj.siafi)
                         .change().focus();
-
+                    jQuery(".autocomplete.citystate:input")
+                        .setOrReplaceVal(
+                            obj.localidade +
+                            " - " +
+                            obj.uf
+                        )
+                        .change().focus();
                     jQuery(".autocomplete.fulladdress:input")
                         .setOrReplaceVal(
                             obj.logradouro +
@@ -1649,6 +1655,43 @@
                             obj.uf
                         )
                         .change().focus();
+
+                    /// verifica se cidade ou estado são selects e se nao existe a opcao, adiciona
+                    jQuery(".autocomplete.city:input").each(function () {
+                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
+                            let val = obj.localidade || "";
+                            if (!jQuery(this).find("option[value='" + val + "']").length) {
+                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                            }
+                        }
+                    });
+
+                    jQuery(".autocomplete.state:input").each(function () {
+                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
+                            let val = obj.uf || "";
+                            if (!jQuery(this).find("option[value='" + val + "']").length) {
+                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                            }
+                        }
+                    });
+
+                    jQuery(".autocomplete.ibge:input").each(function () {
+                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
+                            let val = obj.ibge || "";
+                            if (!jQuery(this).find("option[value='" + val + "']").length) {
+                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                            }
+                        }
+                    });
+
+                    jQuery(".autocomplete.citystate:input").each(function () {
+                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
+                            let val = (obj.localidade || "") + " - " + (obj.uf || "");
+                            if (!jQuery(this).find("option[value='" + val + "']").length) {
+                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                            }
+                        }
+                    });
 
                     jQuery(".autocomplete.address")
                         .not(":input")
@@ -1677,6 +1720,11 @@
                     jQuery(".autocomplete.ddd")
                         .not(":input")
                         .text(obj.ddd);
+                    jQuery(".autocomplete.citystate")
+                        .not(":input")
+                        .text(
+                            obj.localidade + " - " + obj.uf
+                        );
                     jQuery(".autocomplete.fulladdress")
                         .not(":input")
                         .text(
