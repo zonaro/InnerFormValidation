@@ -1562,16 +1562,7 @@
         delay = delay || 0;
         callbackFunction = callbackFunction || function (o) { $.innerForm.log('No callback defined', o); }
         $.innerForm.log('Searching CEP', CEPNumber, homeNumber, delay);
-        let address = jQuery(".autocomplete.address").prop("disabled");
-        let complement = jQuery(".autocomplete.complement").prop("disabled");
-        let neighborhood = jQuery(".autocomplete.neighborhood").prop("disabled");
-        let city = jQuery(".autocomplete.city").prop("disabled");
-        let state = jQuery(".autocomplete.state").prop("disabled");
-        let fulladdress = jQuery(".autocomplete.fulladdress").prop("disabled");
-        let gia = jQuery(".autocomplete.gia").prop("disabled");
-        let ddd = jQuery(".autocomplete.ddd").prop("disabled");
-        let ibge = jQuery(".autocomplete.ibge").prop("disabled");
-        let siafi = jQuery(".autocomplete.siafi").prop("disabled");
+ 
 
         if (
             (CEPNumber.length == 9 && CEPNumber.includes("-")) ||
