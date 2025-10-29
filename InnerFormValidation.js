@@ -1951,7 +1951,7 @@
                             if (hasThousand && thousand !== sep) {
                                 regex = new RegExp("^([0-9]{1,3}(" + thousandRegex + "[0-9]{3})*)" + sepRegex + "?([0-9]{1," + dec + "})?$", "g");
                             } else {
-                                regex = new RegExp("^\d+(" + sepRegex + "\d{1," + dec + "})?$", "g");
+                                regex = new RegExp("^\\d+(" + sepRegex + "\\d{1," + dec + "})?$", "g");
                             }
                             results.push(regex.test(value));
                             break;
