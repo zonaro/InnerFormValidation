@@ -376,6 +376,47 @@
 
             <form action="javascript:void(0)" class="validate" id="mainForm">
 
+                <!-- ========== SEÇÃO ESPECIAL: NÚMEROS COM SEPARADORES PERSONALIZADOS ========== -->
+                <div class="section-header">
+                    <h3><i class="fas fa-sort-numeric-up"></i> Números com Separadores Personalizados</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Número com vírgula decimal e ponto milhar</label>
+                            <input type="text" class="form-control mask num onkeyup" data-separator="," data-thousand="." placeholder="1.234,56" />
+                            <small class="text-muted">Use <code>data-separator=","</code> e <code>data-thousand="."</code></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Número com ponto decimal e vírgula milhar</label>
+                            <input type="text" class="form-control mask num onkeyup" data-separator="." data-thousand="," placeholder="1,234.56" />
+                            <small class="text-muted">Use <code>data-separator="."</code> e <code>data-thousand=","</code></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Número com 3 casas decimais (sem milhar)</label>
+                            <input type="text" class="form-control mask num onkeyup" data-decimal="3" placeholder="1234,567" />
+                            <small class="text-muted">Use <code>data-decimal="3"</code></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            <strong>Dica:</strong> Os atributos <code>data-separator</code>, <code>data-decimal</code> e <code>data-thousand</code> permitem configurar o formato de entrada e validação de números.<br>
+                            <ul class="mb-0">
+                                <li><code>data-separator</code>: separador decimal (ex: "," ou ".")</li>
+                                <li><code>data-decimal</code>: número de casas decimais (ex: "2", "3")</li>
+                                <li><code>data-thousand</code>: separador de milhares (ex: "." ou ",")</li>
+                            </ul>
+                            <span class="text-muted">A máscara e a validação respeitam esses atributos.</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ========== SEÇÃO 1: CAMPOS BÁSICOS ========== -->
                 <div class="section-header">
                     <h3><i class="fas fa-edit"></i> 1. Validações Básicas</h3>

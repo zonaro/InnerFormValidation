@@ -94,6 +94,37 @@ $.innerForm = {
 | `latitude` `lat`         | Coordenada de latitude      | 🌍                      | `<input class="mask latitude">`  |
 | `longitude` `long` `lng` | Coordenada de longitude     | 🌍                      | `<input class="mask longitude">` |
 
+
+### **Validação e Máscara de Números com Separadores Personalizados**
+
+Campos com as classes `num` ou `number` agora suportam os seguintes atributos para personalização de formato:
+
+| Atributo           | Descrição                                                                 | Exemplo |
+|--------------------|---------------------------------------------------------------------------|---------|
+| `data-separator`   | Define o separador decimal (ex: `,` ou `.`). Tem prioridade sobre `data-decimal`. | `<input class="mask num" data-separator="," />` |
+| `data-decimal`     | Define o número de casas decimais (ex: `2`).                              | `<input class="mask num" data-decimal="2" />` |
+| `data-thousand`    | Define o separador de milhares (ex: `.` ou `,`).                          | `<input class="mask num" data-thousand="." />` |
+
+**Regras de prioridade:**
+- Se `data-separator` existir, ele será usado como separador decimal.
+- Se não, será usado o valor de `data-decimal` (padrão: 2 casas decimais, separador ",").
+- O atributo `data-thousand` é opcional e define o separador de milhares.
+
+**Exemplo de uso:**
+```html
+<!-- Número com vírgula como decimal e ponto como milhar -->
+<input class="form-control mask num" data-separator="," data-thousand="." placeholder="1.234,56">
+
+<!-- Número com ponto como decimal e vírgula como milhar -->
+<input class="form-control mask num" data-separator="." data-thousand="," placeholder="1,234.56">
+
+<!-- Número com 3 casas decimais, sem separador de milhar -->
+<input class="form-control mask num" data-decimal="3" placeholder="1234,567">
+```
+
+**A validação também respeita esses atributos, aceitando apenas o formato configurado.**
+
+---
 ### **Validação de Caracteres**
 
 | Classe                    | Descrição           | Compatível com Máscara | Exemplo                         |
