@@ -834,8 +834,12 @@
     };
 
 
-
-
+    /**
+    * Applies a CNPJ mask to format the input as a CNPJ number.
+    * @function applyCNPJMask
+    * @memberof $.innerForm
+    * @param {*} input 
+    */
     $.innerForm.applyCNPJMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
@@ -875,11 +879,62 @@
         }
     }
 
+
+    /**
+     * Aplica máscara numérica considerando separador de milhares, decimal e casas decimais.
+     * @param {HTMLInputElement} input 
+     */
     $.innerForm.applyNumberMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        text = text.replace(/\D/g, "");
+        var sep = input.getAttribute("data-separator");
+        var dec = input.getAttribute("data-decimal");
+        var thousand = input.getAttribute("data-thousand");
+        var hasSep = typeof sep === "string" && sep.length > 0;
+        var hasDec = typeof dec === "string" && dec.length > 0 && !isNaN(dec);
+        var hasThousand = typeof thousand === "string" && thousand.length > 0;
+        if (!hasSep && !hasDec) {
+            // Inteiro
+            text = text.replace(/\D/g, "");
+            if (hasThousand && thousand !== sep) {
+                // Adiciona separador de milhar
+                text = text.replace(/\B(?=(\d{3})+(?!\d))/g, thousand);
+            }
+            input.value = text;
+            return;
+        }
+        // Definir separador e casas decimais
+        if (!hasSep && hasDec) sep = ",";
+        if (hasSep && !hasDec) dec = "2";
+        if (hasSep && hasDec) { /* ok */ }
+        var sepRegex = sep.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+        var thousandRegex = hasThousand ? thousand.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') : null;
+        // Remove tudo exceto dígitos, separador decimal e de milhar
+        var re = hasThousand ? new RegExp("[^\\d" + sepRegex + thousandRegex + "]", "g") : new RegExp("[^\\d" + sepRegex + "]", "g");
+        text = text.replace(re, "");
+        // Permitir só um separador decimal
+        var first = text.indexOf(sep);
+        if (first !== -1) {
+            var before = text.substring(0, first + 1);
+            var after = text.substring(first + 1).replaceAll(sep, "");
+            text = before + after;
+        }
+        // Limitar casas decimais
+        if (first !== -1 && dec > 0) {
+            var decs = text.substring(first + 1);
+            if (decs.length > dec) {
+                decs = decs.substring(0, dec);
+                text = text.substring(0, first + 1) + decs;
+            }
+        }
+        // Adicionar separador de milhar
+        if (hasThousand && thousand !== sep) {
+            var intPart = first !== -1 ? text.substring(0, first) : text;
+            var decPart = first !== -1 ? text.substring(first) : "";
+            intPart = intPart.replace(new RegExp(thousandRegex, 'g'), '');
+            intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousand);
+            text = intPart + decPart;
+        }
         input.value = text;
-
     };
 
     $.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
@@ -1841,13 +1896,38 @@
                             results.push(value.indexOf(" ") < 0);
                             break;
                         case "number":
-                        case "num":
+                        case "num": {
                             if (jQuery.trim(value) === "") {
                                 results.push(true);
                                 break;
                             }
-                            results.push(!isNaN(value.replaceAll(",", ".")));
+                            var sep = jQuery(this).attr("data-separator");
+                            var dec = jQuery(this).attr("data-decimal");
+                            var thousand = jQuery(this).attr("data-thousand");
+                            var hasSep = typeof sep === "string" && sep.length > 0;
+                            var hasDec = typeof dec === "string" && dec.length > 0 && !isNaN(dec);
+                            var hasThousand = typeof thousand === "string" && thousand.length > 0;
+                            if (!hasSep && !hasDec) {
+                                // Inteiro
+                                var reInt = hasThousand ? new RegExp("^([0-9]{1,3}(" + thousand.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + "[0-9]{3})*)$", "g") : /^\d+$/g;
+                                results.push(reInt.test(value));
+                                break;
+                            }
+                            if (!hasSep && hasDec) sep = ",";
+                            if (hasSep && !hasDec) dec = "2";
+                            if (hasSep && hasDec) { /* ok */ }
+                            var sepRegex = sep.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+                            var thousandRegex = hasThousand ? thousand.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') : null;
+                            // Regex para validar número com separador de milhar, decimal e casas decimais
+                            var regex;
+                            if (hasThousand && thousand !== sep) {
+                                regex = new RegExp("^([0-9]{1,3}(" + thousandRegex + "[0-9]{3})*)" + sepRegex + "?([0-9]{1," + dec + "})?$", "g");
+                            } else {
+                                regex = new RegExp("^\d+(" + sepRegex + "\d{1," + dec + "})?$", "g");
+                            }
+                            results.push(regex.test(value));
                             break;
+                        }
                         case "ean":
                             if (jQuery.trim(value) === "") {
                                 results.push(true);
