@@ -1898,6 +1898,8 @@
                         case "number":
                         case "decimal":
                         case "money":
+                        case "integer":
+                        case "int":
                         case "num": {
                             if (jQuery.trim(value) === "") {
                                 results.push(true);
@@ -1910,7 +1912,13 @@
                             var hasSep = typeof sep === "string" && sep.length > 0;
                             var hasDec = typeof dec === "string" && dec.length > 0 && !isNaN(dec);
                             var hasThousand = typeof thousand === "string" && thousand.length > 0;
-                            // Corrige: se só data-decimal está presente, usa vírgula como separador padrão
+
+                            if (urrentValid === 'integer' || currentValid === 'int') {
+                                // Inteiro, ignora separador decimal
+                                hasDec = false;
+                                dec = "0";
+                            }
+
                             if ((!hasSep && hasDec)) {
                                 sep = ",";
                                 hasSep = true;
@@ -2087,7 +2095,7 @@
                                 results.push(true);
                                 break;
                             }
-                            results.push(jQuery(this).isValid("num"));
+                            results.push(jQuery(this).isValid("int"));
                             var num = parseInt(value);
                             results.push(num > 0 && num <= 12);
                             break;
@@ -2491,7 +2499,7 @@
         jQuery(this).find(".mask.creditcard, .mask.debitcard").creditCardMask();
         jQuery(this).find(".mask.date, .mask.data").dateMask();
         jQuery(this).find(".mask.monthyear").monthYearMask();
-        jQuery(this).find(".mask.num, .mask.number, .mask.month").numberMask();
+        jQuery(this).find(".mask.num, .mask.number, .mask.month, .mask.money, .mask.decimal, .mask.integer, .mask.int").numberMask();
         jQuery(this).find(".mask.len").lenMask();
         jQuery(this).find(".autocomplete.cep").cepAutoComplete();
         jQuery(this).find(".mask.time").timeMask();
