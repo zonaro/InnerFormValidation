@@ -99,11 +99,11 @@ $.innerForm = {
 
 Campos com as classes `num` ou `number` agora suportam os seguintes atributos para personalização de formato:
 
-| Atributo           | Descrição                                                                 | Exemplo |
-|--------------------|---------------------------------------------------------------------------|---------|
-| `data-separator`   | Define o separador decimal (ex: `,` ou `.`). Tem prioridade sobre `data-decimal`. | `<input class="mask num" data-separator="," />` |
-| `data-decimal`     | Define o número de casas decimais (ex: `2`).                              | `<input class="mask num" data-decimal="2" />` |
-| `data-thousand`    | Define o separador de milhares (ex: `.` ou `,`).                          | `<input class="mask num" data-thousand="." />` |
+| Atributo         | Descrição                                                                         | Exemplo                                         |
+| ---------------- | --------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `data-separator` | Define o separador decimal (ex: `,` ou `.`). Tem prioridade sobre `data-decimal`. | `<input class="mask num" data-separator="," />` |
+| `data-decimal`   | Define o número de casas decimais (ex: `2`).                                      | `<input class="mask num" data-decimal="2" />`   |
+| `data-thousand`  | Define o separador de milhares (ex: `.` ou `,`).                                  | `<input class="mask num" data-thousand="." />`  |
 
 **Regras de prioridade:**
 - Se `data-separator` existir, ele será usado como separador decimal.
