@@ -1896,28 +1896,46 @@
                             results.push(value.indexOf(" ") < 0);
                             break;
                         case "number":
+                        case "decimal":
                         case "num": {
                             if (jQuery.trim(value) === "") {
                                 results.push(true);
                                 break;
                             }
+
                             var sep = jQuery(this).attr("data-separator");
                             var dec = jQuery(this).attr("data-decimal");
                             var thousand = jQuery(this).attr("data-thousand");
                             var hasSep = typeof sep === "string" && sep.length > 0;
                             var hasDec = typeof dec === "string" && dec.length > 0 && !isNaN(dec);
                             var hasThousand = typeof thousand === "string" && thousand.length > 0;
-                            if (!hasSep && !hasDec) {
-                                // Inteiro
-                                var reInt = hasThousand ? new RegExp("^([0-9]{1,3}(" + thousand.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') + "[0-9]{3})*)$", "g") : /^\d+$/g;
-                                results.push(reInt.test(value));
-                                break;
+                            // Corrige: se só data-decimal está presente, usa vírgula como separador padrão
+                            if ((!hasSep && hasDec)) {
+                                sep = ",";
+                                hasSep = true;
                             }
-                            if (!hasSep && hasDec) sep = ",";
-                            if (hasSep && !hasDec) dec = "2";
-                            if (hasSep && hasDec) { /* ok */ }
-                            var sepRegex = sep.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-                            var thousandRegex = hasThousand ? thousand.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') : null;
+                            if (hasSep && !hasDec) {
+                                dec = "2";
+                                hasDec = true;
+                            }
+                            if (!hasSep && !hasDec) {
+
+                                if (currentValid === 'decimal') {
+                                    // Decimal sem separador, assume 2 casas decimais
+                                    dec = "2";
+                                    sep = ",";
+                                    hasSep = true;
+                                    hasDec = true;
+                                } else {
+                                    // Inteiro
+                                    var reInt = hasThousand ? new RegExp("^([0-9]{1,3}(" + thousand.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "[0-9]{3})*)$", "g") : /^\d+$/g;
+                                    results.push(reInt.test(value));
+                                    break;
+                                }
+
+                            }
+                            var sepRegex = sep.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                            var thousandRegex = hasThousand ? thousand.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') : null;
                             // Regex para validar número com separador de milhar, decimal e casas decimais
                             var regex;
                             if (hasThousand && thousand !== sep) {
