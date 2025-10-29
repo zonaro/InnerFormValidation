@@ -1897,6 +1897,7 @@
                             break;
                         case "number":
                         case "decimal":
+                        case "money":
                         case "num": {
                             if (jQuery.trim(value) === "") {
                                 results.push(true);
@@ -1920,12 +1921,13 @@
                             }
                             if (!hasSep && !hasDec) {
 
-                                if (currentValid === 'decimal') {
+                                if (currentValid === 'decimal' || currentValid === 'money') {
                                     // Decimal sem separador, assume 2 casas decimais
                                     dec = "2";
                                     sep = ",";
                                     hasSep = true;
                                     hasDec = true;
+                                    hasThousand = currentValid === 'money'; // money usa milhar por padrão
                                 } else {
                                     // Inteiro
                                     var reInt = hasThousand ? new RegExp("^([0-9]{1,3}(" + thousand.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "[0-9]{3})*)$", "g") : /^\d+$/g;
