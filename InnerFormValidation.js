@@ -1913,7 +1913,7 @@
                             var hasDec = typeof dec === "string" && dec.length > 0 && !isNaN(dec);
                             var hasThousand = typeof thousand === "string" && thousand.length > 0;
 
-                            if (urrentValid === 'integer' || currentValid === 'int') {
+                            if (currentValid === 'integer' || currentValid === 'int') {
                                 // Inteiro, ignora separador decimal
                                 hasDec = false;
                                 dec = "0";
