@@ -1889,7 +1889,7 @@
                     let currentValid = valids[i].toLowerCase();
                     switch (currentValid) {
                         case "nospace":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -1901,7 +1901,7 @@
                         case "integer":
                         case "int":
                         case "num": {
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -1957,47 +1957,47 @@
                             break;
                         }
                         case "ean":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             results.push($.innerForm.validateEAN(value));
                             break;
                         case "upper":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(!/[a-z]/.test(value));
+                            results.push(!$.innerForm.validateRegex(value, /[a-z]/));
                             break;
                         case "lower":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(!/[A-Z]/.test(value));
+                            results.push(!$.innerForm.validateRegex(value, /[A-Z]/));
 
                             break;
                         case "alphanumeric":
                         case "alphanum":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(/^[A-Za-z0-9 ]+$/.test(value));
+                            results.push($.innerForm.validateRegex(value, /^[A-Za-z0-9 ]+$/));
                             break;
                         case "alpha":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(/^[A-Za-z ]+$/.test(value));
+                            results.push($.innerForm.validateRegex(value, /^[A-Za-z ]+$/));
                             break;
                         case "tel":
                         case "cel":
                         case "telephone":
                         case "mobilephone":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2011,12 +2011,12 @@
                         case "mail":
                         case "email":
                         case "e-mail":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             var re = /^[\w-]+(\.[\w-]+)*@[\w]+(\.[a-z]{2,6})*(\.[a-z]{2,6})$/gi;
-                            results.push(re.test(value));
+                            results.push($.innerForm.validateRegex(value, re));
                             break;
                         case "required":
                         case "req":
@@ -2024,21 +2024,22 @@
                             if (type == "checkbox" || type == "radio") {
                                 results.push(jQuery(this).is(":checked"));
                             } else {
-                                results.push(!(!value || jQuery.trim(value) === ""));
+                                results.push(!(!value || $.innerForm.isBlank(value)));
                             }
                             break;
                         case "url":
                         case "link":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
+
                             var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
-                            results.push(re.test(value));
+                            results.push($.innerForm.validateRegex(value, re));
                             break;
                         case "data":
                         case "date":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2046,21 +2047,21 @@
                             results.push($.innerForm.validDate(value));
                             break;
                         case "daterange":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             results.push($.innerForm.validDateRange(value));
                             break;
                         case "monthyearrange":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             results.push($.innerForm.validMonthYearRange(value));
                             break;
                         case "shortmonthyearrange":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2069,7 +2070,7 @@
                         case "datetime":
                         case "dateshorttime":
                         case "datetimeshort":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2084,14 +2085,14 @@
                         case "shorttime":
                         case "timeshort":
                         case "minutesecond":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             results.push($.innerForm.validateTime(value, currentValid == "minutesecond"));
                             break;
                         case "month":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2100,7 +2101,7 @@
                             results.push(num > 0 && num <= 12);
                             break;
                         case "monthyear":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2118,7 +2119,7 @@
                             results.push(false);
                             break;
                         case "cep":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2129,7 +2130,7 @@
                         case "cnpj":
                         case "cpf":
                             jQuery(this).removeAttr('data-doc');
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2147,7 +2148,7 @@
                             break;
                         case "debitcard":
                         case "creditcard":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2175,12 +2176,13 @@
                             }
                             break;
                         case "password":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
 
                             var strenght = valids[i + 1] || "3";
+                            strenght = strenght.toString().toLowerCase();
 
                             switch (strenght) {
                                 case "strong":
@@ -2209,7 +2211,7 @@
                         case "after":
                         case "before":
 
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2235,7 +2237,7 @@
                             break;
                         case "eq":
                         case "equal":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2271,10 +2273,11 @@
                         case "containsallchar":
                         case "containsallchars":
 
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
+
                             var valor2 =
                                 jQuery(this).attr("data-cnts") ||
                                 jQuery(this).attr("data-contains") ||
@@ -2283,7 +2286,7 @@
                                 valids[i + 1] ||
                                 "";
 
-                            if (valor2 === "") {
+                            if ($.innerForm.isBlank(valor2)) {
                                 results.push(false);
                                 break;
                             }
@@ -2325,7 +2328,7 @@
                             break;
 
                         case "len":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2336,7 +2339,7 @@
                             results.push(value.length == parseInt(valids[i + 1]));
                             break;
                         case "minlen":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2347,7 +2350,7 @@
                             results.push(value.length >= parseInt(valids[i + 1]));
                             break;
                         case "maxlen":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2358,7 +2361,7 @@
                             results.push(value.length <= parseInt(valids[i + 1]));
                             break;
                         case "to":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2375,7 +2378,7 @@
                             results.push(v1 && v2);
                             break;
                         case "minage":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2383,7 +2386,7 @@
                             results.push(idade >= parseInt(valids[i + 1]));
                             break;
                         case "maxage":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2391,7 +2394,7 @@
                             results.push(idade <= parseInt(valids[i + 1]));
                             break;
                         case "age":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2400,7 +2403,7 @@
                             break;
                         case "latitude":
                         case "lat":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2409,7 +2412,7 @@
                         case "longitude":
                         case "long":
                         case "lng":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2418,7 +2421,7 @@
                         case "coordinate":
                         case "coordinates":
                         case "coord":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2426,12 +2429,37 @@
                             break;
                         case "uuid":
                         case "guid":
-                            if (jQuery.trim(value) === "") {
+                            if ($.innerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             results.push($.innerForm.validateUUID(value));
                             break;
+
+                        case 'pix':
+                        case 'chavepix':
+                            if ($.innerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+
+                            results.push($.innerForm.validatePix(value));
+
+                            break;
+                        case 'regex':
+                            if ($.innerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+                            var regext = $(this).attr('pattern') || $(this).data('regex') || "";
+                            var flags = $(this).attr('data-regex-flags') || "";
+                            if ($.innerForm.isBlank(regext)) {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateRegex(value, regext, flags));
+                            break;
+
                         default:
                             results.push(true);
                             break;
@@ -2465,6 +2493,35 @@
             return true;
         }
     };
+
+    $.innerForm.isBlank = function (value) {
+        return value === null || value === undefined || jQuery.trim(value) === "";
+    };
+
+    $.innerForm.validateRegex = function (value, pattern, flags) {
+        var regex = new RegExp(pattern, flags);
+        return regex.test(value);
+    }
+
+
+    $.innerForm.validatePix = function (value) {
+        /// Validar se é um email, cpf, cnpj ou telefone válido, ou se é uma chave aleatória válida (UUID)
+        return $.innerForm.validateEmail(value) ||
+            $.innerForm.validateCPF(value) ||
+            $.innerForm.validateCNPJ(value) ||
+            $.innerForm.validatePhone(value) ||
+            $.innerForm.validateUUID(value);
+    }
+
+
+
+
+    $.innerForm.validateEmail = function (value) {
+        var re = /^[\w-]+(\.[\w-]+)*@[\w]+(\.[a-z]{2,6})*(\.[a-z]{2,6})$/gi;
+        return $.innerForm.validateRegex(value, re);
+
+    }
+
 
 
 
