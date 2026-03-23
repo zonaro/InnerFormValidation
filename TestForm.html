@@ -1333,6 +1333,29 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>Deve ser uma chave PIX válida (email, CPF, CNPJ, telefone ou UUID)</label>
+                            <input type='text' placeholder="exemplo@dominio.com ou 11999999999"
+                                class='form-control pix onkeyup' />
+                            <small class="text-muted">Aceita classes <strong>pix</strong> ou
+                                <strong>chavepix</strong></small>
+                            <div class="code-buttons">
+                                <button type="button" class="code-btn" onclick="copyHTML(this)"
+                                    title="Copiar HTML completo">
+                                    <i class="fas fa-code"></i> HTML
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyClasses(this)"
+                                    title="Copiar classes CSS">
+                                    <i class="fas fa-tags"></i> Classes
+                                </button>
+                                <button type="button" class="code-btn" onclick="copyAttributes(this)"
+                                    title="Copiar atributos">
+                                    <i class="fas fa-list"></i> Atributos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Deve conter espaço</label>
@@ -2394,7 +2417,7 @@ $.innerForm.clearLocationWatch(watchId);</code></pre>
                 'obg', 'req', 'required', 'mask', 'onkeyup',
 
                 // Validações de formato
-                'email', 'mail', 'url', 'link', 'cpf', 'cnpj', 'cpfcnpj', 'cep', 'tel', 'cel', 'ean',
+                'email', 'mail', 'url', 'link', 'cpf', 'cnpj', 'cpfcnpj', 'cep', 'tel', 'cel', 'ean', 'pix', 'chavepix',
 
                 // Validações de caracteres
                 'alpha', 'alphanumeric', 'alphanum', 'num', 'number', 'upper', 'lower', 'nospace',

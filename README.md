@@ -91,6 +91,7 @@ $.innerForm = {
 | `tel` `cel`              | Telefone/Celular brasileiro | 🎭                      | `<input class="mask tel">`       |
 | `ean`                    | Código de barras EAN        | ❌                      | `<input class="ean">`            |
 | `uuid`                   | UUID/GUID válido            | 🎭                      | `<input class="mask uuid">`      |
+| `pix` `chavepix`         | Chave PIX válida            | ❌                      | `<input class="pix">`            |
 | `latitude` `lat`         | Coordenada de latitude      | 🌍                      | `<input class="mask latitude">`  |
 | `longitude` `long` `lng` | Coordenada de longitude     | 🌍                      | `<input class="mask longitude">` |
 
@@ -322,6 +323,15 @@ Campos com as classes `num` ou `number` agora suportam os seguintes atributos pa
 
 <!-- UUID com máscara automática -->
 <input class="form-control mask uuid">
+```
+
+### **Validação de Chave PIX**
+```html
+<!-- Aceita email, CPF, CNPJ, telefone ou UUID -->
+<input class="form-control pix">
+
+<!-- Alias equivalente -->
+<input class="form-control chavepix">
 ```
 
 ### **Validação de Conteúdo de String**
