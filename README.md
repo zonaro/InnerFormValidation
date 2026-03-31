@@ -866,8 +866,7 @@ var isValid = $('#meuInput').isValid();
 // Validar com classes customizadas
 var isValid = $('#meuInput').isValid('obg', 'minlen 5');
 
-// Validar valor direto
-var isValid = $.isValid('teste@email.com', 'email');
+ 
 ```
 
 #### Validar formulário completo:

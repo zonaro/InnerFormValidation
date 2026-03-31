@@ -2663,6 +2663,8 @@
         }
     };
 
+
+
     $.innerForm.isBlank = function (value) {
         return value === null || value === undefined || jQuery.trim(value) === "";
     };
