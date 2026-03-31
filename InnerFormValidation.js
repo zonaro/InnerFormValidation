@@ -949,12 +949,8 @@
         var uf = "";
         var letters = value.match(/[A-Z]{1,2}$/);
         if (letters) {
-            uf = letters[0].slice(0, 2);
-            if (uf.length === 2) {
-                value = value.slice(0, -uf.length);
-            } else {
-                uf = "";
-            }
+            uf = letters[0];
+            value = value.slice(0, -uf.length);
         }
 
         var num = value.replace(/\D/g, "").slice(0, 6);
@@ -964,7 +960,7 @@
             formattedNum = arr.join(".").split("").reverse().join("");
         }
 
-        input.value = uf ? formattedNum + "/" + uf : formattedNum;
+        input.value = formattedNum + (uf ? "/" + uf : "");
         input.maxLength = 10;
     };
 
