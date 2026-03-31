@@ -2733,6 +2733,7 @@
         jQuery(this).find(".mask.datetime").dateTimeMask();
         jQuery(this).find(".mask.alpha").alphaMask();
         jQuery(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
+        jQuery(this).find(".mask.state, .mask.uf").ufMask();
         jQuery(this).find(".mask.nospace").noSpaceMask();
         jQuery(this).find(".mask.maxlen").maxLenMask();
         jQuery(this).find(".mask.leadingzero").leadingZeroMask();
