@@ -83,20 +83,20 @@ $.innerForm = {
 | Classe                   | Descrição                       | Compatível com Máscara | Exemplo                          |
 | ------------------------ | ------------------------------- | ---------------------- | -------------------------------- |
 | `email` `mail`           | Email válido                    | ❌                      | `<input class="email">`          |
-| `url` `link`             | URL válida                      | 🎭                      | `<input class="mask url">`       |
-| `cpf`                    | CPF brasileiro válido           | 🎭                      | `<input class="mask cpf">`       |
-| `cnpj`                   | CNPJ brasileiro válido          | 🎭                      | `<input class="mask cnpj">`      |
-| `cpfcnpj`                | CPF ou CNPJ válido              | 🎭                      | `<input class="mask cpfcnpj">`   |
-| `cep`                    | CEP brasileiro válido           | 🎭                      | `<input class="mask cep">`       |
-| `cnh`                    | CNH brasileira válida           | 🎭                      | `<input class="mask cnh">`       |
-| `tel` `cel`              | Telefone/Celular brasileiro     | 🎭                      | `<input class="mask tel">`       |
+| `url` `link`             | URL válida                      | ✅                      | `<input class="mask url">`       |
+| `cpf`                    | CPF brasileiro válido           | ✅                      | `<input class="mask cpf">`       |
+| `cnpj`                   | CNPJ brasileiro válido          | ✅                      | `<input class="mask cnpj">`      |
+| `cpfcnpj`                | CPF ou CNPJ válido              | ✅                      | `<input class="mask cpfcnpj">`   |
+| `cep`                    | CEP brasileiro válido           | ✅                      | `<input class="mask cep">`       |
+| `cnh`                    | CNH brasileira válida           | ✅                      | `<input class="mask cnh">`       |
+| `tel` `cel`              | Telefone/Celular brasileiro     | ✅                      | `<input class="mask tel">`       |
 | `ean`                    | Código de barras EAN            | ❌                      | `<input class="ean">`            |
-| `uuid`                   | UUID/GUID válido                | 🎭                      | `<input class="mask uuid">`      |
+| `uuid`                   | UUID/GUID válido                | ✅                      | `<input class="mask uuid">`      |
 | `pix` `chavepix`         | Chave PIX válida                | ❌                      | `<input class="pix">`            |
-| `latitude` `lat`         | Coordenada de latitude          | 🌍                      | `<input class="mask latitude">`  |
-| `longitude` `long` `lng` | Coordenada de longitude         | 🌍                      | `<input class="mask longitude">` |
-| `uf` `state`             | Sigla de Estado (UF)            | ❌                      | `<input class="uf">`             |
-| `oab`                    | Registro OAB (1-6 dígitos + UF) | ❌                      | `<input class="mask oab">`       |
+| `latitude` `lat`         | Coordenada de latitude          | ✅                      | `<input class="mask latitude">`  |
+| `longitude` `long` `lng` | Coordenada de longitude         | ✅                      | `<input class="mask longitude">` |
+| `uf` `state`             | Sigla de Estado (UF)            | ✅                      | `<input class="mask uf">`        |
+| `oab`                    | Registro OAB (1-6 dígitos + UF) | ✅                      | `<input class="mask oab">`       |
 
 
 ### **Validação e Máscara de Números com Separadores Personalizados**
@@ -133,27 +133,27 @@ Campos com as classes `num` ou `number` agora suportam os seguintes atributos pa
 
 | Classe                    | Descrição           | Compatível com Máscara | Exemplo                         |
 | ------------------------- | ------------------- | ---------------------- | ------------------------------- |
-| `alpha`                   | Apenas letras (A-Z) | 🎭                      | `<input class="mask alpha">`    |
-| `alphanumeric` `alphanum` | Letras e números    | 🎭                      | `<input class="mask alphanum">` |
-| `num` `number`            | Apenas números      | 🎭                      | `<input class="mask num">`      |
-| `upper`                   | Apenas maiúsculas   | 🎭                      | `<input class="mask upper">`    |
-| `lower`                   | Apenas minúsculas   | 🎭                      | `<input class="mask lower">`    |
-| `nospace`                 | Proibir espaços     | 🎭                      | `<input class="mask nospace">`  |
+| `alpha`                   | Apenas letras (A-Z) | ✅                      | `<input class="mask alpha">`    |
+| `alphanumeric` `alphanum` | Letras e números    | ✅                      | `<input class="mask alphanum">` |
+| `num` `number`            | Apenas números      | ✅                      | `<input class="mask num">`      |
+| `upper`                   | Apenas maiúsculas   | ✅                      | `<input class="mask upper">`    |
+| `lower`                   | Apenas minúsculas   | ✅                      | `<input class="mask lower">`    |
+| `nospace`                 | Proibir espaços     | ✅                      | `<input class="mask nospace">`  |
 
 ### **Validação de Data e Hora**
 
 | Classe                  | Formato                 | Compatível com Máscara | Exemplo                                    |
 | ----------------------- | ----------------------- | ---------------------- | ------------------------------------------ |
-| `date` `data`           | dd/MM/yyyy              | 🎭                      | `<input class="mask date">`                |
-| `time`                  | hh:mm:ss                | 🎭                      | `<input class="mask time">`                |
-| `timeshort` `shorttime` | hh:mm                   | 🎭                      | `<input class="mask timeshort">`           |
-| `datetime`              | dd/MM/yyyy hh:mm:ss     | 🎭                      | `<input class="mask datetime">`            |
-| `datetimeshort`         | dd/MM/yyyy hh:mm        | 🎭                      | `<input class="mask datetimeshort">`       |
-| `minutesecond`          | mm:ss                   | 🎭                      | `<input class="mask minutesecond">`        |
-| `monthyear`             | MM/yyyy                 | 🎭                      | `<input class="mask monthyear">`           |
-| `daterange`             | dd/MM/yyyy ~ dd/MM/yyyy | 🎭                      | `<input class="mask daterange">`           |
-| `monthyearrange`        | MM/yyyy ~ MM/yyyy       | 🎭                      | `<input class="mask monthyearrange">`      |
-| `shortmonthyearrange`   | MM/yy ~ MM/yy           | 🎭                      | `<input class="mask shortmonthyearrange">` |
+| `date` `data`           | dd/MM/yyyy              | ✅                      | `<input class="mask date">`                |
+| `time`                  | hh:mm:ss                | ✅                      | `<input class="mask time">`                |
+| `timeshort` `shorttime` | hh:mm                   | ✅                      | `<input class="mask timeshort">`           |
+| `datetime`              | dd/MM/yyyy hh:mm:ss     | ✅                      | `<input class="mask datetime">`            |
+| `datetimeshort`         | dd/MM/yyyy hh:mm        | ✅                      | `<input class="mask datetimeshort">`       |
+| `minutesecond`          | mm:ss                   | ✅                      | `<input class="mask minutesecond">`        |
+| `monthyear`             | MM/yyyy                 | ✅                      | `<input class="mask monthyear">`           |
+| `daterange`             | dd/MM/yyyy ~ dd/MM/yyyy | ✅                      | `<input class="mask daterange">`           |
+| `monthyearrange`        | MM/yyyy ~ MM/yyyy       | ✅                      | `<input class="mask monthyearrange">`      |
+| `shortmonthyearrange`   | MM/yy ~ MM/yy           | ✅                      | `<input class="mask shortmonthyearrange">` |
 
 ### **Validação de Comprimento**
 
@@ -193,7 +193,7 @@ $.innerForm.validarCNH('987.654.321-00'); // true/false
 ```
 ---
 
-## 🎭 Classes de Máscara
+## ✅ Classes de Máscara
 
 > **Nota**: Adicione a classe `mask` junto com a classe específica para aplicar máscaras automaticamente.
 
