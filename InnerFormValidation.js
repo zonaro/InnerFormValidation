@@ -199,6 +199,63 @@
     };
 
     /**
+     * Validates if a value is a valid Brazilian state abbreviation (UF).
+     * @function validateUF
+     * @memberof $.innerForm
+     * @param {string} value - The UF string to validate (e.g., "SP", "RJ")
+     * @returns {boolean} True if the value is a valid UF, false otherwise
+     * @see https://en.wikipedia.org/wiki/States_of_Brazil
+     */
+    $.innerForm.validateUF = function (value) {
+        value = value || "";
+        var ufsValidas = [
+            "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+            "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
+            "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+        ];
+        var ufDigitada = value.trim().toUpperCase();
+        return ufsValidas.includes(ufDigitada);
+    };
+
+    /**
+     * Validates a Brazilian OAB registration number in the format NUMERIC(1-6) + UF.
+     * Accepts raw values (511061SP) or formatted values (511.061/SP).
+     * @function validateOAB
+     * @memberof $.innerForm
+     * @param {string} value - The OAB number to validate (e.g., "511061SP", "511.061/SP")
+     * @returns {boolean} True if the OAB is valid, false otherwise
+     */
+    $.innerForm.validateOAB = function (value) {
+        value = value || "";
+        var clean = value.trim().toUpperCase().replace(/[^0-9A-Z]/g, "");
+
+        // Debe terminar con UF de dois caracteres
+        if (clean.length < 3) {
+            return false;
+        }
+
+        var uf = clean.slice(-2);
+        var num = clean.slice(0, -2);
+
+        if (!$.innerForm.validateUF(uf)) {
+            return false;
+        }
+
+        if (!/^[0-9]{1,6}$/.test(num)) {
+            return false;
+        }
+
+        return true;
+    };
+
+    /**
+     * Alias em português para validarOAB
+     * @function validarOAB
+     * @memberof $.innerForm
+     */
+    $.innerForm.validarOAB = $.innerForm.validateOAB;
+
+    /**
      * Validates latitude coordinate values.
      * @function validateLatitude
      * @memberof $.innerForm
@@ -852,6 +909,38 @@
         }
         input.value = text;
 
+    };
+
+    /**
+     * Applies OAB (511.061/SP) mask to an input field.
+     * @function applyOABMask
+     * @memberof $.innerForm
+     * @param {HTMLInputElement} [input]
+     */
+    $.innerForm.applyOABMask = function (input = new HTMLInputElement()) {
+        var value = input.value || "";
+        value = value.toUpperCase().replace(/[^0-9A-Z]/g, "");
+
+        var uf = "";
+        var letters = value.match(/[A-Z]{1,2}$/);
+        if (letters) {
+            uf = letters[0].slice(0, 2);
+            if (uf.length === 2) {
+                value = value.slice(0, -uf.length);
+            } else {
+                uf = "";
+            }
+        }
+
+        var num = value.replace(/\D/g, "").slice(0, 6);
+        var formattedNum = "";
+        if (num.length > 0) {
+            var arr = num.split("").reverse().join("").match(/.{1,3}/g) || [];
+            formattedNum = arr.join(".").split("").reverse().join("");
+        }
+
+        input.value = uf ? formattedNum + "/" + uf : formattedNum;
+        input.maxLength = 10;
     };
 
 
@@ -2459,6 +2548,21 @@
                             }
                             results.push($.innerForm.validateRegex(value, regext, flags));
                             break;
+                        case "oab":
+                            if ($.innerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateOAB(value));
+                            break;
+                        case 'state':
+                        case 'uf':
+                            if ($.innerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateUF(value));
+                            break;
 
                         default:
                             results.push(true);
@@ -2572,6 +2676,7 @@
         jQuery(this).find(".mask.monthyearrange").monthYearRangeMask();
         jQuery(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
         jQuery(this).find(".mask.uuid").uuidMask();
+        jQuery(this).find(".mask.oab").oabMask();
         jQuery(this).find(".mask.latitude, .mask.lat").latitudeMask();
         jQuery(this).find(".mask.longitude, .mask.long, .mask.lng").longitudeMask();
 
@@ -2849,6 +2954,14 @@
             $.innerForm.applyUUIDMask(this);
         });
         $.innerForm.log("InnerFormValidation:", "UUIDMask started", x);
+        return x;
+    }
+
+    jQuery.fn.oabMask = function () {
+        let x = jQuery(this).on("input", function () {
+            $.innerForm.applyOABMask(this);
+        });
+        $.innerForm.log("InnerFormValidation:", "OABMask started", x);
         return x;
     }
 

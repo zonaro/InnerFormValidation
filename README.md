@@ -80,20 +80,22 @@ $.innerForm = {
 
 ### **Validação de Formato**
 
-| Classe                   | Descrição                   | Compatível com Máscara | Exemplo                          |
-| ------------------------ | --------------------------- | ---------------------- | -------------------------------- |
-| `email` `mail`           | Email válido                | ❌                      | `<input class="email">`          |
-| `url` `link`             | URL válida                  | 🎭                      | `<input class="mask url">`       |
-| `cpf`                    | CPF brasileiro válido       | 🎭                      | `<input class="mask cpf">`       |
-| `cnpj`                   | CNPJ brasileiro válido      | 🎭                      | `<input class="mask cnpj">`      |
-| `cpfcnpj`                | CPF ou CNPJ válido          | 🎭                      | `<input class="mask cpfcnpj">`   |
-| `cep`                    | CEP brasileiro válido       | 🎭                      | `<input class="mask cep">`       |
-| `tel` `cel`              | Telefone/Celular brasileiro | 🎭                      | `<input class="mask tel">`       |
-| `ean`                    | Código de barras EAN        | ❌                      | `<input class="ean">`            |
-| `uuid`                   | UUID/GUID válido            | 🎭                      | `<input class="mask uuid">`      |
-| `pix` `chavepix`         | Chave PIX válida            | ❌                      | `<input class="pix">`            |
-| `latitude` `lat`         | Coordenada de latitude      | 🌍                      | `<input class="mask latitude">`  |
-| `longitude` `long` `lng` | Coordenada de longitude     | 🌍                      | `<input class="mask longitude">` |
+| Classe                   | Descrição                       | Compatível com Máscara | Exemplo                          |
+| ------------------------ | ------------------------------- | ---------------------- | -------------------------------- |
+| `email` `mail`           | Email válido                    | ❌                      | `<input class="email">`          |
+| `url` `link`             | URL válida                      | 🎭                      | `<input class="mask url">`       |
+| `cpf`                    | CPF brasileiro válido           | 🎭                      | `<input class="mask cpf">`       |
+| `cnpj`                   | CNPJ brasileiro válido          | 🎭                      | `<input class="mask cnpj">`      |
+| `cpfcnpj`                | CPF ou CNPJ válido              | 🎭                      | `<input class="mask cpfcnpj">`   |
+| `cep`                    | CEP brasileiro válido           | 🎭                      | `<input class="mask cep">`       |
+| `tel` `cel`              | Telefone/Celular brasileiro     | 🎭                      | `<input class="mask tel">`       |
+| `ean`                    | Código de barras EAN            | ❌                      | `<input class="ean">`            |
+| `uuid`                   | UUID/GUID válido                | 🎭                      | `<input class="mask uuid">`      |
+| `pix` `chavepix`         | Chave PIX válida                | ❌                      | `<input class="pix">`            |
+| `latitude` `lat`         | Coordenada de latitude          | 🌍                      | `<input class="mask latitude">`  |
+| `longitude` `long` `lng` | Coordenada de longitude         | 🌍                      | `<input class="mask longitude">` |
+| `uf` `state`             | Sigla de Estado (UF)            | ❌                      | `<input class="uf">`             |
+| `oab`                    | Registro OAB (1-6 dígitos + UF) | ❌                      | `<input class="mask oab">`       |
 
 
 ### **Validação e Máscara de Números com Separadores Personalizados**
@@ -160,6 +162,29 @@ Campos com as classes `num` ou `number` agora suportam os seguintes atributos pa
 | `minlen <número>`      | Mínimo X caracteres            | `<input class="minlen 5">`           |
 | `maxlen <número>`      | Máximo X caracteres            | `<input class="maxlen 20">`          |
 | `leadingzero <número>` | Completar com zeros à esquerda | `<input class="mask leadingzero 8">` |
+
+---
+
+## 🔍 Validações Específicas: UF e OAB
+
+- `uf` ou `state`: valida se a sigla é uma UF brasileira válida.
+- `oab`: valida se a entrada está no formato `Nº(1-6 dígitos)` + `UF` (ex: `511061SP` ou `511.061/SP`).
+
+### Uso em HTML
+```html
+<input type="text" class="form-control uf onkeyup" placeholder="SP" />
+<input type="text" class="form-control mask oab onkeyup" placeholder="511061SP" />
+```
+
+### API JavaScript disponível
+```js
+$.innerForm.validateUF('RJ');           // true
+$.innerForm.validateUF('ZZ');           // false
+$.innerForm.validateOAB('511061SP');    // true
+$.innerForm.validateOAB('511.061/SP');  // true
+$.innerForm.validateOAB('12345RJ');     // true
+$.innerForm.validateOAB('123456SA');    // false (UF inválida)
+```
 
 ---
 
