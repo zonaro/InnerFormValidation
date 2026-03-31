@@ -789,7 +789,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>UF (Estado Brasileiro)</label>
-                            <input type='text' placeholder="SP" class='form-control uf onkeyup' />
+                            <input type='text' placeholder="SP" class='form-control mask uf onkeyup' />
                             <small class="text-muted">Classificação: <code>uf</code> ou <code>state</code></small>
                             <div class="validation-status"></div>
                         </div>
@@ -1618,7 +1618,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Estado</label>
-                            <input type='text' class='form-control autocomplete state' readonly />
+                            <input type='text' class='form-control autocomplete mask state' readonly />
                             <div class="code-buttons">
                                 <button type="button" class="code-btn" onclick="copyHTML(this)"
                                     title="Copiar HTML completo">
