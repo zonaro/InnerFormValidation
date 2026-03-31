@@ -892,7 +892,7 @@ $('#meuForm').startValidation();
 $('#telefone').phoneMask();
 $('#data').dateMask();
 $('#cpf').cpfMask();
-$('#uuid').uuidMask();  // 🆕 NOVA máscara UUID
+$('#uuid').uuidMask();  
 ```
 
 ### **Busca de CEP Programática**
