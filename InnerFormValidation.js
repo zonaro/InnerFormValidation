@@ -722,6 +722,15 @@
 
     };
 
+    $.innerForm.applyUFMask = function (input = new HTMLInputElement()) {
+        input.value = input.value
+            .replace(/[^a-zA-Z]/g, '').toUpperCase();
+        if (input.value.length > 2) {
+            input.value = input.value.substring(0, 2);
+        }
+    };
+
+
     /**
      * Applies an alphanumeric mask that allows letters, numbers, and spaces.
      * @function applyAlphaNumericMask  
@@ -910,6 +919,22 @@
         input.value = text;
 
     };
+    $.innerForm.applyCNHMask = function (input = new HTMLInputElement()) {
+        var text = input.value || "";
+        text = text.replace(/\D/g, "");
+        text = text.substring(0, 11);
+        text = text.replace(/^(\d{3})(\d+)/, "$1.$2");
+        text = text.replace(/^(\d{3}\.\d{3})(\d+)/g, "$1.$2");
+        text = text.replace(/^(\d{3}\.\d{3}\.\d{3})(\d{1,2})$/g, "$1-$2");
+        if (/^[\d]{3}\.[\d]{3}\.[\d]{3}-[\d]{2}$/g.test(text)) {
+            input.maxLength = text.length;
+        } else {
+            input.maxLength = 14;
+        }
+        input.value = text;
+    };
+
+
 
     /**
      * Applies OAB (511.061/SP) mask to an input field.
@@ -1664,9 +1689,42 @@
         if (resultado != digitos.charAt(1))
             return false;
 
-
         return true;
     };
+
+    $.innerForm.validateCNH = function (cnh) {
+        cnh = (cnh || "").toString();
+        cnh = cnh.replace(/[^\d]/g, "");
+
+        var char1 = cnh.charAt(0);
+
+        if (cnh.length !== 11 || char1.repeat(11) === cnh) {
+            return false;
+        }
+
+        for (var i = 0, j = 9, v = 0; i < 9; ++i, --j) {
+            v += +(cnh.charAt(i) * j);
+        }
+
+        var dsc = 0,
+            vl1 = v % 11;
+
+        if (vl1 >= 10) {
+            vl1 = 0;
+            dsc = 2;
+        }
+
+        for (i = 0, j = 1, v = 0; i < 9; ++i, ++j) {
+            v += +(cnh.charAt(i) * j);
+        }
+
+        var x = v % 11;
+        var vl2 = (x >= 10) ? 0 : x - dsc;
+
+        return ('' + vl1 + vl2) === cnh.substr(-2);
+    };
+
+
 
     $.innerForm.validatePassword = function (input) {
         // Create an array and push all possible values that you want in password
@@ -2235,6 +2293,13 @@
                                 results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));
                             }
                             break;
+                        case "cnh":
+                            if ($.innerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+                            results.push($.innerForm.validateCNH(value));
+                            break;
                         case "debitcard":
                         case "creditcard":
                             if ($.innerForm.isBlank(value)) {
@@ -2654,6 +2719,7 @@
         jQuery(this).find(".mask.upper").upperMask();
         jQuery(this).find(".mask.lower, .mask.email, .mask.mail").lowerMask();
         jQuery(this).find(".mask.cpf").cpfMask();
+        jQuery(this).find(".mask.cnh").cnhMask();
         jQuery(this).find(".mask.cep").cepMask();
         jQuery(this).find(".mask.cnpj").cnpjMask();
         jQuery(this).find(".mask.cpfcnpj, .mask.cnpjcpf").cpfCnpjMask();
@@ -2787,6 +2853,15 @@
             $.innerForm.applyCNPJMask(this);
         });
         $.innerForm.log("InnerFormValidation:", "CnpjMask started", x);
+        return x;
+    }
+
+
+    jQuery.fn.cnhMask = function () {
+        let x = jQuery(this).on('input', function () {
+            $.innerForm.applyCNHMask(this);
+        });
+        $.innerForm.log('InnerFormValidation:', 'CNHMask started', x);
         return x;
     }
 
@@ -2937,6 +3012,14 @@
             $.innerForm.applyAlphaNumericMask(this);
         });
         $.innerForm.log("InnerFormValidation:", "AlphaNumericMask started", x);
+        return x;
+    }
+
+    jQuery.fn.ufMask = function () {
+        let x = jQuery(this).on("input", function () {
+            $.innerForm.applyUFMask(this);
+        });
+        $.innerForm.log("InnerFormValidation:", "UFMask started", x);
         return x;
     }
 

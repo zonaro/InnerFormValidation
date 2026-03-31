@@ -2,7 +2,7 @@
 
 **Uma biblioteca JavaScript completa para mascaramento e validação de formulários utilizando jQuery e classes CSS.**
 
-[![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/innercodetech/innerformvalidation@master/InnerFormValidation.js)
+[![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerFormValidation.js)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![jQuery](https://img.shields.io/badge/Requires-jQuery-blue)](https://jquery.com/)
 
@@ -29,7 +29,7 @@
 ```html
 <!-- Adicione antes do script principal para ver mensagens detalhadas no console -->
 <script>$.innerForm = { verbose: true }</script>
-<script src="https://cdn.jsdelivr.net/gh/innercodetech/innerformvalidation@master/InnerFormValidation.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerFormValidation.js"></script>
 ```
 
 ### Download Local
@@ -88,6 +88,7 @@ $.innerForm = {
 | `cnpj`                   | CNPJ brasileiro válido          | 🎭                      | `<input class="mask cnpj">`      |
 | `cpfcnpj`                | CPF ou CNPJ válido              | 🎭                      | `<input class="mask cpfcnpj">`   |
 | `cep`                    | CEP brasileiro válido           | 🎭                      | `<input class="mask cep">`       |
+| `cnh`                    | CNH brasileira válida           | 🎭                      | `<input class="mask cnh">`       |
 | `tel` `cel`              | Telefone/Celular brasileiro     | 🎭                      | `<input class="mask tel">`       |
 | `ean`                    | Código de barras EAN            | ❌                      | `<input class="ean">`            |
 | `uuid`                   | UUID/GUID válido                | 🎭                      | `<input class="mask uuid">`      |
@@ -165,10 +166,11 @@ Campos com as classes `num` ou `number` agora suportam os seguintes atributos pa
 
 ---
 
-## 🔍 Validações Específicas: UF e OAB
+## 🔍 Validações Específicas: UF, OAB e CNH
 
 - `uf` ou `state`: valida se a sigla é uma UF brasileira válida.
 - `oab`: valida se a entrada está no formato `Nº(1-6 dígitos)` + `UF` (ex: `511061SP` ou `511.061/SP`).
+- `cnh`: valida se a CNH brasileira é válida e não contém sequência repetida (ex: `000.000.000-00`).
 
 ### Uso em HTML
 ```html
@@ -184,8 +186,11 @@ $.innerForm.validateOAB('511061SP');    // true
 $.innerForm.validateOAB('511.061/SP');  // true
 $.innerForm.validateOAB('12345RJ');     // true
 $.innerForm.validateOAB('123456SA');    // false (UF inválida)
-```
 
+$.innerForm.validateCNH('98765432100'); // true/false conforme DV
+$.innerForm.validateCNH('00000000000'); // false
+$.innerForm.validarCNH('987.654.321-00'); // true/false
+```
 ---
 
 ## 🎭 Classes de Máscara
@@ -205,6 +210,9 @@ $.innerForm.validateOAB('123456SA');    // false (UF inválida)
 
 <!-- CEP: 12345-678 -->
 <input class="form-control mask cep">
+
+<!-- CNH: 123.456.789-00 -->
+<input class="form-control mask cnh">
 ```
 
 ### **Máscaras de Data e Hora**
