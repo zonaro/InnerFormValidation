@@ -1,64 +1,64 @@
 # 🚀 InnerFormValidation
 
-**Uma biblioteca JavaScript completa para mascaramento e validação de formulários, sem dependências e com API callable nativa.**
+**A complete JavaScript library for form masking and validation, dependency-free and with a native callable API.**
 
 ## Documentação
 
-Consulte o [site completo de documentação](docs/index.html), com exemplos interativos, referência da API, instalação standalone, compatibilidade jQuery, autocomplete de CEP e geolocalização.
+See the [complete documentation site](docs/index.html), with interactive examples, API reference, standalone installation, jQuery compatibility, postal-code autocomplete, and geolocation.
 
-[![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerForm.js)
+[![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Standalone](https://img.shields.io/badge/JavaScript-standalone-brightgreen)](docs/index.html)
 
 ## 📖 Índice
 
-1. [Instalação e Configuração](#instalação-e-configuração)
-2. [Configuração Básica](#configuração-básica)
-3. [Classes de Validação](#classes-de-validação)
-4. [Classes de Máscara](#classes-de-máscara)
-5. [Validações Avançadas](#validações-avançadas)
-6. [Sistema de Callbacks](#sistema-de-callbacks)
-7. [Autocompletar Endereços](#autocompletar-endereços)
-8. [Geolocalização](#geolocalização)
-9. [Exemplos Práticos](#exemplos-práticos)
-10. [API JavaScript](#api-javascript)
-11. [Funções do InnerFormValidation](#funções-do-innerformvalidation)
-12. [Personalização Visual](#personalização-visual)
+1. [Installation and Configuration](#installation-and-configuration)
+2. [Basic Configuration](#basic-configuration)
+3. [Validation Classes](#validation-classes)
+4. [Mask Classes](#mask-classes)
+5. [Advanced Validations](#advanced-validations)
+6. [Callbacks System](#callbacks-system)
+7. [Address Autocomplete](#address-autocomplete)
+8. [Geolocation](#geolocation)
+9. [Practical Examples](#practical-examples)
+10. [JavaScript API](#javascript-api)
+11. [InnerFormValidation Functions](#innerformvalidation-functions)
+12. [Visual Customization](#visual-customization)
 
 ---
 
-## 🛠️ Instalação e Configuração
+## 🛠️ Installation and Configuration
 
 ### CDN
 ```html
-<!-- Recomendado: funciona sem jQuery -->
+<!-- Recommended: works without jQuery -->
 <script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
 <script>
     InnerForm.validateCPF('529.982.247-25');
 </script>
 ```
 
-Para usar como plugin jQuery, carregue jQuery antes do mesmo endereço CDN:
+To use it as a jQuery plugin, load jQuery before the same CDN address:
 ```html
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>jQuery.innerForm = { verbose: true }</script>
-<script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerForm.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
 ```
 
-### Download Local
-1. Baixe o arquivo `InnerFormValidation.js`
-2. Inclua no seu projeto:
+### Local Download
+1. Download the `InnerFormValidation.js` file
+2. Include it in your project:
 ```html
 <script>InnerForm.verbose = true</script>
 <script src="path/to/InnerFormValidation.js"></script>
 ```
 
-### Dependências
-- Nenhuma para a API standalone.
-- jQuery é opcional e habilita os métodos de plugin legados em `jQuery.fn`.
-- A biblioteca nunca sobrescreve `$` nem usa jQuery no núcleo.
+### Dependencies
+- None for the standalone API.
+- jQuery is optional and enables the legacy plugin methods in `jQuery.fn`.
+- The library never overwrites `$` or uses jQuery in its core.
 
-### API standalone
+### Standalone API
 ```html
 <script src="InnerFormValidation.js"></script>
 <script>
@@ -70,9 +70,9 @@ Para usar como plugin jQuery, carregue jQuery antes do mesmo endereço CDN:
 
 ---
 
-## ⚙️ Configuração Básica
+## ⚙️ Basic Configuration
 
-### 1. Estrutura HTML Base
+### 1. Base HTML Structure
 ```html
 <form class="validate">
     <input type="text" class="form-control obg minlen 5" placeholder="Mínimo 5 caracteres">
@@ -80,95 +80,95 @@ Para usar como plugin jQuery, carregue jQuery antes do mesmo endereço CDN:
 </form>
 ```
 
-### 2. Classes Fundamentais
-- **`validate`**: Adicione ao elemento `<form>` para ativar a validação
-- **`mask`**: Combinar com outras classes para aplicar máscaras automaticamente
-- **`onkeyup`**: Validar conforme o usuário digita (com delay de 900ms)
+### 2. Fundamental Classes
+- **`validate`**: Add to the `<form>` element to enable validation
+- **`mask`**: Combine with other classes to apply masks automatically
+- **`onkeyup`**: Validate as the user types (with a 900ms delay)
 
-### 3. Configuração Global
+### 3. Global Configuration
 ```javascript
 InnerForm.verbose = true;
 InnerForm.onTypeTimeout = 1000;
 ```
 
-Para selecionar elementos com a API nativa, use a própria função:
+To select elements with the native API, use the function itself:
 ```javascript
 InnerForm('#meu-formulario').isValid();
 ```
 
 ---
 
-## ✅ Classes de Validação
+## ✅ Validation Classes
 
-### **Campos Obrigatórios**
+### **Required Fields**
 
-| Classe                 | Descrição         | Exemplo               |
-| ---------------------- | ----------------- | --------------------- |
-| `obg` `req` `required` | Campo obrigatório | `<input class="obg">` |
+| Class                  | Description    | Example               |
+| ---------------------- | -------------- | --------------------- |
+| `obg` `req` `required` | Required field | `<input class="obg">` |
 
-### **Validação de Formato**
+### **Format Validation**
 
-| Classe                   | Descrição                       | Compatível com Máscara | Exemplo                          |
-| ------------------------ | ------------------------------- | ---------------------- | -------------------------------- |
-| `email` `mail`           | Email válido                    | ❌                      | `<input class="email">`          |
-| `url` `link`             | URL válida                      | ✅                      | `<input class="mask url">`       |
-| `cpf`                    | CPF brasileiro válido           | ✅                      | `<input class="mask cpf">`       |
-| `cnpj`                   | CNPJ brasileiro válido          | ✅                      | `<input class="mask cnpj">`      |
-| `cpfcnpj`                | CPF ou CNPJ válido              | ✅                      | `<input class="mask cpfcnpj">`   |
-| `cep`                    | CEP brasileiro válido           | ✅                      | `<input class="mask cep">`       |
-| `cnh`                    | CNH brasileira válida           | ✅                      | `<input class="mask cnh">`       |
-| `tel` `cel`              | Telefone/Celular brasileiro     | ✅                      | `<input class="mask tel">`       |
-| `ean`                    | Código de barras EAN            | ❌                      | `<input class="ean">`            |
-| `uuid`                   | UUID/GUID válido                | ✅                      | `<input class="mask uuid">`      |
-| `pix` `chavepix`         | Chave PIX válida                | ❌                      | `<input class="pix">`            |
-| `latitude` `lat`         | Coordenada de latitude          | ✅                      | `<input class="mask latitude">`  |
-| `longitude` `long` `lng` | Coordenada de longitude         | ✅                      | `<input class="mask longitude">` |
-| `uf` `state`             | Sigla de Estado (UF)            | ✅                      | `<input class="mask uf">`        |
-| `oab`                    | Registro OAB (1-6 dígitos + UF) | ✅                      | `<input class="mask oab">`       |
+| Class                    | Description                        | Mask Compatible | Example                          |
+| ------------------------ | ---------------------------------- | --------------- | -------------------------------- |
+| `email` `mail`           | Valid email                        | ❌               | `<input class="email">`          |
+| `url` `link`             | Valid URL                          | ✅               | `<input class="mask url">`       |
+| `cpf`                    | Valid Brazilian CPF                | ✅               | `<input class="mask cpf">`       |
+| `cnpj`                   | Valid Brazilian CNPJ               | ✅               | `<input class="mask cnpj">`      |
+| `cpfcnpj`                | Valid CPF or CNPJ                  | ✅               | `<input class="mask cpfcnpj">`   |
+| `cep`                    | Valid Brazilian postal code        | ✅               | `<input class="mask cep">`       |
+| `cnh`                    | Valid Brazilian CNH                | ✅               | `<input class="mask cnh">`       |
+| `tel` `cel`              | Brazilian phone/mobile             | ✅               | `<input class="mask tel">`       |
+| `ean`                    | EAN barcode                        | ❌               | `<input class="ean">`            |
+| `uuid`                   | Valid UUID/GUID                    | ✅               | `<input class="mask uuid">`      |
+| `pix` `chavepix`         | Valid PIX key                      | ❌               | `<input class="pix">`            |
+| `latitude` `lat`         | Latitude coordinate                | ✅               | `<input class="mask latitude">`  |
+| `longitude` `long` `lng` | Longitude coordinate               | ✅               | `<input class="mask longitude">` |
+| `uf` `state`             | State abbreviation (UF)            | ✅               | `<input class="mask uf">`        |
+| `oab`                    | OAB registration (1-6 digits + UF) | ✅               | `<input class="mask oab">`       |
 
 
-### **Validação e Máscara de Números com Separadores Personalizados**
+### **Number Validation and Masking with Custom Separators**
 
-Campos com as classes `num` ou `number` agora suportam os seguintes atributos para personalização de formato:
+Fields with the `num` or `number` classes now support the following attributes for format customization:
 
-| Atributo         | Descrição                                                                         | Exemplo                                         |
-| ---------------- | --------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `data-separator` | Define o separador decimal (ex: `,` ou `.`). Tem prioridade sobre `data-decimal`. | `<input class="mask num" data-separator="," />` |
-| `data-decimal`   | Define o número de casas decimais (ex: `2`).                                      | `<input class="mask num" data-decimal="2" />`   |
-| `data-thousand`  | Define o separador de milhares (ex: `.` ou `,`).                                  | `<input class="mask num" data-thousand="." />`  |
+| Attribute        | Description                                                                          | Example                                         |
+| ---------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| `data-separator` | Defines the decimal separator (e.g. `,` or `.`). Takes priority over `data-decimal`. | `<input class="mask num" data-separator="," />` |
+| `data-decimal`   | Defines the number of decimal places (e.g. `2`).                                     | `<input class="mask num" data-decimal="2" />`   |
+| `data-thousand`  | Defines the thousands separator (e.g. `.` or `,`).                                   | `<input class="mask num" data-thousand="." />`  |
 
-**Regras de prioridade:**
-- Se `data-separator` existir, ele será usado como separador decimal.
-- Se não, será usado o valor de `data-decimal` (padrão: 2 casas decimais, separador ",").
-- O atributo `data-thousand` é opcional e define o separador de milhares.
+**Priority rules:**
+- If `data-separator` exists, it is used as the decimal separator.
+- Otherwise, the value of `data-decimal` is used (default: 2 decimal places, separator `,`).
+- The `data-thousand` attribute is optional and defines the thousands separator.
 
-**Exemplo de uso:**
+**Usage example:**
 ```html
-<!-- Número com vírgula como decimal e ponto como milhar -->
+<!-- Number with comma as decimal separator and period as thousands separator -->
 <input class="form-control mask num" data-separator="," data-thousand="." placeholder="1.234,56">
 
-<!-- Número com ponto como decimal e vírgula como milhar -->
+<!-- Number with period as decimal separator and comma as thousands separator -->
 <input class="form-control mask num" data-separator="." data-thousand="," placeholder="1,234.56">
 
-<!-- Número com 3 casas decimais, sem separador de milhar -->
+<!-- Number with 3 decimal places and no thousands separator -->
 <input class="form-control mask num" data-decimal="3" placeholder="1234,567">
 ```
 
-**A validação também respeita esses atributos, aceitando apenas o formato configurado.**
+**Validation also respects these attributes and accepts only the configured format.**
 
 ---
-### **Validação de Caracteres**
+### **Character Validation**
 
-| Classe                    | Descrição           | Compatível com Máscara | Exemplo                         |
-| ------------------------- | ------------------- | ---------------------- | ------------------------------- |
-| `alpha`                   | Apenas letras (A-Z) | ✅                      | `<input class="mask alpha">`    |
-| `alphanumeric` `alphanum` | Letras e números    | ✅                      | `<input class="mask alphanum">` |
-| `num` `number`            | Apenas números      | ✅                      | `<input class="mask num">`      |
-| `upper`                   | Apenas maiúsculas   | ✅                      | `<input class="mask upper">`    |
-| `lower`                   | Apenas minúsculas   | ✅                      | `<input class="mask lower">`    |
-| `nospace`                 | Proibir espaços     | ✅                      | `<input class="mask nospace">`  |
+| Class                     | Description         | Mask Compatible | Example                         |
+| ------------------------- | ------------------- | --------------- | ------------------------------- |
+| `alpha`                   | Letters only (A-Z)  | ✅               | `<input class="mask alpha">`    |
+| `alphanumeric` `alphanum` | Letters and numbers | ✅               | `<input class="mask alphanum">` |
+| `num` `number`            | Numbers only        | ✅               | `<input class="mask num">`      |
+| `upper`                   | Uppercase only      | ✅               | `<input class="mask upper">`    |
+| `lower`                   | Lowercase only      | ✅               | `<input class="mask lower">`    |
+| `nospace`                 | Forbid spaces       | ✅               | `<input class="mask nospace">`  |
 
-### **Validação de Data e Hora**
+### **Date and Time Validation**
 
 | Classe                  | Formato                 | Compatível com Máscara | Exemplo                                    |
 | ----------------------- | ----------------------- | ---------------------- | ------------------------------------------ |
@@ -183,30 +183,30 @@ Campos com as classes `num` ou `number` agora suportam os seguintes atributos pa
 | `monthyearrange`        | MM/yyyy ~ MM/yyyy       | ✅                      | `<input class="mask monthyearrange">`      |
 | `shortmonthyearrange`   | MM/yy ~ MM/yy           | ✅                      | `<input class="mask shortmonthyearrange">` |
 
-### **Validação de Comprimento**
+### **Length Validation**
 
-| Classe                 | Descrição                      | Exemplo                              |
-| ---------------------- | ------------------------------ | ------------------------------------ |
-| `len <número>`         | Exatamente X caracteres        | `<input class="len 10">`             |
-| `minlen <número>`      | Mínimo X caracteres            | `<input class="minlen 5">`           |
-| `maxlen <número>`      | Máximo X caracteres            | `<input class="maxlen 20">`          |
-| `leadingzero <número>` | Completar com zeros à esquerda | `<input class="mask leadingzero 8">` |
+| Class                  | Description            | Example                              |
+| ---------------------- | ---------------------- | ------------------------------------ |
+| `len <number>`         | Exactly X characters   | `<input class="len 10">`             |
+| `minlen <number>`      | At least X characters  | `<input class="minlen 5">`           |
+| `maxlen <number>`      | At most X characters   | `<input class="maxlen 20">`          |
+| `leadingzero <number>` | Pad with leading zeros | `<input class="mask leadingzero 8">` |
 
 ---
 
-## 🔍 Validações Específicas: UF, OAB e CNH
+## 🔍 Specific Validations: UF, OAB, and CNH
 
-- `uf` ou `state`: valida se a sigla é uma UF brasileira válida.
-- `oab`: valida se a entrada está no formato `Nº(1-6 dígitos)` + `UF` (ex: `511061SP` ou `511.061/SP`).
-- `cnh`: valida se a CNH brasileira é válida e não contém sequência repetida (ex: `000.000.000-00`).
+- `uf` or `state`: validates whether the abbreviation is a valid Brazilian UF.
+- `oab`: validates whether the input uses the format `Nº(1-6 digits)` + `UF` (e.g. `511061SP` or `511.061/SP`).
+- `cnh`: validates whether the Brazilian CNH is valid and does not contain a repeated sequence (e.g. `000.000.000-00`).
 
-### Uso em HTML
+### HTML Usage
 ```html
 <input type="text" class="form-control uf onkeyup" placeholder="SP" />
 <input type="text" class="form-control mask oab onkeyup" placeholder="511061SP" />
 ```
 
-### API JavaScript disponível
+### Available JavaScript API
 ```js
 InnerForm.validateUF('RJ');           // true
 InnerForm.validateUF('ZZ');           // false
@@ -221,11 +221,11 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 ```
 ---
 
-## ✅ Classes de Máscara
+## ✅ Mask Classes
 
-> **Nota**: Adicione a classe `mask` junto com a classe específica para aplicar máscaras automaticamente.
+> **Note**: Add the `mask` class together with the specific class to apply masks automatically.
 
-### **Máscaras de Documento**
+### **Document Masks**
 ```html
 <!-- CPF: 123.456.789-01 -->
 <input class="form-control mask cpf">
@@ -243,7 +243,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask cnh">
 ```
 
-### **Máscaras de Data e Hora**
+### **Date and Time Masks**
 ```html
 <!-- Data: dd/mm/aaaa -->
 <input class="form-control mask date">
@@ -267,7 +267,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask shortmonthyearrange">
 ```
 
-### **Máscaras de Comunicação**
+### **Communication Masks**
 ```html
 <!-- Telefone: (11) 1234-5678 ou (11) 12345-6789 -->
 <input class="form-control mask tel">
@@ -276,7 +276,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask url">
 ```
 
-### **Máscaras de Cartão**
+### **Card Masks**
 ```html
 <!-- Qualquer cartão: 1234 5678 9012 3456 -->
 <input class="form-control mask creditcard">
@@ -285,7 +285,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask creditcard visa">
 ```
 
-### **Máscaras de Formatação**
+### **Formatting Masks**
 ```html
 <!-- Apenas maiúsculas -->
 <input class="form-control mask upper">
@@ -305,9 +305,9 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 
 ---
 
-## 🔥 Validações Avançadas
+## 🔥 Advanced Validations
 
-### **Validação por Idade**
+### **Age Validation**
 ```html
 <!-- Maior de 18 anos -->
 <input class="form-control mask date minage 18" placeholder="Data de Nascimento">
@@ -319,7 +319,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask date age 30">
 ```
 
-### **Validação por Comparação Numérica**
+### **Numeric Comparison Validation**
 ```html
 <!-- Maior que 10 -->
 <input class="form-control num after 10">
@@ -331,7 +331,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control num 1 to 10">
 ```
 
-### **Validação por Comparação de Data**
+### **Date Comparison Validation**
 ```html
 <!-- Após hoje -->
 <input class="form-control mask date after today">
@@ -343,7 +343,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask date 01/01/2023 to 31/12/2023">
 ```
 
-### **Validação de Senhas**
+### **Password Validation**
 ```html
 <!-- Senha forte (4 de 4 critérios: maiúscula, minúscula, número, símbolo) -->
 <input type="password" class="form-control password strong minlen 8">
@@ -355,9 +355,9 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input type="password" class="form-control password 2 minlen 4">
 ```
 
-### **Validação de Cartões de Crédito**
+### **Credit Card Validation**
 
-#### Cartões Suportados:
+#### Supported Cards:
 - `visa` - Visa
 - `mastercard` - Mastercard  
 - `amex` - American Express
@@ -377,7 +377,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask creditcard visa mastercard">
 ```
 
-### **Validação de UUID/GUID**
+### **UUID/GUID Validation**
 ```html
 <!-- UUID/GUID válido em qualquer formato -->
 <input class="form-control uuid">
@@ -386,7 +386,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control mask uuid">
 ```
 
-### **Validação de Chave PIX**
+### **PIX Key Validation**
 ```html
 <!-- Aceita email, CPF, CNPJ, telefone ou UUID -->
 <input class="form-control pix">
@@ -395,7 +395,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control chavepix">
 ```
 
-### **Validação de Conteúdo de String**
+### **String Content Validation**
 ```html
 <!-- Deve conter espaço -->
 <input class="form-control contains _space">
@@ -413,7 +413,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <input class="form-control notcontainschar ABCD">
 ```
 
-### **Validação de Igualdade**
+### **Equality Validation**
 ```html
 <!-- Comparar com outro campo -->
 <input id="senha" type="password" class="form-control">
@@ -425,11 +425,11 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 
 ---
 
-## 🎯 Sistema de Callbacks
+## 🎯 Callbacks System
 
-Use atributos `data-*` para executar código JavaScript em eventos de validação:
+Use `data-*` attributes to run JavaScript code on validation events:
 
-### **Callbacks Disponíveis**
+### **Available Callbacks**
 ```html
 <input class="form-control obg" 
     data-beforevalidatecallback="console.log('Antes da validação')"
@@ -438,13 +438,13 @@ Use atributos `data-*` para executar código JavaScript em eventos de validaçã
     data-aftervalidatecallback="console.log('Após validação')">
 ```
 
-### **Callback para Mensagem HTML5**
+### **HTML5 Message Callback**
 ```html
 <input class="form-control obg" 
     data-invalidmessage="Este campo é obrigatório! 😊">
 ```
 
-### **Exemplo Prático de Callbacks**
+### **Practical Callback Example**
 ```html
 <input class="form-control obg eq #div_OK" 
     data-invalidcallback="$('#status').text('❌ Inválido').css('color','red')"
@@ -454,13 +454,13 @@ Use atributos `data-*` para executar código JavaScript em eventos de validaçã
 
 ---
 
-## 🏠 Sistema de Autocompletar Endereços
+## 🏠 Address Autocomplete System
 
-O InnerFormValidation inclui integração com a API **ViaCEP** para autocompletar endereços brasileiros.
+InnerFormValidation includes integration with the **ViaCEP** API for Brazilian address autocomplete.
 
-### **Classes de Autocompletar**
+### **Autocomplete Classes**
 
-| Classe                              | Descrição                         | Exemplo                                     |
+| Class                               | Description                       | Example                                     |
 | ----------------------------------- | --------------------------------- | ------------------------------------------- |
 | `autocomplete cep`                  | Campo CEP que busca endereço      | `<input class="autocomplete cep mask">`     |
 | `autocomplete address`              | Recebe logradouro                 | `<input class="autocomplete address">`      |
@@ -477,7 +477,7 @@ O InnerFormValidation inclui integração com a API **ViaCEP** para autocompleta
 | `autocomplete longitude` `long`     | Recebe longitude automaticamente  | `<input class="autocomplete longitude">`    |
 | `autocomplete siafi`                | Código SIAFI                      | `<input class="autocomplete siafi">`        |
 
-### **Exemplo Completo de Endereço**
+### **Complete Address Example**
 ```html
 <div class="row">
     <div class="col-md-4">
@@ -507,172 +507,172 @@ O InnerFormValidation inclui integração com a API **ViaCEP** para autocompleta
 </div>
 ```
 
-### **Controlando Substituição de Valores**
+### **Controlling Value Replacement**
 ```html
-<!-- Não substituir valor se já preenchido -->
+<!-- Do not replace value if already filled -->
 <input class="form-control autocomplete address noreplace">
 ```
 
 ---
 
-## 📍 Geolocalização
+## 📍 Geolocation
 
-O InnerFormValidation inclui funções avançadas de geolocalização que utilizam a API nativa do navegador para obter informações de localização do usuário.
+InnerFormValidation includes advanced geolocation functions that use the browser's native API to obtain the user's location information.
 
-### **Função Principal: `InnerForm.getLocation()`**
+### **Main Function: `InnerForm.getLocation()`**
 
-Obtém a localização atual do usuário de forma assíncrona usando Promises.
+Asynchronously obtains the user's current location using Promises.
 
 ```javascript
-// Uso básico
+// Basic usage
 InnerForm.getLocation()
     .then(function(location) {
         console.log('Latitude:', location.latitude);
         console.log('Longitude:', location.longitude);
-        console.log('Precisão:', location.accuracyFormatted);
+        console.log('Accuracy:', location.accuracyFormatted);
         
-        // Preencher campos do formulário
+        // Fill form fields
         $('#latitude').val(location.latitude);
         $('#longitude').val(location.longitude);
     })
     .catch(function(error) {
-        console.error('Erro:', error.userMessage);
-        alert('Erro ao obter localização: ' + error.userMessage);
+        console.error('Error:', error.userMessage);
+        alert('Error obtaining location: ' + error.userMessage);
     });
 
-// Uso com opções customizadas
+// Usage with custom options
 InnerForm.getLocation({
-    enableHighAccuracy: true,  // Alta precisão
-    timeout: 15000,           // Timeout de 15 segundos
-    maximumAge: 60000         // Cache de 60 segundos
+    enableHighAccuracy: true,  // High accuracy
+    timeout: 15000,           // 15-second timeout
+    maximumAge: 60000         // 60-second cache
 })
 .then(function(location) {
-    // Localização obtida com sucesso
-    console.log('Coordenadas:', location.coordinates);
+    // Location obtained successfully
+    console.log('Coordinates:', location.coordinates);
     console.log('Google Maps:', location.googleMapsUrl);
 })
 .catch(function(error) {
-    // Tratar erro
-    console.error('Erro de geolocalização:', error);
+    // Handle error
+    console.error('Geolocation error:', error);
 });
 ```
 
-### **Objeto de Resposta da Localização**
+### **Location Response Object**
 
-A função retorna um objeto rico com informações de localização:
+The function returns a rich object with location information:
 
 ```javascript
 {
-    // Coordenadas principais
+    // Main coordinates
     latitude: -23.5505,
     longitude: -46.6333,
     
-    // Precisão
-    accuracy: 65.0,                    // Em metros
-    accuracyFormatted: "65 metros",    // Formatado para exibição
-    altitudeAccuracy: 12.0,            // Precisão da altitude
+    // Accuracy
+    accuracy: 65.0,                    // In meters
+    accuracyFormatted: "65 meters",    // Formatted for display
+    altitudeAccuracy: 12.0,            // Altitude accuracy
     
-    // Altitude (pode ser null)
-    altitude: 760.5,                   // Em metros
+    // Altitude (may be null)
+    altitude: 760.5,                   // In meters
     
-    // Direção e velocidade (podem ser null)
-    heading: 180.5,                    // Direção em graus
-    speed: 2.5,                        // Velocidade em m/s
+    // Heading and speed (may be null)
+    heading: 180.5,                    // Heading in degrees
+    speed: 2.5,                        // Speed in m/s
     
-    // Informações temporais
+    // Time information
     timestamp: 1704067200000,          // Timestamp
-    formattedTime: "01/01/2024 10:00:00", // Data/hora formatada
+    formattedTime: "01/01/2024 10:00:00", // Formatted date/time
     
-    // URLs úteis para mapas
+    // Useful map URLs
     googleMapsUrl: "https://www.google.com/maps?q=-23.5505,-46.6333",
     osmUrl: "https://www.openstreetmap.org/?mlat=-23.5505&mlon=-46.6333&zoom=15",
     
-    // Informações formatadas para exibição
-    coordinates: "-23.550500, -46.633300",  // Coordenadas formatadas
+    // Information formatted for display
+    coordinates: "-23.550500, -46.633300",  // Formatted coordinates
 }
 ```
 
-### **AutoComplete de Geolocalização**
+### **Geolocation Autocomplete**
 
-**Preenchimento Automático de Coordenadas**
+**Automatic Coordinate Population**
 
-Os campos com classes de geolocalização são automaticamente preenchidos quando uma localização é obtida:
+Fields with geolocation classes are automatically populated when a location is obtained:
 
 ```html
-<!-- Campos preenchidos automaticamente -->
+<!-- Automatically populated fields -->
 <input type="text" class="form-control autocomplete latitude" readonly>
 <input type="text" class="form-control autocomplete longitude" readonly>
 
-<!-- Versões abreviadas -->
+<!-- Short versions -->
 <input type="text" class="form-control autocomplete lat" readonly>
 <input type="text" class="form-control autocomplete long" readonly>
 
-<!-- Elementos não-input também são preenchidos -->
-<div class="autocomplete latitude">Aguardando localização...</div>
+<!-- Non-input elements are populated as well -->
+<div class="autocomplete latitude">Waiting for location...</div>
 <span class="autocomplete longitude">-</span>
 ```
 
-**Comportamento do AutoComplete:**
-- 🔄 **Automático**: Preenchido toda vez que `getLocation()` ou `watchLocation()` retorna uma posição
-- 📝 **Campos editáveis**: Se o campo não tem `readonly`, usa `.setOrReplaceVal()` (só preenche se vazio ou sem `.noreplace`)
-- 🔗 **Elementos não-input**: Divs, spans, etc. têm seu `text()` atualizado
-- ⚡ **Tempo real**: No monitoramento contínuo, os campos são atualizados a cada mudança de posição
+**Autocomplete behavior:**
+- 🔄 **Automatic**: Populated every time `getLocation()` or `watchLocation()` returns a position
+- 📝 **Editable fields**: If the field does not have `readonly`, uses `.setOrReplaceVal()` (only fills it when empty or without `.noreplace`)
+- 🔗 **Non-input elements**: Divs, spans, etc. have their `text()` updated
+- ⚡ **Real time**: During continuous monitoring, fields are updated with every position change
 
-**Exemplo de Uso:**
+**Usage Example:**
 
 ```javascript
-// Quando esta função é chamada, os campos .autocomplete.latitude 
-// e .autocomplete.longitude são automaticamente preenchidos!
+// When this function is called, the .autocomplete.latitude
+// and .autocomplete.longitude fields are automatically populated!
 InnerForm.getLocation().then(function(location) {
-    console.log('Campos preenchidos automaticamente!');
+    console.log('Fields populated automatically!');
     // location.latitude -> .autocomplete.latitude
     // location.longitude -> .autocomplete.longitude
 });
 
-// No monitoramento, os campos são atualizados em tempo real
+// During monitoring, fields are updated in real time
 var watchId = InnerForm.watchLocation(function(location) {
-    // Campos atualizados automaticamente a cada mudança
-    console.log('Posição atualizada:', location.coordinates);
+    // Fields updated automatically with every change
+    console.log('Position updated:', location.coordinates);
 });
 ```
 
-### **Monitoramento Contínuo de Localização**
+### **Continuous Location Monitoring**
 
-Para aplicações que precisam acompanhar mudanças na localização:
+For applications that need to track location changes:
 
 ```javascript
-// Iniciar monitoramento
+// Start monitoring
 var watchId = InnerForm.watchLocation(
     function(location) {
-        // Callback chamado a cada atualização de posição
-        console.log('Nova posição:', location.coordinates);
+        // Callback called on every position update
+        console.log('New position:', location.coordinates);
         
-        // Atualizar interface
+        // Update the interface
         $('#latitude').val(location.latitude);
         $('#longitude').val(location.longitude);
         $('#lastUpdate').text(location.formattedTime);
     },
     function(error) {
-        // Callback de erro
-        console.error('Erro no monitoramento:', error.userMessage);
+        // Error callback
+        console.error('Monitoring error:', error.userMessage);
         
-        // Parar monitoramento em caso de erro
+        // Stop monitoring in case of error
         InnerForm.clearLocationWatch(watchId);
     },
     {
         enableHighAccuracy: true,
-        timeout: 10000,           // Timeout menor para monitoramento
-        maximumAge: 5000          // Cache menor para dados mais frescos
+        timeout: 10000,           // Shorter monitoring timeout
+        maximumAge: 5000          // Smaller cache for fresher data
     }
 );
 
-// Parar monitoramento quando necessário
+// Stop monitoring when needed
 InnerForm.clearLocationWatch(watchId);
 ```
 
-### **Integração com Formulários**
+### **Form Integration**
 
-Exemplo prático de integração com campos de formulário:
+Practical example of integrating form fields:
 
 ```html
 <form class="validate">
@@ -719,9 +719,9 @@ function obterLocalizacao() {
 </script>
 ```
 
-### **Tratamento de Erros**
+### **Error Handling**
 
-A API de geolocalização pode falhar por diversos motivos. A biblioteca fornece mensagens amigáveis:
+The geolocation API can fail for several reasons. The library provides user-friendly messages:
 
 ```javascript
 InnerForm.getLocation()
@@ -745,7 +745,7 @@ InnerForm.getLocation()
     });
 ```
 
-### **Opções de Configuração**
+### **Configuration Options**
 
 | Opção                | Tipo    | Padrão | Descrição                                    |
 | -------------------- | ------- | ------ | -------------------------------------------- |
@@ -753,38 +753,38 @@ InnerForm.getLocation()
 | `timeout`            | number  | 10000  | Tempo limite em milissegundos                |
 | `maximumAge`         | number  | 60000  | Idade máxima aceitável do cache (ms)         |
 
-### **Requisitos e Limitações**
+### **Requirements and Limitations**
 
-1. **HTTPS Obrigatório**: A geolocalização só funciona em sites HTTPS (ou localhost)
-2. **Permissão do Usuário**: O navegador sempre solicitará permissão
-3. **Precisão Variável**: Depende do dispositivo (GPS, WiFi, torres de celular)
-4. **Compatibilidade**: Funciona em navegadores modernos com suporte à API de Geolocalização
+1. **HTTPS Required**: Geolocation works only on HTTPS sites (or localhost)
+2. **User Permission**: The browser always requests permission
+3. **Variable Accuracy**: Depends on the device (GPS, WiFi, cell towers)
+4. **Compatibility**: Works in modern browsers that support the Geolocation API
 
-### **Exemplos Práticos**
+### **Practical Examples**
 
-Veja os arquivos de exemplo incluídos:
-- `ExemploSimples.html` - Implementação básica
-- `ExemploGeolocalizacao.html` - Interface completa com monitoramento
-- `TestForm.html` - Seção dedicada com todos os recursos
+See the included example files:
+- `ExemploSimples.html` - Basic implementation
+- `ExemploGeolocalizacao.html` - Complete interface with monitoring
+- `TestForm.html` - Dedicated section with all features
 
-### **API de Geolocalização Completa**
+### **Complete Geolocation API**
 
 ```javascript
-// Função principal - obter localização única
+// Main function - get a single location
 InnerForm.getLocation(options) // Retorna Promise
 
-// Monitoramento contínuo
+// Continuous monitoring
 InnerForm.watchLocation(successCallback, errorCallback, options) // Retorna watchId
 
-// Parar monitoramento  
+// Stop monitoring
 InnerForm.clearLocationWatch(watchId)
 ```
 
 ---
 
-## 🧪 Exemplos Práticos
+## 🧪 Practical Examples
 
-### **Formulário de Cadastro Completo**
+### **Complete Registration Form**
 ```html
 <form class="validate">
     <div class="row">
@@ -847,7 +847,7 @@ InnerForm.clearLocationWatch(watchId)
 </form>
 ```
 
-### **Formulário Financeiro**
+### **Financial Form**
 ```html
 <form class="validate">
     <!-- Dados do Cartão -->
@@ -882,48 +882,48 @@ InnerForm.clearLocationWatch(watchId)
 
 ---
 
-## 🔧 API JavaScript
+## 🔧 JavaScript API
 
-### **Validação Programática**
+### **Programmatic Validation**
 
-#### Validar elemento específico:
+#### Validate a specific element:
 ```javascript
-// Validar input individual
+// Validate an individual input
 var isValid = $('#meuInput').isValid();
 
-// Validar com classes customizadas
+// Validate with custom classes
 var isValid = $('#meuInput').isValid('obg', 'minlen 5');
 
  
 ```
 
-#### Validar formulário completo:
+#### Validate a complete form:
 ```javascript
-// Validar formulário inteiro
+// Validate the entire form
 var isValid = $('#meuForm').isValid();
 
-// Validar apenas campos que receberam foco
+// Validate only fields that received focus
 $('#meuForm').find(':input').addClass('prevFocus');
 var isValid = $('#meuForm').isValid();
 ```
 
-### **Aplicar Máscaras Manualmente**
+### **Apply Masks Manually**
 
 ```javascript
-// Aplicar todas as máscaras
+// Apply all masks
 $('#meuForm').startMasks();
 
-// Aplicar validações
+// Apply validations
 $('#meuForm').startValidation();
 
-// Máscaras específicas
+// Specific masks
 $('#telefone').phoneMask();
 $('#data').dateMask();
 $('#cpf').cpfMask();
 $('#uuid').uuidMask();  
 ```
 
-### **Busca de CEP Programática**
+### **Programmatic Postal-Code Search**
 
 ```javascript
 InnerForm.searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
@@ -932,57 +932,57 @@ InnerForm.searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
 });
 ```
 
-### **Configurar Timeout de Validação**
+### **Configure Validation Timeout**
 ```javascript
-// Validar com delay de 1 segundo
+// Validate with a 1-second delay
 $('#input').validateOnType(1000);
 
-// Validar em tempo real
+// Validate in real time
 $('#input').validateOnType(0);
 ```
 
-### **Utilitário para Definir Valores**
+### **Value Assignment Utility**
 ```javascript
 // Define valor apenas se campo estiver vazio
 // Se não estiver vazio, só substitui se não tiver classe 'noreplace'
 $('#campo').setOrReplaceVal('Novo valor');
 ```
 
-### **API de Geolocalização**
+### **Geolocation API**
 
 ```javascript
-// Obter localização única
+// Get a single location
 InnerForm.getLocation()
     .then(function(location) {
         $('#latitude').val(location.latitude);
         $('#longitude').val(location.longitude);
-        console.log('Precisão:', location.accuracyFormatted);
+        console.log('Accuracy:', location.accuracyFormatted);
     })
     .catch(function(error) {
-        console.error('Erro:', error.userMessage);
+        console.error('Error:', error.userMessage);
     });
 
-// Obter localização com opções customizadas
+// Get location with custom options
 InnerForm.getLocation({
     enableHighAccuracy: true,
     timeout: 15000,
     maximumAge: 60000
 })
 .then(function(location) {
-    // Usar dados de localização
+    // Use location data
     window.open(location.googleMapsUrl, '_blank');
 });
 
-// Monitorar localização continuamente
+// Monitor location continuously
 var watchId = InnerForm.watchLocation(
     function(location) {
-        // Callback de sucesso - chamado a cada atualização
+        // Success callback - called on every update
         $('#coordenadas').text(location.coordinates);
         $('#precisao').text(location.accuracyFormatted);
     },
     function(error) {
-        // Callback de erro
-        console.error('Erro no monitoramento:', error.userMessage);
+        // Error callback
+        console.error('Monitoring error:', error.userMessage);
     },
     {
         enableHighAccuracy: true,
@@ -991,70 +991,70 @@ var watchId = InnerForm.watchLocation(
     }
 );
 
-// Parar monitoramento
+// Stop monitoring
 InnerForm.clearLocationWatch(watchId);
 ```
 
 ---
 
-## 🛠️ Funções do InnerFormValidation
+## 🛠️ InnerFormValidation Functions
 
-A biblioteca expõe diversas funções utilitárias através do objeto `InnerFormValidation`. Abaixo estão documentadas as principais funções disponíveis:
+The library exposes several utility functions through the `InnerFormValidation` object. The main available functions are documented below:
 
-### **Funções de Logging e Debug**
+### **Logging and Debug Functions**
 
 #### `log(...arguments)`
-Registra mensagens no console quando o modo verbose está ativo.
+Logs messages to the console when verbose mode is enabled.
 ```javascript
 InnerForm.verbose = true;
 InnerForm.log('Mensagem de debug', dados);
 ```
 
 #### `error(...arguments)` 
-Registra mensagens de erro no console quando o modo verbose está ativo.
+Logs error messages to the console when verbose mode is enabled.
 ```javascript
 InnerForm.error('Erro encontrado:', erro);
 ```
 
 #### `warn(...arguments)`
-Registra avisos no console quando o modo verbose está ativo.
+Logs warnings to the console when verbose mode is enabled.
 ```javascript
 InnerForm.warn('Aviso:', dados);
 ```
 
-### **Funções Utilitárias**
+### **Utility Functions**
 
 #### `addLeadingZeros(num, totalLength)`
-Adiciona zeros à esquerda para atingir o comprimento especificado.
+Adds leading zeros to reach the specified length.
 ```javascript
 InnerForm.addLeadingZeros(123, 5); // "00123"
 InnerForm.addLeadingZeros(-45, 4);  // "-045"
 ```
 
 #### `barcodeCheckSum(code)`
-Calcula o dígito verificador de códigos de barras usando algoritmos padrão.
+Calculates the check digit of barcodes using standard algorithms.
 ```javascript
 InnerForm.barcodeCheckSum("1234567"); // Retorna número do checksum
 ```
 
 #### `getAge(birthDate, fromDate)`
-Calcula a idade com base na data de nascimento e data de referência.
+Calculates age based on the birth date and reference date.
 ```javascript
 InnerForm.getAge("15/03/1990"); // Idade atual
 InnerForm.getAge("15/03/1990", new Date("2025-01-01")); // Idade em 2025
 ```
 
 #### `expandYear(year, pastDistance, futureDistance)`
-Expande um ano de 2 dígitos (YY) para 4 dígitos (YYYY) baseado no século atual.
+Expands a two-digit year (YY) to four digits (YYYY) based on the current century.
 ```javascript
 InnerForm.expandYear(25, 20, 5); // 2025 (próximo de 2024)
 InnerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
 ```
 
-### **Funções de Validação**
+### **Validation Functions**
 
 #### `validateUUID(value)`
-Valida se uma string é um UUID/GUID válido. Aceita formatos flexíveis, não apenas RFC 4122.
+Validates whether a string is a valid UUID/GUID. Accepts flexible formats, not only RFC 4122.
 ```javascript
 InnerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
 InnerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
@@ -1062,7 +1062,7 @@ InnerForm.validateUUID("invalid-uuid"); // false
 ```
 
 #### `validateLatitude(value)` - **🆕 NOVA**
-Valida se um valor é uma coordenada de latitude válida (-90 a +90 graus).
+Validates whether a value is a valid latitude coordinate (-90 to +90 degrees).
 ```javascript
 InnerForm.validateLatitude("-23.550520"); // true
 InnerForm.validateLatitude("45.5");       // true
@@ -1071,7 +1071,7 @@ InnerForm.validateLatitude("-90.5");      // false (fora do limite)
 ```
 
 #### `validateLongitude(value)` - **🆕 NOVA**
-Valida se um valor é uma coordenada de longitude válida (-180 a +180 graus).
+Validates whether a value is a valid longitude coordinate (-180 to +180 degrees).
 ```javascript
 InnerForm.validateLongitude("-46.633308"); // true
 InnerForm.validateLongitude("180");        // true
@@ -1080,7 +1080,7 @@ InnerForm.validateLongitude("-180.1");     // false (fora do limite)
 ```
 
 #### `validateCoordinate(value)` - **🆕 NOVA**
-Valida se um valor contém um par de coordenadas válido em vários formatos.
+Validates whether a value contains a valid coordinate pair in several formats.
 ```javascript
 InnerForm.validateCoordinate("-23.550520,-46.633308"); // true
 InnerForm.validateCoordinate("-23.5 -46.6");           // true
@@ -1182,7 +1182,7 @@ InnerForm.validateAllChar("senha123", "123"); // true
 InnerForm.validateAllChar("senha12", "123");  // false
 ```
 
-### **Novas Funções de Validação**
+### **New Validation Functions**
 
 #### `validShortMonthYearRange(value)`
 Valida um intervalo de mês/ano curto no formato "MM/YY ~ MM/YY".
@@ -1234,7 +1234,7 @@ InnerForm.validateAllChar("teste123!", "t3!"); // true
 InnerForm.validateAllChar("teste", "tx"); // false
 ```
 
-### **Novas Funções de Parsing Inteligente**
+### **New Smart Parsing Functions**
 
 #### `parseShortMonthYearPartial(part)` - **🆕 NOVA**
 Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada com validação inteligente.
@@ -1261,22 +1261,22 @@ InnerForm.parseDatePartial("32122024"); // "31/12/2024" (limita dia a 31)
 InnerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
 ```
 
-### **Funções de Máscara**
+### **Mask Functions**
 
 #### `applyNoSpaceMask(input)`
-Aplica máscara que remove todos os espaços da entrada.
+Applies a mask that removes all spaces from the input.
 ```javascript
 InnerForm.applyNoSpaceMask(document.getElementById('campo'));
 ```
 
 #### `applyAlphaMask(input)`
-Aplica máscara que permite apenas letras e espaços.
+Applies a mask that allows only letters and spaces.
 ```javascript
 InnerForm.applyAlphaMask(document.getElementById('nome'));
 ```
 
 #### `applyAlphaNumericMask(input)`
-Aplica máscara que permite letras, números e espaços.
+Applies a mask that allows letters, numbers, and spaces.
 ```javascript
 InnerForm.applyAlphaNumericMask(document.getElementById('codigo'));
 ```
@@ -1345,7 +1345,7 @@ Aplica máscara para período de mês/ano abreviado (MM/YY ~ MM/YY).
 InnerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev'));
 ```
 
-### **Funções Especializadas**
+### **Specialized Functions**
 
 #### `checkLuhn(cardNumber)`
 Valida número de cartão de crédito usando o algoritmo de Luhn.
@@ -1384,7 +1384,7 @@ InnerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
 });
 ```
 
-### **Funções de Geolocalização - 🆕 NOVAS**
+### **Geolocation Functions - 🆕 NEW**
 
 #### `getLocation(options)`
 Obtém a localização atual do usuário usando a API de Geolocalização do navegador.
@@ -1493,9 +1493,9 @@ InnerForm.getLocation()
     });
 ```
 
-### **Configuração Global**
+### **Global Configuration**
 
-#### Propriedades Configuráveis:
+#### Configurable Properties:
 ```javascript
 // Ativar logs detalhados
 InnerForm.verbose = true;
@@ -1504,39 +1504,39 @@ InnerForm.verbose = true;
 InnerForm.onTypeTimeout = 900;
 ```
 
-### **Uso Avançado**
+### **Advanced Usage**
 
-As funções podem ser usadas individualmente para validações customizadas ou integração com outros sistemas:
+The functions can be used individually for custom validation or integration with other systems:
 
 ```javascript
-// Validação customizada
+// Custom validation
 function validarFormularioCustomizado() {
     let isValid = true;
     
-    // Validar data
+    // Validate date
     if (!InnerForm.validDate($('#data').val())) {
         isValid = false;
-        alert('Data inválida!');
+        alert('Invalid date!');
     }
     
-    // Validar idade
+    // Validate age
     if (InnerForm.getAge($('#nascimento').val()) < 18) {
         isValid = false;
-        alert('Menor de idade!');
+        alert('Underage!');
     }
     
     return isValid;
 }
 
-// Aplicar máscaras programaticamente
+// Apply masks programmatically
 $('#telefone').on('input', function() {
     InnerForm.applyPhoneMask(this);
 });
 
-// Buscar CEP com tratamento de erro
+// Search for a postal code with error handling
 InnerForm.searchViaCEP(cep, num, 0, function(dados) {
     if (dados.erro) {
-        console.warn('CEP não encontrado');
+        console.warn('Postal code not found');
         return;
     }
     
@@ -1549,20 +1549,20 @@ InnerForm.searchViaCEP(cep, num, 0, function(dados) {
 
 ---
 
-## 🎨 Personalização Visual
+## 🎨 Visual Customization
 
-### **Classes CSS Aplicadas Automaticamente**
+### **Automatically Applied CSS Classes**
 
-O InnerFormValidation adiciona classes CSS automaticamente conforme o estado do campo:
+InnerFormValidation automatically adds CSS classes according to the field state:
 
 ```css
-/* Campo válido (aplicado apenas em valores não-vazios) */
+/* Valid field (applied only to non-empty values) */
 .success {
     border-color: #28a745 !important;
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
-/* Campo inválido */
+/* Invalid field */
 .error {
     border-color: #dc3545 !important;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
@@ -1574,7 +1574,7 @@ O InnerFormValidation adiciona classes CSS automaticamente conforme o estado do 
 }
 ```
 
-### **Personalização Avançada**
+### **Advanced Customization**
 ```css
 /* Estilo para campos obrigatórios */
 .obg::before {
@@ -1608,32 +1608,32 @@ O InnerFormValidation adiciona classes CSS automaticamente conforme o estado do 
 }
 ```
 
-### **Informações Disponíveis via Atributos**
+### **Information Available via Attributes**
 
-Após validação, alguns elementos recebem atributos `data-*` com informações úteis:
+After validation, some elements receive `data-*` attributes with useful information:
 
 ```javascript
-// Força da senha (0-4)
+// Password strength (0-4)
 var forcaSenha = $('#senha').attr('data-pwstrength');
 
-// Bandeira do cartão detectada
+// Detected card brand
 var bandeiraCartao = $('#cartao').attr('data-flagcard');
 ```
 
 ---
 
-## 📚 Classes Especiais
+## 📚 Special Classes
 
-### **Controle de Comportamento**
+### **Behavior Control**
 
-| Classe        | Descrição                                   |
+| Class         | Description                                 |
 | ------------- | ------------------------------------------- |
 | `onkeyup`     | Validar conforme digita (com delay)         |
 | `notonblur`   | NÃO validar ao sair do campo                |
 | `notonchange` | NÃO validar quando valor muda               |
 | `noreplace`   | Autocompletar não substitui valor existente |
 
-### **Casos de Uso Especiais**
+### **Special Use Cases**
 ```html
 <!-- Validar apenas ao enviar formulário -->
 <input class="obg notonblur notonchange">
@@ -1647,23 +1647,23 @@ var bandeiraCartao = $('#cartao').attr('data-flagcard');
 
 ---
 
-## 🐛 Debugging e Logs
+## 🐛 Debugging and Logs
 
-### **Ativar Logs Detalhados**
+### **Enable Detailed Logs**
 ```html
 <script>
-InnerForm.verbose = true; // Ativa logs detalhados no console
+InnerForm.verbose = true; // Enables detailed console logs
 </script>
 ```
 
-### **Logs Disponíveis**
-- ✅ **Sucesso**: `InnerForm.log()`
-- ⚠️ **Aviso**: `InnerForm.warn()`  
-- ❌ **Erro**: `InnerForm.error()`
+### **Available Logs**
+- ✅ **Success**: `InnerForm.log()`
+- ⚠️ **Warning**: `InnerForm.warn()`
+- ❌ **Error**: `InnerForm.error()`
 
-### **Exemplo de Debug**
+### **Debug Example**
 ```javascript
-// No console do navegador, você verá:
+// In the browser console, you will see:
 // InnerFormValidation: Validation started
 // InnerFormValidation: PhoneMask started  
 // InnerFormValidation: Valid input detected
@@ -1671,13 +1671,13 @@ InnerForm.verbose = true; // Ativa logs detalhados no console
 
 ---
 
-## ⚠️ Notas Importantes
+## ⚠️ Important Notes
 
-1. **Ordem das Classes**: A ordem das classes pode importar em validações complexas
-2. **Performance**: Para formulários grandes, considere usar `notonblur` em campos menos críticos
-3. **Compatibilidade**: jQuery é opcional; quando presente, os plugins legados são conectados em `jQuery.fn` sem alterar `$`
-4. **Campos Vazios**: A maioria das validações permite campos vazios (exceto `obg`/`required`)
-5. **Máscaras vs Validação**: Nem toda validação tem máscara equivalente e vice-versa
+1. **Class Order**: Class order may matter in complex validations
+2. **Performance**: For large forms, consider using `notonblur` on less critical fields
+3. **Compatibility**: jQuery is optional; when present, legacy plugins are connected to `jQuery.fn` without changing `$`
+4. **Empty Fields**: Most validations allow empty fields (except `obg`/`required`)
+5. **Masks vs. Validation**: Not every validation has an equivalent mask, and vice versa
 
 ---
 

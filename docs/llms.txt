@@ -9,6 +9,12 @@ InnerFormValidation is a dependency-free JavaScript library for form validation,
 ## Primary API
 Load `InnerFormValidation.js`, then call `InnerForm.validateCPF(value)`, `validateCNPJ`, `validateEmail`, `validDate`, `validateUF`, `validateOAB`, `validatePix`, `applyCPFMask(input)`, `applyCEPMask(input)`, `isValid(element, ...rules)`, `startMasks(element)` and `startValidation(element)`.
 
+## Automatic configuration
+Forms are initialized automatically when they match `form.validate`, `form[data-validate="true"]`, `form[data-validation="true"]` or `.forcevalidate`. `startValidation(element)` enables blur and change validation; add `onkeyup` to a field for delayed type validation. Use `notonblur` or `notonchange` to opt out, and set `InnerForm.onTypeTimeout` to change the typing delay.
+
+Validation fields receive `error` when invalid and `success` when valid and non-empty. A `.form-group` ancestor receives `has-error` when invalid. CSS can style these classes directly. Declarative callbacks are supported through `data-beforevalidatecallback`, `data-validcallback`, `data-invalidcallback` and `data-aftervalidatecallback`; `data-invalidmessage` sets the native `setCustomValidity` message.
+
+Useful data attributes include `data-separator`, `data-decimal` and `data-thousand` for number masks, `data-regex-flags` for regex rules, and `data-addressnotfoundtext`/`data-notfoundtext` plus `data-addressnotfound`/`data-notfound` for ViaCEP fallback behavior.
 ## Callable API and jQuery compatibility
 `InnerForm` is both the public API and the native selector wrapper. Call `InnerForm(selector)` to get a chainable collection, or call methods directly such as `InnerForm.validateCPF(value)` and `InnerForm.isValid(element)`.
 

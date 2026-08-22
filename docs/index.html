@@ -56,13 +56,110 @@ InnerForm.isValid(form)
 InnerForm.validateCPF(value)</code></pre>
         </section>
         <div class="layout wrap">
-            <aside class="toc"><strong>Conteúdo</strong><a href="#basicas">01 Básicas</a><a href="#strings">02
+            <aside class="toc"><strong>Conteúdo</strong><a href="#configuracao">00 Configuração</a><a href="#basicas">01
+                    Básicas</a><a href="#strings">02
                     Caracteres</a><a href="#tamanho">03 Comprimento</a><a href="#documentos">04 Documentos</a><a
                     href="#datas">05 Data e hora</a><a href="#comparacoes">06 Idade e comparação</a><a href="#senha">07
                     Senhas</a><a href="#cartoes">08 Cartões</a><a href="#conteudo">09 Conteúdo</a><a
                     href="#integracoes">10 CEP e geo</a><a href="#callbacks">11 Callbacks</a><a href="#api">12 API</a>
             </aside>
             <div class="content">
+                <section id="configuracao" class="section configuration">
+                    <p class="eyebrow">00 / comece aqui</p>
+                    <h2>Configure o plugin de verdade</h2>
+                    <p class="intro">A biblioteca lê as classes do HTML e inicializa os formulários automaticamente
+                        quando o script termina de carregar. Use a configuração declarativa para a maioria dos casos e a
+                        API JavaScript quando precisar controlar um fluxo específico.</p>
+                    <div class="columns">
+                        <article class="panel">
+                            <h3>Ativação automática</h3>
+                            <p>Um formulário é ativado se tiver <code>validate</code>,
+                                <code>data-validate="true"</code>, <code>data-validation="true"</code> ou
+                                <code>forcevalidate</code>. Campos sem uma dessas regras continuam disponíveis pela API,
+                                mas não recebem eventos automaticamente.
+                            </p>
+                            <pre><code>&lt;form class="validate"&gt;
+  &lt;input class="obg email" type="email"&gt;
+  &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;script src="InnerFormValidation.js"&gt;&lt;/script&gt;</code></pre>
+                            <p class="hint">No envio, o plugin marca os campos como visitados e valida o formulário
+                                inteiro.</p>
+                        </article>
+                        <article class="panel">
+                            <h3>Ativação manual</h3>
+                            <p>Para conteúdo inserido depois do carregamento, inicialize máscaras e eventos no novo
+                                formulário. Também é possível validar apenas um campo ou passar regras diretamente.</p>
+                            <pre><code>InnerForm.startMasks('#checkout');
+InnerForm.startValidation('#checkout');
+
+InnerForm.isValid('#email');
+InnerForm('#codigo').isValid('regex');</code></pre>
+                            <p class="hint">As funções retornam a coleção encadeável, exceto <code>isValid</code>, que
+                                retorna booleano.</p>
+                        </article>
+                    </div>
+                    <div class="configuration-grid">
+                        <article class="panel">
+                            <h3>Quando validar</h3>
+                            <table class="config-table">
+                                <tbody>
+                                    <tr>
+                                        <th><code>onkeyup</code></th>
+                                        <td>valida enquanto digita, após <code>InnerForm.onTypeTimeout</code> (900 ms
+                                            por padrão)</td>
+                                    </tr>
+                                    <tr>
+                                        <th><code>notonblur</code></th>
+                                        <td>desliga a validação ao perder o foco</td>
+                                    </tr>
+                                    <tr>
+                                        <th><code>notonchange</code></th>
+                                        <td>desliga a validação no evento <code>change</code></td>
+                                    </tr>
+                                    <tr>
+                                        <th><code>InnerForm.verbose = true</code></th>
+                                        <td>habilita logs de diagnóstico no console</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <pre><code>InnerForm.onTypeTimeout = 1200;</code></pre>
+                        </article>
+                        <article class="panel">
+                            <h3>Classes que controlam a aparência</h3>
+                            <p>Ao validar um campo preenchido, o plugin alterna automaticamente <code>success</code> e
+                                <code>error</code>. Em layouts Bootstrap ou semelhantes, o ancestral
+                                <code>.form-group</code> também recebe <code>has-error</code> quando inválido.
+                            </p>
+                            <pre><code>input.success { border-color: #198754; }
+input.error { border-color: #dc3545; }
+.form-group.has-error .help { color: #dc3545; }</code></pre>
+                            <p class="hint">O campo vazio e opcional permanece sem <code>success</code>. Prefira CSS
+                                próprio para manter a aparência consistente com seu design system.</p>
+                        </article>
+                    </div>
+                    <article class="panel data-panel">
+                        <h3>Atributos <code>data-*</code> para personalizar a experiência</h3>
+                        <div class="data-table">
+                            <div><code>data-invalidmessage</code><span>Mensagem usada em
+                                    <code>setCustomValidity()</code>, exibida pela validação nativa do navegador.</span>
+                            </div>
+                            <div><code>data-regex-flags</code><span>Flags da regra <code>regex</code>, como
+                                    <code>i</code> ou <code>g</code>.</span></div>
+                            <div><code>data-separator</code> · <code>data-decimal</code> ·
+                                <code>data-thousand</code><span>Configuram separador decimal, casas decimais e separador
+                                    de milhares em números e dinheiro.</span>
+                            </div>
+                            <div><code>data-addressnotfoundtext</code> · <code>data-notfoundtext</code><span>Texto
+                                    exibido quando a consulta ViaCEP não encontra o endereço.</span></div>
+                            <div><code>data-addressnotfound</code> · <code>data-notfound</code><span>Expressão executada
+                                    quando o CEP não é encontrado; use para atualizar sua UI.</span></div>
+                        </div>
+                        <pre><code>&lt;input class="mask decimal" data-separator="," data-decimal="2" data-thousand="."&gt;
+&lt;input class="cep" data-addressnotfoundtext="Confira o CEP informado."&gt;</code></pre>
+                    </article>
+                </section>
                 <section id="laboratorio" class="section">
                     <p class="eyebrow">Laboratório interativo</p>
                     <h2>Todas as regras, em um lugar</h2>
@@ -325,11 +422,11 @@ InnerForm.clearLocationWatch(watchId)</code></pre>
         </div>
     </main>
     <footer class="wrap footer"><b>InnerFormValidation</b><span>MIT · documentação humana e AI-friendly</span><a
-            href="../README.md">README</a></footer>
+            href="https://github.com/InnerFormValidation/InnerFormValidation">README</a></footer>
     <div id="field-menu" class="field-menu" hidden role="menu"><button type="button" data-field-action="classes"
             role="menuitem">Copiar classes CSS de validação</button><button type="button" data-field-action="html"
             role="menuitem">Copiar HTML</button></div>
-    <script src="../InnerForm.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
     <script src="docs.js"></script>
 </body>
 

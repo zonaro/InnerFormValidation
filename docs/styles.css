@@ -239,6 +239,57 @@
     border-top: 1px solid var(--line)
 }
 
+.configuration {
+    padding-top: 55px
+}
+
+.configuration-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px
+}
+
+.config-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px
+}
+
+.config-table th,
+.config-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top
+}
+
+.config-table th {
+    width: 34%;
+    padding-right: 12px;
+    font-weight: 400
+}
+
+.data-panel {
+    margin-top: 20px
+}
+
+.data-table {
+    border-top: 1px solid var(--line)
+}
+
+.data-table div {
+    display: grid;
+    grid-template-columns: minmax(190px, .7fr) 1.3fr;
+    gap: 20px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line)
+}
+
+.data-table span {
+    color: var(--muted)
+}
+
 @media(max-width:760px) {
     .layout {
         display: block
@@ -264,8 +315,14 @@
 
     .demo-grid,
     .integration-grid,
+    .configuration-grid,
     .api-list {
         grid-template-columns: 1fr
+    }
+
+    .data-table div {
+        grid-template-columns: 1fr;
+        gap: 4px
     }
 
     .demo-grid button {
