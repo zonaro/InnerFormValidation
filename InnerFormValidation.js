@@ -1214,6 +1214,22 @@
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
 
+        var dateDigits = text.replace(/\D/g, "");
+        if (dateDigits.length >= 16) {
+            var firstDate = dateDigits.substring(0, 8);
+            var secondDate = dateDigits.substring(8, 16);
+            var firstFormatted = firstDate.substring(0, 2) + "/" + firstDate.substring(2, 4) + "/" + firstDate.substring(4, 8);
+            var secondFormatted = secondDate.substring(0, 2) + "/" + secondDate.substring(2, 4) + "/" + secondDate.substring(4, 8);
+            var firstParsed = InnerForm.parseDate(firstFormatted);
+            var secondParsed = InnerForm.parseDate(secondFormatted);
+            if (firstParsed && secondParsed) {
+                text = firstFormatted + " ~ " + secondFormatted;
+                if (firstParsed > secondParsed) text = secondFormatted + " ~ " + firstFormatted;
+                input.value = text;
+                return;
+            }
+        }
+
         text = InnerForm.parseDatePartial(text);
 
         if (text.length > 23) text = text.substring(0, 23);
@@ -1603,6 +1619,22 @@
 
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
+
+        var monthYearDigits = text.replace(/\D/g, "");
+        if (monthYearDigits.length >= 12) {
+            var firstMonthYear = monthYearDigits.substring(0, 6);
+            var secondMonthYear = monthYearDigits.substring(6, 12);
+            var firstMonthYearFormatted = firstMonthYear.substring(0, 2) + "/" + firstMonthYear.substring(2, 6);
+            var secondMonthYearFormatted = secondMonthYear.substring(0, 2) + "/" + secondMonthYear.substring(2, 6);
+            var firstMonthYearParsed = InnerForm.parseDate("01/" + firstMonthYearFormatted);
+            var secondMonthYearParsed = InnerForm.parseDate("01/" + secondMonthYearFormatted);
+            if (firstMonthYearParsed && secondMonthYearParsed) {
+                text = firstMonthYearFormatted + " ~ " + secondMonthYearFormatted;
+                if (firstMonthYearParsed > secondMonthYearParsed) text = secondMonthYearFormatted + " ~ " + firstMonthYearFormatted;
+                input.value = text;
+                return;
+            }
+        }
 
         text = InnerForm.parseMonthYearPartial(text);
 

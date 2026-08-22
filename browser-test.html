@@ -1,161 +1,129 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>InnerFormValidation | Browser test</title>
-    <style>
-        :root { color-scheme: light; font: 16px/1.5 system-ui, sans-serif; --ink: #18212b; --muted: #5d6873; --line: #d8dee5; --paper: #f5f7f9; --pass: #087443; --fail: #b42318; }
-        body { margin: 0; color: var(--ink); background: var(--paper); }
-        main { width: min(1100px, calc(100% - 32px)); margin: 32px auto; }
-        h1 { margin-bottom: 4px; }
-        p { color: var(--muted); }
-        .summary { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
-        .stat { min-width: 140px; padding: 14px; background: white; border: 1px solid var(--line); border-radius: 6px; }
-        .stat strong { display: block; font-size: 1.5rem; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-        th { background: #e9eef3; }
-        .pass { color: var(--pass); }
-        .fail { color: var(--fail); }
-        code { font-family: ui-monospace, monospace; }
-        #details { max-height: 55vh; overflow: auto; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InnerFormValidation | Teste funcional no navegador</title>
+<style>
+:root{font:16px/1.5 system-ui,sans-serif;color:#18212b;background:#f5f7f9;--line:#d8dee5;--pass:#087443;--fail:#b42318}body{margin:0}main{width:min(1100px,calc(100% - 32px));margin:32px auto}p{color:#5d6873}.summary{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{min-width:140px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:6px}.stat strong{display:block;font-size:1.5rem}table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:#e9eef3}.pass{color:var(--pass)}.fail{color:var(--fail)}code{font-family:ui-monospace,monospace}#fixture{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+</style>
 </head>
 <body>
 <main>
-    <h1>Teste da biblioteca no navegador</h1>
-    <p id="status">Executando testes no DOM real...</p>
-    <section class="summary" aria-label="Resumo">
-        <div class="stat"><strong id="passed">0</strong><span>passaram</span></div>
-        <div class="stat"><strong id="failed">0</strong><span>falharam</span></div>
-        <div class="stat"><strong id="total">0</strong><span>testes executados</span></div>
-    </section>
-    <table id="details">
-        <thead><tr><th>Grupo</th><th>Teste</th><th>Resultado</th><th>Detalhe</th></tr></thead>
-        <tbody></tbody>
-    </table>
+<h1>Teste funcional no navegador</h1>
+<p id="status">Criando formulários reais e executando eventos do DOM...</p>
+<section class="summary" aria-label="Resumo"><div class="stat"><strong id="passed">0</strong><span>passaram</span></div><div class="stat"><strong id="failed">0</strong><span>falharam</span></div><div class="stat"><strong id="total">0</strong><span>testes executados</span></div></section>
+<table id="details"><thead><tr><th>Grupo</th><th>Comportamento observado</th><th>Resultado</th><th>Detalhe</th></tr></thead><tbody></tbody></table>
 </main>
-<form id="matrix" hidden></form>
-<script src="InnerFormValidation.js"></script>
+<div id="fixture"></div>
+<script src="InnerFormValidation.js?browser-test=2"></script>
 <script>
-(function () {
+(async function () {
+    var fixture = document.getElementById('fixture');
     var tbody = document.querySelector('#details tbody');
     var passed = 0;
     var failed = 0;
 
+    function escapeHtml(value) { return String(value || '').replace(/[&<>]/g, function (char) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[char]; }); }
     function record(group, name, ok, detail) {
         if (ok) passed++; else failed++;
         var row = document.createElement('tr');
-        row.innerHTML = '<td><code>' + group + '</code></td><td><code>' + name + '</code></td><td class="' + (ok ? 'pass' : 'fail') + '">' + (ok ? 'PASS' : 'FAIL') + '</td><td>' + String(detail || '').replace(/[&<>]/g, function (char) { return {'&':'&amp;','<':'&lt;','>':'&gt;'}[char]; }) + '</td>';
+        row.innerHTML = '<td><code>' + escapeHtml(group) + '</code></td><td>' + escapeHtml(name) + '</td><td class="' + (ok ? 'pass' : 'fail') + '">' + (ok ? 'PASS' : 'FAIL') + '</td><td>' + escapeHtml(detail) + '</td>';
         tbody.appendChild(row);
     }
-
-    function test(group, name, callback) {
-        try { var result = callback(); record(group, name, result === true, result === true ? '' : String(result)); }
-        catch (error) { record(group, name, false, error.name + ': ' + error.message); }
+    async function test(group, name, callback) {
+        try {
+            var result = await callback();
+            record(group, name, result === true, result === true ? '' : result);
+        } catch (error) { record(group, name, false, error.name + ': ' + error.message); }
     }
-
-    var validators = [
-        ['required', 'abc'], ['req', 'abc'], ['obg', 'abc'], ['email', 'test@example.com'], ['mail', 'test@example.com'], ['e-mail', 'test@example.com'],
-        ['alpha', 'Maria Silva'], ['alphanumeric', 'ABC 123'], ['alphanum', 'ABC 123'], ['upper', 'ABC'], ['lower', 'abc'], ['nospace', 'ABC123'],
-        ['number', '123'], ['decimal', '12,34'], ['money', '12,34'], ['integer', '123'], ['int', '123'], ['num', '123'], ['ean', '4006381333931'],
-        ['tel', '(11) 99999-9999'], ['cel', '(11) 99999-9999'], ['telephone', '(11) 99999-9999'], ['mobilephone', '(11) 99999-9999'],
-        ['url', 'https://example.com'], ['link', 'https://example.com'], ['data', '15/08/2026'], ['date', '15/08/2026'], ['daterange', '01/01/2026 ~ 15/08/2026'],
-        ['monthyearrange', '01/2026 ~ 08/2026'], ['shortmonthyearrange', '01/26 ~ 08/26'], ['datetime', '15/08/2026 12:30:00'],
-        ['dateshorttime', '15/08/2026 12:30'], ['datetimeshort', '15/08/2026 12:30'], ['time', '12:30'], ['shorttime', '12:30'],
-        ['timeshort', '12:30'], ['minutesecond', '12:30'], ['month', '12'], ['monthyear', '08/2026'], ['cep', '01001-000'],
-        ['cpfcnpj', '529.982.247-25'], ['cnpjcpf', '529.982.247-25'], ['cpf', '529.982.247-25'], ['cnpj', '04.252.011/0001-10'],
-        ['cnh', '04352702100'], ['debitcard', '4111111111111111'], ['creditcard', '4111111111111111'], ['password', 'Abc123!'],
-        ['after today', '15/08/2026'], ['before today', '15/08/2026'], ['eq', 'abc'], ['equal', 'abc'], ['notchar x', 'abc'], ['notchars x', 'abc'],
-        ['containsnotchar x', 'abc'], ['containsnotchars x', 'abc'], ['notcontainschars x', 'abc'], ['notcontainschar x', 'abc'], ['eqv abc', 'abc'],
-        ['equalvalue abc', 'abc'], ['equal-value abc', 'abc'], ['eq-v abc', 'abc'], ['contains abc', 'abc'], ['cnts abc', 'abc'], ['containsstring abc', 'abc'],
-        ['containsanychar abc', 'abc'], ['containschar abc', 'abc'], ['containsanychars abc', 'abc'], ['containsallchar abc', 'abc'], ['containsallchars abc', 'abc'],
-        ['len 4', 'abcd'], ['minlen 3', 'abcd'], ['maxlen 8', 'abcd'], ['to 2026', '15/08/2026'], ['minage 18', '15/08/1990'], ['maxage 65', '15/08/1990'],
-        ['age 30', '15/08/1996'], ['latitude', '-23.5505'], ['lat', '-23.5505'], ['longitude', '-46.6333'], ['long', '-46.6333'], ['lng', '-46.6333'],
-        ['coordinate', '-23.5505 -46.6333'], ['coordinates', '-23.5505 -46.6333'], ['coord', '-23.5505 -46.6333'],
-        ['uuid', '550e8400-e29b-41d4-a716-446655440000'], ['guid', '550e8400-e29b-41d4-a716-446655440000'], ['pix', 'test@example.com'], ['chavepix', 'test@example.com'],
-        ['regex', 'abc'], ['oab', '511.061/SP'], ['state', 'SP'], ['uf', 'SP']
-    ];
+    function reset() { fixture.innerHTML = ''; }
+    function form() { var value = document.createElement('form'); fixture.appendChild(value); return value; }
+    function field(parent, name, classes, value, attributes) {
+        var input = document.createElement('input');
+        input.name = name; input.className = classes; input.value = value || '';
+        Object.keys(attributes || {}).forEach(function (key) { input.setAttribute(key, attributes[key]); });
+        parent.appendChild(input); return input;
+    }
+    function type(input, value) {
+        input.value = '';
+        for (var index = 0; index < value.length; index++) {
+            input.value += value[index];
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        input.dispatchEvent(new Event('blur', { bubbles: true }));
+    }
+    function paste(input, value) {
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        input.dispatchEvent(new Event('blur', { bubbles: true }));
+    }
+    function has(input, className) { return input.classList.contains(className); }
 
     var masks = [
-        ['phone', '11999999999', 'applyPhoneMask'], ['tel', '11999999999', 'applyPhoneMask'], ['cel', '11999999999', 'applyPhoneMask'],
-        ['upper', 'abc', 'applyUpperMask'], ['lower', 'ABC', 'applyLowerMask'], ['email', 'ABC@EXAMPLE.COM', 'applyLowerMask'], ['mail', 'ABC@EXAMPLE.COM', 'applyLowerMask'],
-        ['cpf', '52998224725', 'applyCPFMask'], ['cnh', '04352702100', 'applyCNHMask'], ['cep', '01001000', 'applyCEPMask'],
-        ['cnpj', '04252011000110', 'applyCNPJMask'], ['cpfcnpj', '52998224725', 'applyCPForCNPJMask'], ['cnpjcpf', '04252011000110', 'applyCPForCNPJMask'],
-        ['creditcard', '4111111111111111', 'applyCreditCardMask'], ['debitcard', '4111111111111111', 'applyCreditCardMask'], ['date', '15082026', 'applyDateMask'], ['data', '15082026', 'applyDateMask'],
-        ['monthyear', '082026', 'applyMonthYearMask'], ['number', '123456', 'applyNumberMask'], ['num', '123456', 'applyNumberMask'], ['month', '12', 'applyNumberMask'],
-        ['money', '123456', 'applyNumberMask'], ['decimal', '1234', 'applyNumberMask'], ['integer', '123456', 'applyNumberMask'], ['int', '123456', 'applyNumberMask'],
-        ['len 4', '123456', 'noop'], ['time', '1230', 'applyTimeMask'], ['shorttime', '1230', 'applyShortTimeMask'], ['timeshort', '1230', 'applyShortTimeMask'], ['minutesecond', '1230', 'applyShortTimeMask'],
-        ['datetime', '150820261230', 'applyDateTimeMask'], ['datetimeshort', '150820261230', 'applyDateShortMask'], ['dateshorttime', '150820261230', 'applyDateShortMask'], ['alpha', 'abc 123', 'applyAlphaMask'],
-        ['alphanum', 'abc !123', 'applyAlphaNumericMask'], ['alphanumeric', 'abc !123', 'applyAlphaNumericMask'], ['uf', 'sp1', 'applyUFMask'], ['state', 'sp1', 'applyUFMask'], ['nospace', 'a b c', 'applyNoSpaceMask'],
-        ['maxlen 4', '123456', 'noop'], ['leadingzero len 5', '12', 'noop'], ['daterange', '15082026', 'applyDateRangeMask'], ['monthyearrange', '082026', 'applyMonthYearRangeMask'],
-        ['shortmonthyearrange', '0826', 'applyShortMonthYearRangeMask'], ['uuid', '550e8400e29b41d4a716446655440000', 'applyUUIDMask'],
-        ['oab', '511061SP', 'applyOABMask'], ['latitude', '-23,5505123', 'applyLatitudeMask'], ['longitude', '-46,6333123', 'applyLongitudeMask']
+        ['telefone', 'mask phone required tel', '11999999999', '(11) 99999-9999'],
+        ['e-mail', 'mask email required email', 'USER@EXAMPLE.COM', 'user@example.com'],
+        ['CPF', 'mask cpf required cpf', '52998224725', '529.982.247-25'],
+        ['CNPJ', 'mask cnpj required cnpj', '04252011000110', '04.252.011/0001-10'],
+        ['CNH', 'mask cnh required cnh', '04352702100', '043.527.021-00'],
+        ['CEP', 'mask cep required cep', '01001000', '01001-000'],
+        ['data', 'mask date required date', '15082026', '15/08/2026'],
+        ['data e hora', 'mask datetime datetime', '15082026123000', '15/08/2026 12:30:00'],
+        ['hora curta', 'mask shorttime shorttime', '1230', '12:30'],
+        ['mês/ano', 'mask monthyear monthyear', '082026', '08/2026'],
+        ['período de data', 'mask daterange daterange', '01/01/2026 ~ 15/08/2026', '01/01/2026 ~ 15/08/2026'],
+        ['período mês/ano', 'mask monthyearrange monthyearrange', '01/2026 ~ 08/2026', '01/2026 ~ 08/2026'],
+        ['período curto', 'mask shortmonthyearrange shortmonthyearrange', '01/26 ~ 08/26', '01/26 ~ 08/26'],
+        ['letras', 'mask alpha required alpha', 'Maria 123', 'Maria '],
+        ['alfanumérico', 'mask alphanumeric alphanumeric', 'Sala 2!', 'Sala 2'],
+        ['UF', 'mask uf required uf', 'sp1', 'SP'],
+        ['sem espaço', 'mask nospace nospace', 'ABC 123', 'ABC123'],
+        ['UUID', 'mask uuid uuid', '550e8400e29b41d4a716446655440000', '550e8400-e29b-41d4-a716-446655440000'],
+        ['OAB', 'mask oab oab', '511061SP', '511.061/SP'],
+        ['latitude', 'mask latitude latitude', '-23,5505123', '-23.550512'],
+        ['longitude', 'mask longitude longitude', '-46,6333123', '-46.633312'],
+        ['cartão', 'mask creditcard creditcard', '4111111111111111', '4111 1111 1111 1111']
     ];
-
-    var apiCases = [
-        ['validateCEP valid', InnerForm.validateCEP, ['01001-000'], true], ['validateCEP invalid', InnerForm.validateCEP, ['123'], false],
-        ['validateCPF valid', InnerForm.validateCPF, ['529.982.247-25'], true], ['validateCPF invalid', InnerForm.validateCPF, ['111.111.111-11'], false],
-        ['validateCNPJ valid', InnerForm.validateCNPJ, ['04.252.011/0001-10'], true], ['validateCNPJ invalid', InnerForm.validateCNPJ, ['00.000.000/0000-00'], false],
-        ['validateTime valid', InnerForm.validateTime, ['23:59:59'], true], ['validateTime invalid junk', InnerForm.validateTime, ['1a:2'], false],
-        ['validateLatitude invalid junk', InnerForm.validateLatitude, ['12abc'], false], ['validateLongitude invalid junk', InnerForm.validateLongitude, ['-45xyz'], false],
-        ['validateUUID valid', InnerForm.validateUUID, ['550e8400-e29b-41d4-a716-446655440000'], true],
-        ['validateOAB valid', InnerForm.validateOAB, ['511.061/SP'], true], ['validateUF invalid', InnerForm.validateUF, ['XX'], false],
-        ['checkLuhn valid', InnerForm.checkLuhn, ['4111111111111111'], true], ['checkLuhn empty', InnerForm.checkLuhn, [''], false],
-        ['validateCardBrand Visa', InnerForm.validateCardBrand, ['4111111111111111'], 'visa'],
-        ['validateCoordinate valid', InnerForm.validateCoordinate, ['-23.5505 -46.6333'], true],
-        ['validateCoordinate invalid', InnerForm.validateCoordinate, ['12,34,56'], false],
-        ['parseDate null', InnerForm.parseDateInt, [null], null]
-    ];
-
-    apiCases.forEach(function (entry) {
-        test('API', entry[0], function () { return entry[1].apply(InnerForm, entry[2]) === entry[3]; });
-    });
-
-    masks.forEach(function (entry) {
-        test('Máscara', entry[0], function () {
-            var input = document.createElement('input');
-            input.value = entry[1];
-            if (entry[0].indexOf('number') >= 0) input.setAttribute('data-thousand', '.');
-            if (entry[2] !== 'noop') InnerForm[entry[2]](input);
-            return typeof input.value === 'string';
+    for (var mask of masks) {
+        await test('Máscaras', 'preenche e formata ' + mask[0], function () {
+            reset(); var parent = form(); var input = field(parent, mask[0], mask[1], '', {});
+            InnerForm.startMasks(parent);
+            if (mask[1].indexOf('daterange') >= 0 || mask[1].indexOf('monthyearrange') >= 0 || mask[1].indexOf('shortmonthyearrange') >= 0) paste(input, mask[2]); else type(input, mask[2]);
+            return input.value === mask[3] ? true : 'esperado ' + mask[3] + ', obtido ' + input.value;
         });
-    });
+    }
 
-    var matrix = document.getElementById('matrix');
-    masks.forEach(function (mask) {
-        validators.forEach(function (validator) {
-            test('Combinação', mask[0] + ' + ' + validator[0], function () {
-                var input = document.createElement('input');
-                input.className = mask[0] + ' ' + validator[0];
-                input.value = validator[1];
-                matrix.appendChild(input);
-                InnerForm.startMasks(input);
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-                InnerForm(input).isValid(validator[0]);
-                matrix.removeChild(input);
-                return true;
-            });
-        });
+    await test('Validação DOM', 'campo válido recebe success', function () {
+        reset(); var parent = form(); var input = field(parent, 'email', 'mask email required email', '', {}); InnerForm.startMasks(parent); type(input, 'test@example.com'); InnerForm(input).isValid(); return has(input, 'success') && !has(input, 'error');
     });
-
-    test('Coleção', 'change dispara evento', function () {
-        var input = document.createElement('input');
-        var fired = false;
-        input.addEventListener('change', function () { fired = true; });
-        InnerForm(input).change();
-        return fired;
+    await test('Validação DOM', 'campo obrigatório vazio recebe error', function () {
+        reset(); var parent = form(); var input = field(parent, 'required', 'required email', '', {}); InnerForm.startValidation(parent); input.classList.add('prevFocus'); InnerForm(input).isValid(); return has(input, 'error');
     });
-    test('Coleção', 'startMasks é encadeável', function () { return !!InnerForm(matrix).startMasks(); });
-    test('Coleção', 'coleção vazia não lança exceção', function () { return InnerForm([]).isValid() === false; });
+    await test('Validação DOM', 'e-mail inválido recebe error', function () {
+        reset(); var parent = form(); var input = field(parent, 'email', 'required email', '', {}); type(input, 'nao-e-mail'); InnerForm(input).isValid(); return has(input, 'error') && !has(input, 'success');
+    });
+    await test('Validação DOM', 'dinheiro usa milhar e decimal BR', function () {
+        reset(); var parent = form(); var input = field(parent, 'money', 'mask money required money', '', { 'data-separator': ',', 'data-decimal': '2', 'data-thousand': '.' }); InnerForm.startMasks(parent); type(input, '1234567,89'); return input.value === '1.234.567,89' && InnerForm(input).isValid();
+    });
+    await test('Validação DOM', 'senha forte valida quatro classes', function () { reset(); var parent = form(); var input = field(parent, 'password', 'required password strong', 'Abc123!', {}); parent.appendChild(input); return InnerForm(input).isValid() && has(input, 'success'); });
+    await test('Validação DOM', 'cartão Visa passa Luhn e bandeira', function () { reset(); var parent = form(); var input = field(parent, 'card', 'required creditcard visa', '4111 1111 1111 1111', {}); return InnerForm(input).isValid() && input.getAttribute('data-flagcard') === 'visa'; });
+    await test('Validação DOM', 'igualdade compara campos reais', function () { reset(); var parent = form(); field(parent, 'password-a', 'required', 'segredo', {}); var input = field(parent, 'password-b', 'required', 'segredo', { 'data-eq': '[name="password-a"]' }); return InnerForm(input).isValid('equal [name="password-a"]'); });
+    await test('Validação DOM', 'len limita o valor digitado', function () { reset(); var parent = form(); var input = field(parent, 'limited', 'mask len 4', '', {}); InnerForm.startMasks(parent); type(input, '123456'); return input.value === '1234'; });
+    await test('Validação DOM', 'coleção vazia retorna false sem lançar', function () { reset(); return InnerForm([]).isValid() === false; });
 
-    document.getElementById('passed').textContent = passed;
-    document.getElementById('failed').textContent = failed;
-    document.getElementById('total').textContent = passed + failed;
-    var status = document.getElementById('status');
-    status.textContent = failed ? 'Teste concluído com falhas.' : 'Teste concluído sem falhas.';
-    status.className = failed ? 'fail' : 'pass';
+    await test('ViaCEP', 'resposta preenche campos relacionados no DOM', async function () {
+        reset(); var parent = form(); field(parent, 'cep', 'autocomplete cep', '', {}); field(parent, 'address', 'autocomplete address', '', {}); field(parent, 'city', 'autocomplete city', '', {}); field(parent, 'state', 'autocomplete state', '', {});
+        var originalFetch = window.fetch;
+        window.fetch = function () { return Promise.resolve({ ok: true, json: function () { return Promise.resolve({ logradouro: 'Praça da Sé', complemento: 'lado ímpar', bairro: 'Sé', localidade: 'São Paulo', uf: 'SP', ibge: '3550308', gia: '1004', ddd: '11', siafi: '7107' }); } }); };
+        try { await InnerForm.searchViaCEP('01001000'); } finally { window.fetch = originalFetch; }
+        return parent.querySelector('[name="address"]').value === 'Praça da Sé' && parent.querySelector('[name="city"]').value === 'São Paulo' && parent.querySelector('[name="state"]').value === 'SP';
+    });
+    await test('API', 'entradas inválidas são rejeitadas', function () { return InnerForm.validateCPF(null) === false && InnerForm.validateCNPJ(null) === false && InnerForm.validateLatitude('12abc') === false && InnerForm.validateTime('1a:2') === false && InnerForm.checkLuhn('') === false; });
+
+    document.getElementById('passed').textContent = passed; document.getElementById('failed').textContent = failed; document.getElementById('total').textContent = passed + failed;
+    var status = document.getElementById('status'); status.textContent = failed ? 'Teste concluído com falhas.' : 'Teste concluído sem falhas.'; status.className = failed ? 'fail' : 'pass';
     window.browserTestResult = { passed: passed, failed: failed, total: passed + failed };
 }());
 </script>
