@@ -1,99 +1,92 @@
 (function (root) {
 
-    InnerForm = function (selector, context) {
-        var inputSelector = "input, select, textarea, button";
-        var toArray = function (value) {
-            return Array.prototype.slice.call(value || []);
-        };
-        var normalizeSelector = function (selector) {
-            return selector.replace(/:input/g, inputSelector);
-        };
-        var select = function (selector, context) {
-            context = context || document;
-            if ((typeof document !== "undefined" && selector === document) || (typeof window !== "undefined" && selector === window)) return [selector];
-            if (selector && selector.nodeType) return [selector];
-            if (selector && selector.elements) return selector.elements;
-            if (selector && selector.jquery) return toArray(selector);
-            if (typeof selector !== "string") return [];
-            if (selector.indexOf(":input") >= 0) {
-                return selector.split(",").reduce(function (result, part) {
-                    var cleanPart = part.trim().replace(/:input/g, "") || "*";
-                    return result.concat(toArray(context.querySelectorAll(cleanPart)).filter(function (element) {
-                        return /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
-                    }));
-                }, []);
-            }
-            return toArray(context.querySelectorAll(normalizeSelector(selector)));
-        };
-        var query = function (selector, context) {
-            var elements = Array.isArray(selector) ? selector : select(selector, context);
-            var api = Object.create(query.fn);
-            api.elements = elements;
-            api.length = elements.length;
-            for (var i = 0; i < elements.length; i++) api[i] = elements[i];
-            return api;
-        };
-        var fire = function (element, type) {
-            element.dispatchEvent(new Event(type, { bubbles: true }));
-        };
-        var matches = function (element, selector) {
-            if (selector === ":checked") return !!element.checked;
-            if (selector === ":input") return /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
-            if (selector.indexOf(":input") >= 0) return matches(element, selector.replace(/:input/g, "")) && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
-            return element.matches(selector);
-        };
-        query.fn = {
-            each: function (callback) { this.elements.forEach(function (element, index) { callback.call(element, index, element); }); return this; },
-            find: function (selector) { var found = []; this.each(function () { found = found.concat(select(selector, this)); }); return query(found); },
-            get: function (index) { return index === undefined ? this.elements : this.elements[index]; },
-            first: function () { return query(this.elements.slice(0, 1)); },
-            not: function (selector) { return query(this.elements.filter(function (element) { return !matches(element, selector); })); },
-            is: function (selector) { return this.elements.some(function (element) { return matches(element, selector); }); },
-            closest: function (selector) { return query(this.elements.map(function (element) { return element.closest(selector); }).filter(Boolean)); },
-            addClass: function (name) { return this.each(function () { this.classList.add.apply(this.classList, name.split(/\s+/)); }); },
-            removeClass: function (name) { return this.each(function () { this.classList.remove.apply(this.classList, name.split(/\s+/)); }); },
-            hasClass: function (name) { return this.elements.some(function (element) { return element.classList.contains(name); }); },
-            attr: function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0].getAttribute(name) : undefined; return this.each(function () { this.setAttribute(name, value); }); },
-            removeAttr: function (name) { return this.each(function () { this.removeAttribute(name); }); },
-            prop: function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0][name] : undefined; return this.each(function () { this[name] = value; }); },
-            data: function (name, value) { name = name.replace(/^data-/, ""); if (value === undefined) return this.elements[0] ? this.elements[0].dataset[name] : undefined; return this.each(function () { this.dataset[name] = value; }); },
-            val: function (value) { if (value === undefined) return this.elements[0] && this.elements[0].value !== undefined ? this.elements[0].value : undefined; return this.each(function () { this.value = value; }); },
-            text: function (value) { if (value === undefined) return this.elements.map(function (element) { return element.textContent; }).join(""); return this.each(function () { this.textContent = value; }); },
-            append: function (html) { return this.each(function () { this.insertAdjacentHTML("beforeend", html); }); },
-            change: function () { return this.each(function () { fire(this, "change"); }); },
-            focus: function () { return this.each(function () { if (this.focus) this.focus(); }); },
-            on: function (event, selector, handler) { if (typeof selector === "function") { handler = selector; selector = null; } return this.each(function () { this.addEventListener(event, function (e) { if (!selector || matches(e.target, selector)) handler.call(e.target, e); }); }); }
-        };
-        query.trim = function (value) { return String(value == null ? "" : value).trim(); };
-        query.ajax = function (options) {
-            if (options.beforeSend) options.beforeSend();
-            fetch(options.url).then(function (response) { if (!response.ok) throw new Error(response.statusText); return response.json(); }).then(options.success).catch(function (error) { if (options.error) options.error(null, "error", error); }).finally(function () { if (options.complete) options.complete(); });
-        };
-        query.ready = function (callback) { if (typeof document === "undefined") return; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", callback); else callback(); };
-        Object.keys(query.fn).forEach(function (methodName) { InnerForm.fn[methodName] = query.fn[methodName]; });
-        query.fn = InnerForm.fn;
-        InnerForm.trim = query.trim;
-        InnerForm.ajax = query.ajax;
-        InnerForm.ready = query.ready;
-        return query(selector, context);
-    }
-
-    InnerForm.fn = {};
-    InnerForm.trim = function (value) { return String(value == null ? "" : value).trim(); };
-    InnerForm.ajax = function (options) {
-        if (options.beforeSend) options.beforeSend();
-        fetch(options.url).then(function (response) { if (!response.ok) throw new Error(response.statusText); return response.json(); }).then(options.success).catch(function (error) { if (options.error) options.error(null, "error", error); }).finally(function () { if (options.complete) options.complete(); });
+    var inputSelector = "input, select, textarea, button";
+    var toArray = function (value) { return Array.prototype.slice.call(value || []); };
+    var normalizeSelector = function (selector) {
+        return selector.replace(/:input/g, inputSelector);
     };
-    InnerForm.ready = function (callback) { if (typeof document === "undefined") return; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", callback); else callback(); };
+    var select = function (selector, context) {
+        context = context || (typeof document !== "undefined" ? document : null);
+        if ((typeof document !== "undefined" && selector === document) || (typeof window !== "undefined" && selector === window)) return [selector];
+        if (selector && selector.nodeType) return [selector];
+        if (selector && selector.elements) return selector.elements;
+        if (selector && selector.jquery) return toArray(selector);
+        if (typeof selector !== "string") return [];
+        if (!context || !context.querySelectorAll) return [];
+        if (selector.indexOf(":input") >= 0) {
+            return selector.split(",").reduce(function (result, part) {
+                var cleanPart = part.trim().replace(/:input/g, "") || "*";
+                return result.concat(toArray(context.querySelectorAll(cleanPart)).filter(function (element) {
+                    return /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
+                }));
+            }, []);
+        }
+        return toArray(context.querySelectorAll(normalizeSelector(selector)));
+    };
 
-    root.InnerForm = InnerForm;
+    var matches = function (element, selector) {
+        if (selector === ":checked") return !!element.checked;
+        if (selector === ":input") return /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
+        if (selector.indexOf(":input") >= 0) return matches(element, selector.replace(/:input/g, "")) && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
+        return element.matches(selector);
+    };
+    var query = function (selector, context) {
+        var elements = Array.isArray(selector) ? selector : select(selector, context);
+        var api = Object.create(InnerForm.fn);
+        api.elements = elements;
+        api.length = elements.length;
+        for (var i = 0; i < elements.length; i++) api[i] = elements[i];
+        return api;
+    };
 
-    var baseMethods = Object.keys(InnerForm.fn);
+    /**
+     * InnerForm is a lightweight DOM manipulation and validation library.
+     * It provides methods for selecting elements, manipulating classes and attributes,
+     * and handling form validation.
+     */
+    InnerForm = function (selector, context) { return query(selector, context); }
+    InnerForm.fn = {};
+
+
+    InnerForm.fn.each = function (callback) { this.elements.forEach(function (element, index) { callback.call(element, index, element); }); return this; }
+    InnerForm.fn.find = function (selector) { var found = []; this.each(function () { found = found.concat(select(selector, this)); }); return query(found); }
+    InnerForm.fn.get = function (index) { return index === undefined ? this.elements : this.elements[index]; }
+    InnerForm.fn.first = function () { return query(this.elements.slice(0, 1)); }
+    InnerForm.fn.not = function (selector) { return query(this.elements.filter(function (element) { return !matches(element, selector); })); }
+    InnerForm.fn.is = function (selector) { return this.elements.some(function (element) { return matches(element, selector); }); }
+    InnerForm.fn.closest = function (selector) { return query(this.elements.map(function (element) { return element.closest(selector); }).filter(Boolean)); }
+    InnerForm.fn.addClass = function (name) { return this.each(function () { this.classList.add.apply(this.classList, name.split(/\s+/)); }); }
+    InnerForm.fn.removeClass = function (name) { return this.each(function () { this.classList.remove.apply(this.classList, name.split(/\s+/)); }); }
+    InnerForm.fn.hasClass = function (name) { return this.elements.some(function (element) { return element.classList.contains(name); }); }
+    InnerForm.fn.attr = function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0].getAttribute(name) : undefined; return this.each(function () { this.setAttribute(name, value); }); }
+    InnerForm.fn.removeAttr = function (name) { return this.each(function () { this.removeAttribute(name); }); }
+    InnerForm.fn.prop = function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0][name] : undefined; return this.each(function () { this[name] = value; }); }
+    InnerForm.fn.data = function (name, value) { name = name.replace(/^data-/, ""); if (value === undefined) return this.elements[0] ? this.elements[0].dataset[name] : undefined; return this.each(function () { this.dataset[name] = value; }); }
+    InnerForm.fn.val = function (value) { if (value === undefined) return this.elements[0] && this.elements[0].value !== undefined ? this.elements[0].value : undefined; return this.each(function () { this.value = value; }); }
+    InnerForm.fn.text = function (value) { if (value === undefined) return this.elements.map(function (element) { return element.textContent; }).join(""); return this.each(function () { this.textContent = value; }); }
+    InnerForm.fn.append = function (html) { return this.each(function () { this.insertAdjacentHTML("beforeend", html); }); }
+    InnerForm.fn.change = function () { return this.each(function () { this.dispatchEvent(new Event("change", { bubbles: true })); }); }
+    InnerForm.fn.focus = function () { return this.each(function () { if (this.focus) this.focus(); }); }
+    InnerForm.fn.on = function (event, selector, handler) { if (typeof selector === "function") { handler = selector; selector = null; } return this.each(function () { this.addEventListener(event, function (e) { if (!selector || matches(e.target, selector)) handler.call(e.target, e); }); }); }
 
 
     /**
-     * InnerFormValidation Configuration and Functions
+     * Removes leading and trailing whitespace from a value or input.
+     * @param {*} value - Value to trim
+     * @returns {string} Trimmed value
      */
+    InnerForm.trim = function (value) {
+        //se for um input, da trim no input e retorna, senao trata como texto
+        if (value instanceof HTMLInputElement || value instanceof HTMLTextAreaElement) {
+            value.value = InnerForm.trim(value.value);
+            return value;
+        }
+        //forca a conversão para string e trim
+        return String(value || "").trim();
+    };
+
+    root.InnerForm = InnerForm;
+
     /**
      * Enables or disables verbose logging for debugging purposes.
      */
@@ -196,10 +189,12 @@
      * @returns {boolean} True if the time format is valid, false otherwise
      */
     InnerForm.validateTime = function (value, minutesSeconds) {
+        value = String(value || "");
         minutesSeconds = minutesSeconds || false;
+        if (!/^\d{1,2}:\d{2}(?::\d{2})?$/.test(value)) return false;
         var comp = value.split(":");
         if (comp.length == 3) {
-            minutesSeconds == false;
+            minutesSeconds = false;
             var h = parseInt(comp[0], 10);
             var m = parseInt(comp[1], 10);
             var s = parseInt(comp[2], 10);
@@ -245,12 +240,12 @@
      * @function getAge
      * @memberof InnerFormValidation
      * @param {string|Date} birthDate - The birth date
-     * @param {Date} [fromDate=new Date()] - Reference date to calculate age from
+     * @param {Date} [atDate=new Date()] - Reference date to calculate age at
      * @returns {number} The calculated age in years
      */
-    InnerForm.getAge = function (birthDate, fromDate) {
-        fromDate = fromDate || new Date();
-        return Math.floor((fromDate - InnerForm.parseDateInt(birthDate)) / 3.15576e+10);
+    InnerForm.getAge = function (birthDate, atDate) {
+        atDate = atDate || new Date();
+        return Math.floor((atDate - InnerForm.parseDateInt(birthDate)) / 3.15576e+10);
     };
 
     /**
@@ -347,13 +342,12 @@
      * @returns {boolean} True if the value is a valid latitude (-90 to +90), false otherwise
      */
     InnerForm.validateLatitude = function (value) {
-        value = value || "";
+        value = String(value || "").trim().replace(',', '.');
 
-        // Remove espaços e substitui vírgula por ponto
-        value = value.trim().replace(',', '.');
+        if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(value)) return false;
 
         // Verifica se é um número válido
-        var numValue = parseFloat(value);
+        var numValue = Number(value);
 
         // Valida se é um número e está dentro dos limites da latitude
         return !isNaN(numValue) && numValue >= -90 && numValue <= 90;
@@ -367,13 +361,12 @@
      * @returns {boolean} True if the value is a valid longitude (-180 to +180), false otherwise
      */
     InnerForm.validateLongitude = function (value) {
-        value = value || "";
+        value = String(value || "").trim().replace(',', '.');
 
-        // Remove espaços e substitui vírgula por ponto
-        value = value.trim().replace(',', '.');
+        if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(value)) return false;
 
         // Verifica se é um número válido
-        var numValue = parseFloat(value);
+        var numValue = Number(value);
 
         // Valida se é um número e está dentro dos limites da longitude
         return !isNaN(numValue) && numValue >= -180 && numValue <= 180;
@@ -474,11 +467,12 @@
      * @returns {Date|null} The parsed Date object or null if invalid
      */
     InnerForm.parseDateInt = function (value) {
+        value = String(value || "");
         var dt = 0;
         var d = 0;
         var m = 0;
         var y = 0;
-        var comp = value.split(" ")[0].split("/") ?? value.split("/");
+        var comp = value.split(" ")[0].split("/");
         if (comp.length == 3) {
             comp[2] = comp[2].length == 2 ? InnerForm.expandYear(comp[2]) : comp[2];
             d = parseInt(comp[0], 10);
@@ -491,6 +485,7 @@
             m = parseInt(comp[0], 10) - 1;
             y = parseInt(comp[1], 10);
         }
+        if (!Number.isFinite(d) || !Number.isFinite(m) || !Number.isFinite(y) || y < 1) return null;
         dt = new Date(y, m, d);
         var lastday = new Date(y, m + 1, 0);
         if (m > 11 || m < 0) { return null }
@@ -806,6 +801,10 @@
 
     };
 
+    /**
+     * Formats an input as a two-letter uppercase Brazilian state abbreviation.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyUFMask = function (input = new HTMLInputElement()) {
         input.value = input.value
             .replace(/[^a-zA-Z]/g, '').toUpperCase();
@@ -846,14 +845,25 @@
 
     };
 
+    /**
+     * Converts an input value to uppercase.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyUpperMask = function (input = new HTMLInputElement()) {
         input.value = input.value.toUpperCase();
     };
 
+    /**
+     * Converts an input value to lowercase.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyLowerMask = function (input = new HTMLInputElement()) {
         input.value = input.value.toLowerCase();
     };
-
+    /**
+     * Applies a date mask (DD/MM/YYYY format) to an input field.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyDateMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         if (isDeleting == false) {
@@ -903,6 +913,10 @@
 
     };
 
+    /**
+     * Formats an input as DD/MM/YYYY HH:MM.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyDateShortMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
@@ -914,6 +928,10 @@
 
     };
 
+    /**
+     * Formats an input as HH:MM:SS.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyTimeMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         value = value.replace(/^(\d{2})(\d+)$/g, "$1:$2");
@@ -922,6 +940,10 @@
 
     };
 
+    /**
+     * Formats an input as MM:SS.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyShortTimeMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         input.value = value.replace(/^(\d{2})(\d{1,2})$/g, "$1:$2");
@@ -930,6 +952,10 @@
     };
 
 
+    /**
+     * Formats an input as either CPF or CNPJ based on its length.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyCPForCNPJMask = function (input = new HTMLInputElement()) {
         var value = input.value;
         value = value.replace(/\D/g, "");
@@ -949,6 +975,10 @@
     };
 
 
+    /**
+     * Formats an input as a Brazilian CPF.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyCPFMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
@@ -963,6 +993,10 @@
     };
 
 
+    /**
+     * Formats an input as an eight-digit Brazilian CEP.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyCEPMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
@@ -1003,6 +1037,11 @@
         input.value = text;
 
     };
+
+    /**
+     * Formats an input as an eleven-digit Brazilian CNH.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyCNHMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
@@ -1049,6 +1088,10 @@
     };
 
 
+    /**
+     * Groups a card number into four-digit blocks.
+     * @param {HTMLInputElement} [input] - Input to format
+     */
     InnerForm.applyCreditCardMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
@@ -1062,6 +1105,11 @@
 
     };
 
+    /**
+     * Checks whether a value can be parsed as a finite number.
+     * @param {*} n - Value to check
+     * @returns {boolean} Whether the value is numeric
+     */
     InnerForm.isNumber = function (n) {
         if (n === null || n === undefined) return false;
         if (typeof n === "string") n = n.trim();
@@ -1131,6 +1179,11 @@
         input.value = text;
     };
 
+
+    /**
+     * Formats an input as MM/YYYY.
+     * @param {HTMLInputElement} [input] - Input to format
+     * */
     InnerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         if (isDeleting == false) {
@@ -1624,10 +1677,13 @@
         input.value = text;
     }
 
+
+    /** Validates a card number with the Luhn algorithm. @param {string} cardNumber - Card number @returns {boolean} Whether the checksum is valid */
     InnerForm.checkLuhn = function (cardNumber) {
         var s = 0;
         var doubleDigit = false;
-        cardNumber = cardNumber.replace(/[^\d]+/g, "");
+        cardNumber = String(cardNumber || "").replace(/[^\d]+/g, "");
+        if (!cardNumber) return false;
         for (var i = cardNumber.length - 1; i >= 0; i--) {
             var digit = +cardNumber[i];
             if (doubleDigit) {
@@ -1641,8 +1697,9 @@
         return s % 10 == 0;
     };
 
+    /** Identifies the brand of a card number. @param {string} cardNumber - Card number @returns {string|boolean} Brand name or false */
     InnerForm.validateCardBrand = function (cardNumber) {
-        cardNumber = cardNumber.replace(/[^0-9]+/g, "");
+        cardNumber = String(cardNumber || "").replace(/[^0-9]+/g, "");
         var cards = {
             visa: /^4[0-9]{12}(?:[0-9]{3})/,
             mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/,
@@ -1674,9 +1731,9 @@
         return false;
     };
 
+    /** Validates a Brazilian CPF. @param {string} CPFNumber - CPF value @returns {boolean} Whether the CPF is valid */
     InnerForm.validateCPF = function (CPFNumber) {
-        CPFNumber = CPFNumber.replace(/\D/g, "");
-        CPFNumber = CPFNumber.replace(/\D/g, "");
+        CPFNumber = String(CPFNumber || "").replace(/\D/g, "");
 
         // Elimina CPFS invalidos conhecidos
         if (
@@ -1698,7 +1755,7 @@
         var Soma = 0;
         var Resto = 0;
 
-        for (x = 1; x <= 9; x++)
+        for (var x = 1; x <= 9; x++)
             Soma = Soma + parseInt(CPFNumber.substring(x - 1, x)) * (11 - x);
         Resto = (Soma * 10) % 11;
 
@@ -1719,8 +1776,9 @@
         return true;
     }
 
+    /** Validates a Brazilian CNPJ. @param {string} CNPJNumber - CNPJ value @returns {boolean} Whether the CNPJ is valid */
     InnerForm.validateCNPJ = function (CNPJNumber) {
-        CNPJNumber = CNPJNumber.replace(/\D/g, "");
+        CNPJNumber = String(CNPJNumber || "").replace(/\D/g, "");
 
         if (CNPJNumber == '')
             return false;
@@ -1742,17 +1800,17 @@
             return false;
 
         // Valida DVs
-        tamanho = CNPJNumber.length - 2;
-        numeros = CNPJNumber.substring(0, tamanho);
-        digitos = CNPJNumber.substring(tamanho);
-        soma = 0;
-        pos = tamanho - 7;
-        for (i = tamanho; i >= 1; i--) {
+        var tamanho = CNPJNumber.length - 2;
+        var numeros = CNPJNumber.substring(0, tamanho);
+        var digitos = CNPJNumber.substring(tamanho);
+        var soma = 0;
+        var pos = tamanho - 7;
+        for (var i = tamanho; i >= 1; i--) {
             soma += numeros.charAt(tamanho - i) * pos--;
             if (pos < 2)
                 pos = 9;
         }
-        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(0))
             return false;
 
@@ -1772,6 +1830,7 @@
         return true;
     };
 
+    /** Validates a Brazilian CNH. @param {string} cnh - CNH value @returns {boolean} Whether the CNH is valid */
     InnerForm.validateCNH = function (cnh) {
         cnh = (cnh || "").toString();
         cnh = cnh.replace(/[^\d]/g, "");
@@ -1806,6 +1865,7 @@
 
 
 
+    /** Calculates password strength from character classes. @param {Object} input - Input or selector accepted by InnerForm @returns {number} Number of matched character classes */
     InnerForm.validatePassword = function (input) {
         // Create an array and push all possible values that you want in password
         var matchedCase = new Array();
@@ -1837,29 +1897,30 @@
         InnerForm.log("replaceAll added to String.prototype");
     }
 
+    /** Validates a Brazilian CEP (8 digits), ignoring mask characters. @param {string} CEPNumber - CEP value @returns {boolean} Whether the format is valid */
+    InnerForm.validateCEP = function (CEPNumber) {
+        CEPNumber = String(CEPNumber || "").replace(/\D/g, "");
+        return /^[0-9]{8}$/.test(CEPNumber);
+    }
 
+    /** Looks up a CEP and fills matching autocomplete fields. @param {string} CEPNumber - CEP value @param {string} homeNumber - House number @param {number} delay - Focus delay in milliseconds @param {Function} callbackFunction - Response callback */
     InnerForm.searchViaCEP = function (CEPNumber, homeNumber, delay, callbackFunction) {
         CEPNumber = CEPNumber || "";
         homeNumber = homeNumber || "";
         delay = delay || 0;
         callbackFunction = callbackFunction || function (o) { InnerForm.log('No callback defined', o); }
         InnerForm.log('Searching CEP', CEPNumber, homeNumber, delay);
+        var cepInput = InnerForm(".autocomplete.cep:input").first();
 
 
-        if (
-            (CEPNumber.length == 9 && CEPNumber.includes("-")) ||
-            (CEPNumber.length == 8 && CEPNumber.includes("-") == false)
-        ) {
-            InnerForm.ajax({
-                type: "GET",
-                url: "https://viacep.com.br/ws/" + CEPNumber + "/json/",
-                async: true,
-                crossorigin: true,
-                beforeSend: function () {
-                    InnerForm.log("Getting info from ViaCEP...")
-
-                },
-                success: function (obj) {
+        if (InnerForm.validateCEP(CEPNumber)) {
+            InnerForm.log("Getting info from ViaCEP...");
+            return fetch("https://viacep.com.br/ws/" + CEPNumber + "/json/")
+                .then(function (response) {
+                    if (!response.ok) throw new Error(response.statusText);
+                    return response.json();
+                })
+                .then(function (obj) {
                     obj["numero"] = obj["numero"] || "";
                     if (homeNumber != "") {
                         if (obj["numero"] == "") {
@@ -2018,31 +2079,31 @@
                         }, delay);
                     } else {
                         InnerForm.error('Address not found');
-                        let nft = InnerForm(this).attr("data-addressnotfoundtext") || InnerForm(this).attr("data-notfoundtext") || "";
+                        let nft = cepInput.attr("data-addressnotfoundtext") || cepInput.attr("data-notfoundtext") || "";
                         InnerForm(".autocomplete.fulladdress")
                             .not(":input").text(nft);
                         InnerForm(".autocomplete.fulladdress:input")
                             .val(nft).change();
-                        eval(InnerForm(this).attr("data-addressnotfound") || InnerForm(this).attr("data-notfound") || "void(0)");
+                        eval(cepInput.attr("data-addressnotfound") || cepInput.attr("data-notfound") || "void(0)");
                         setTimeout(function () {
                             InnerForm(".autocomplete.address:input").focus();
                         }, delay);
                     }
                     if (obj) callbackFunction(obj);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
+                })
+                .catch(function (error) {
                     //Error event
-                    InnerForm.log("VIACEP error", xhr, ajaxOptions, thrownError);
+                    InnerForm.log("VIACEP error", error);
                     setTimeout(function () {
                         InnerForm(".autocomplete.address:input").focus();
                     }, delay);
-                },
-                complete: function () {
+                })
+                .finally(function () {
                     InnerForm.log("VIACEP request completed");
-                }
-            });
+                });
         } else {
             InnerForm.log("Awaiting a valid CEP", CEPNumber);
+            return Promise.resolve(null);
         }
     }
 
@@ -2090,6 +2151,7 @@
             eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
             return true;
         } else {
+            if (!this.get(0)) return false;
             this.removeClass("error");
             this.removeClass("success");
             this.closest(".form-group").removeClass("has-error");
@@ -2163,6 +2225,7 @@
                                     hasSep = true;
                                     hasDec = true;
                                     hasThousand = currentValid === 'money'; // money usa milhar por padrão
+                                    if (hasThousand) thousand = ".";
                                 } else {
                                     // Inteiro
                                     var reInt = hasThousand ? new RegExp("^([0-9]{1,3}(" + thousand.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + "[0-9]{3})*)$", "g") : /^\d+$/g;
@@ -2228,12 +2291,7 @@
                                 results.push(true);
                                 break;
                             }
-                            value = value
-                                .replaceAll("(", "")
-                                .replaceAll(")", "")
-                                .replaceAll(" ", "")
-                                .replaceAll("-", "");
-                            results.push(!isNaN(value) && value.length >= 8);
+                            results.push(InnerForm.validatePhone(value));
                             break;
                         case "mail":
                         case "email":
@@ -2350,7 +2408,7 @@
                                 results.push(true);
                                 break;
                             }
-                            results.push(value.replace("-", "").length == 8);
+                            results.push(InnerForm.validateCEP(value));
                             break;
                         case "cpfcnpj":
                         case "cnpjcpf":
@@ -2685,8 +2743,8 @@
                                 results.push(true);
                                 break;
                             }
-                            var regext = $(this).attr('pattern') || $(this).data('regex') || "";
-                            var flags = $(this).attr('data-regex-flags') || "";
+                            var regext = InnerForm(this).attr('pattern') || InnerForm(this).data('regex') || "";
+                            var flags = InnerForm(this).attr('data-regex-flags') || "";
                             if (InnerForm.isBlank(regext)) {
                                 results.push(true);
                                 break;
@@ -2743,6 +2801,7 @@
         }
     };
 
+    /** Validates an element or form through the InnerForm API. @param {Object|string} element - Element or selector @returns {boolean} Whether the target is valid */
     InnerForm.isValid = function (element) {
         var args = Array.prototype.slice.call(arguments, 1);
         return InnerForm(element).isValid.apply(InnerForm(element), args);
@@ -2750,16 +2809,29 @@
 
 
 
+    /** Checks whether a value is null, undefined, or empty after trimming. @param {*} value - Value to check @returns {boolean} Whether the value is blank */
     InnerForm.isBlank = function (value) {
         return value === null || value === undefined || InnerForm.trim(value) === "";
     };
 
+    /** Validates a value against a regular expression. @param {string} value - Value to validate @param {string|RegExp} pattern - Pattern or expression source @param {string} [flags] - Regular expression flags @returns {boolean} Whether the value matches */
     InnerForm.validateRegex = function (value, pattern, flags) {
         var regex = new RegExp(pattern, flags);
         return regex.test(value);
     }
 
 
+    /** Validates a Brazilian phone number (at least 8 digits, ignoring masks). @param {string} value - Phone value @returns {boolean} Whether the phone is valid */
+    InnerForm.validatePhone = function (value) {
+        value = String(value || "")
+            .replaceAll("(", "")
+            .replaceAll(")", "")
+            .replaceAll(" ", "")
+            .replaceAll("-", "");
+        return !isNaN(value) && value.length >= 8;
+    };
+
+    /** Validates a PIX key as email, CPF, CNPJ, phone, or UUID. @param {string} value - PIX key @returns {boolean} Whether the key is valid */
     InnerForm.validatePix = function (value) {
         /// Validar se é um email, cpf, cnpj ou telefone válido, ou se é uma chave aleatória válida (UUID)
         return InnerForm.validateEmail(value) ||
@@ -2772,6 +2844,7 @@
 
 
 
+    /** Validates an email address. @param {string} value - Email address @returns {boolean} Whether the address is valid */
     InnerForm.validateEmail = function (value) {
         var re = /^[\w-]+(\.[\w-]+)*@[\w]+(\.[a-z]{2,6})*(\.[a-z]{2,6})$/gi;
         return InnerForm.validateRegex(value, re);
@@ -2782,26 +2855,31 @@
 
 
 
-    if (typeof document !== "undefined") InnerForm.ready(function () {
-        setTimeout(function () {
-            InnerForm(document).on("keydown", ":input", function (e) {
-                if (e.key === "Backspace" || e.key === "Delete") {
-                    isDeleting = true;
-                } else {
-                    isDeleting = false;
-                }
+    if (typeof document !== "undefined") {
+        var initInnerForm = function () {
+            setTimeout(function () {
+                InnerForm(document).on("keydown", ":input", function (e) {
+                    if (e.key === "Backspace" || e.key === "Delete") {
+                        isDeleting = true;
+                    } else {
+                        isDeleting = false;
+                    }
 
-            });
-            InnerForm('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
-            InnerForm(":input").each(function () {
-                InnerForm(this).focus(function () {
-                    InnerForm(this).addClass("prevFocus");
                 });
-            });
-        }, 0);
-    });
+                InnerForm('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
+                InnerForm(":input").each(function () {
+                    InnerForm(this).focus(function () {
+                        InnerForm(this).addClass("prevFocus");
+                    });
+                });
+            }, 0);
+        };
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initInnerForm);
+        else initInnerForm();
+    }
 
 
+    /** Starts automatic masks for the current collection. @returns {Object} Chainable InnerForm collection */
     InnerForm.fn.startMasks = function () {
 
         InnerForm(this).find(".mask.phone, .mask.tel, .mask.cel").phoneMask();
@@ -2835,9 +2913,10 @@
         InnerForm(this).find(".mask.oab").oabMask();
         InnerForm(this).find(".mask.latitude, .mask.lat").latitudeMask();
         InnerForm(this).find(".mask.longitude, .mask.long, .mask.lng").longitudeMask();
-
+        return InnerForm(this);
     }
 
+    /** Starts blur, change, type, and submit validation for the current collection. @returns {Object} Chainable InnerForm collection */
     InnerForm.fn.startValidation = function () {
         InnerForm(this).not(".notonblur").validateOnBlur();
         InnerForm(this).not(".notonchange").validateOnChange();
@@ -2849,15 +2928,18 @@
 
     }
 
+    /** Starts automatic masks on an element or selector. @param {Object|string} element - Target element or selector @returns {Object} Chainable collection */
     InnerForm.startMasks = function (element) {
         return InnerForm(element).startMasks();
     };
 
+    /** Starts validation on an element or selector. @param {Object|string} element - Target element or selector @returns {Object} Chainable collection */
     InnerForm.startValidation = function (element) {
         return InnerForm(element).startValidation();
     };
 
 
+    /** Validates fields after typing pauses. @param {number} time - Delay in milliseconds @returns {Object} Chainable collection */
     InnerForm.fn.validateOnType = function (time) {
         time = time || InnerForm.onTypeTimeout;
         let x = InnerForm(this)
@@ -2911,6 +2993,7 @@
     }
 
 
+    /** Applies the uppercase mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.upperMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyUpperMask(this);
@@ -2920,6 +3003,7 @@
     }
 
 
+    /** Applies the lowercase mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.lowerMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyLowerMask(this);
@@ -2928,6 +3012,7 @@
         return x;
     }
 
+    /** Applies the CPF mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cpfMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyCPFMask(this);
@@ -2937,6 +3022,7 @@
     }
 
 
+    /** Applies the CEP mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cepMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyCEPMask(this);
@@ -2946,6 +3032,7 @@
     }
 
 
+    /** Applies the CNPJ mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cnpjMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyCNPJMask(this);
@@ -2955,6 +3042,7 @@
     }
 
 
+    /** Applies the CNH mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cnhMask = function () {
         let x = InnerForm(this).on('input', function () {
             InnerForm.applyCNHMask(this);
@@ -2963,6 +3051,7 @@
         return x;
     }
 
+    /** Applies the CPF or CNPJ mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cpfCnpjMask = function () {
         let x = InnerForm(this).on('input', function () {
             InnerForm.applyCPForCNPJMask(this);
@@ -2972,6 +3061,7 @@
     }
 
 
+    /** Applies the credit card mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.creditCardMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyCreditCardMask(this);
@@ -2980,6 +3070,7 @@
         return x;
     }
 
+    /** Applies the date mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyDateMask(this);
@@ -2988,6 +3079,7 @@
         return x;
     }
 
+    /** Applies the month/year mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.monthYearMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyMonthYearMask(this);
@@ -2996,6 +3088,7 @@
         return x;
     }
 
+    /** Applies the number mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.numberMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyNumberMask(this);
@@ -3004,6 +3097,7 @@
         return x;
     }
 
+    /** Applies the date range mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateRangeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyDateRangeMask(this);
@@ -3012,6 +3106,7 @@
         return x;
     }
 
+    /** Applies the short month/year range mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.shortMonthYearRangeMask = function () {
 
         let x = InnerForm(this).on("input", function () {
@@ -3021,6 +3116,7 @@
         return x;
 
     }
+    /** Applies the month/year range mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.monthYearRangeMask = function () {
 
         let x = InnerForm(this).on("input", function () {
@@ -3030,6 +3126,7 @@
         return x;
     }
 
+    /** Limits the length of fields in the current collection. @param {number} [tam] - Maximum length @returns {Object} Chainable collection */
     InnerForm.fn.lenMask = function (tam) {
         let x = InnerForm(this).on("input", function () {
             var array = InnerForm(this)
@@ -3052,6 +3149,7 @@
         return x;
     }
 
+    /** Enables ViaCEP autocomplete for the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cepAutoComplete = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.searchViaCEP(
@@ -3064,6 +3162,7 @@
         return x;
     }
 
+    /** Applies the time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.timeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyTimeMask(this);
@@ -3072,6 +3171,7 @@
         return x;
     }
 
+    /** Applies the short time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.shortTimeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyShortTimeMask(this);
@@ -3081,6 +3181,7 @@
 
     }
 
+    /** Applies the short date/time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateShortTimeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyDateShortMask(this);
@@ -3089,6 +3190,7 @@
         return x;
     }
 
+    /** Applies the date/time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateTimeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyDateTimeMask(this);
@@ -3097,6 +3199,7 @@
         return x;
     }
 
+    /** Applies the alphabetic mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.alphaMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyAlphaMask(this);
@@ -3105,6 +3208,7 @@
         return x;
     }
 
+    /** Applies the alphanumeric mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.alphaNumericMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyAlphaNumericMask(this);
@@ -3113,6 +3217,7 @@
         return x;
     }
 
+    /** Applies the UF mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.ufMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyUFMask(this);
@@ -3122,6 +3227,7 @@
     }
 
 
+    /** Applies the no-space mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.noSpaceMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyNoSpaceMask(this);
@@ -3130,6 +3236,7 @@
         return x;
     }
 
+    /** Applies the UUID mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.uuidMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyUUIDMask(this);
@@ -3138,6 +3245,7 @@
         return x;
     }
 
+    /** Applies the OAB mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.oabMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyOABMask(this);
@@ -3146,6 +3254,7 @@
         return x;
     }
 
+    /** Applies the latitude mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.latitudeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyLatitudeMask(this);
@@ -3154,6 +3263,7 @@
         return x;
     }
 
+    /** Applies the longitude mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.longitudeMask = function () {
         let x = InnerForm(this).on("input", function () {
             InnerForm.applyLongitudeMask(this);
@@ -3162,6 +3272,7 @@
         return x;
     }
 
+    /** Limits field values to the configured maximum length. @returns {Object} Chainable collection */
     InnerForm.fn.maxLenMask = function () {
         let x = InnerForm(this).on("input", function () {
             var array = InnerForm(this)
@@ -3176,7 +3287,7 @@
                 InnerForm(this).val(
                     InnerForm(this)
                         .val()
-                        .substring(0, tam + 1)
+                        .substring(0, tam)
                 );
             }
         });
@@ -3186,6 +3297,7 @@
 
 
 
+    /** Pads field values with leading zeros on blur. @returns {Object} Chainable collection */
     InnerForm.fn.leadingZeroMask = function () {
         let x = InnerForm(this).on("blur", function () {
             var array = InnerForm(this)
@@ -3452,9 +3564,7 @@
         }
         root.jQuery.innerForm = InnerForm;
         Object.keys(InnerForm.fn).forEach(function (methodName) {
-            if (baseMethods.indexOf(methodName) === -1) {
-                root.jQuery.fn[methodName] = InnerForm.fn[methodName];
-            }
+            root.jQuery.fn[methodName] = InnerForm.fn[methodName];
         });
     }
 

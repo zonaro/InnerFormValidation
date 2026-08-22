@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>InnerFormValidation | Browser test</title>
+    <style>
+        :root { color-scheme: light; font: 16px/1.5 system-ui, sans-serif; --ink: #18212b; --muted: #5d6873; --line: #d8dee5; --paper: #f5f7f9; --pass: #087443; --fail: #b42318; }
+        body { margin: 0; color: var(--ink); background: var(--paper); }
+        main { width: min(1100px, calc(100% - 32px)); margin: 32px auto; }
+        h1 { margin-bottom: 4px; }
+        p { color: var(--muted); }
+        .summary { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+        .stat { min-width: 140px; padding: 14px; background: white; border: 1px solid var(--line); border-radius: 6px; }
+        .stat strong { display: block; font-size: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+        th { background: #e9eef3; }
+        .pass { color: var(--pass); }
+        .fail { color: var(--fail); }
+        code { font-family: ui-monospace, monospace; }
+        #details { max-height: 55vh; overflow: auto; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Teste da biblioteca no navegador</h1>
+    <p id="status">Executando testes no DOM real...</p>
+    <section class="summary" aria-label="Resumo">
+        <div class="stat"><strong id="passed">0</strong><span>passaram</span></div>
+        <div class="stat"><strong id="failed">0</strong><span>falharam</span></div>
+        <div class="stat"><strong id="total">0</strong><span>testes executados</span></div>
+    </section>
+    <table id="details">
+        <thead><tr><th>Grupo</th><th>Teste</th><th>Resultado</th><th>Detalhe</th></tr></thead>
+        <tbody></tbody>
+    </table>
+</main>
+<form id="matrix" hidden></form>
+<script src="InnerFormValidation.js"></script>
+<script>
+(function () {
+    var tbody = document.querySelector('#details tbody');
+    var passed = 0;
+    var failed = 0;
+
+    function record(group, name, ok, detail) {
+        if (ok) passed++; else failed++;
+        var row = document.createElement('tr');
+        row.innerHTML = '<td><code>' + group + '</code></td><td><code>' + name + '</code></td><td class="' + (ok ? 'pass' : 'fail') + '">' + (ok ? 'PASS' : 'FAIL') + '</td><td>' + String(detail || '').replace(/[&<>]/g, function (char) { return {'&':'&amp;','<':'&lt;','>':'&gt;'}[char]; }) + '</td>';
+        tbody.appendChild(row);
+    }
+
+    function test(group, name, callback) {
+        try { var result = callback(); record(group, name, result === true, result === true ? '' : String(result)); }
+        catch (error) { record(group, name, false, error.name + ': ' + error.message); }
+    }
+
+    var validators = [
+        ['required', 'abc'], ['req', 'abc'], ['obg', 'abc'], ['email', 'test@example.com'], ['mail', 'test@example.com'], ['e-mail', 'test@example.com'],
+        ['alpha', 'Maria Silva'], ['alphanumeric', 'ABC 123'], ['alphanum', 'ABC 123'], ['upper', 'ABC'], ['lower', 'abc'], ['nospace', 'ABC123'],
+        ['number', '123'], ['decimal', '12,34'], ['money', '12,34'], ['integer', '123'], ['int', '123'], ['num', '123'], ['ean', '4006381333931'],
+        ['tel', '(11) 99999-9999'], ['cel', '(11) 99999-9999'], ['telephone', '(11) 99999-9999'], ['mobilephone', '(11) 99999-9999'],
+        ['url', 'https://example.com'], ['link', 'https://example.com'], ['data', '15/08/2026'], ['date', '15/08/2026'], ['daterange', '01/01/2026 ~ 15/08/2026'],
+        ['monthyearrange', '01/2026 ~ 08/2026'], ['shortmonthyearrange', '01/26 ~ 08/26'], ['datetime', '15/08/2026 12:30:00'],
+        ['dateshorttime', '15/08/2026 12:30'], ['datetimeshort', '15/08/2026 12:30'], ['time', '12:30'], ['shorttime', '12:30'],
+        ['timeshort', '12:30'], ['minutesecond', '12:30'], ['month', '12'], ['monthyear', '08/2026'], ['cep', '01001-000'],
+        ['cpfcnpj', '529.982.247-25'], ['cnpjcpf', '529.982.247-25'], ['cpf', '529.982.247-25'], ['cnpj', '04.252.011/0001-10'],
+        ['cnh', '04352702100'], ['debitcard', '4111111111111111'], ['creditcard', '4111111111111111'], ['password', 'Abc123!'],
+        ['after today', '15/08/2026'], ['before today', '15/08/2026'], ['eq', 'abc'], ['equal', 'abc'], ['notchar x', 'abc'], ['notchars x', 'abc'],
+        ['containsnotchar x', 'abc'], ['containsnotchars x', 'abc'], ['notcontainschars x', 'abc'], ['notcontainschar x', 'abc'], ['eqv abc', 'abc'],
+        ['equalvalue abc', 'abc'], ['equal-value abc', 'abc'], ['eq-v abc', 'abc'], ['contains abc', 'abc'], ['cnts abc', 'abc'], ['containsstring abc', 'abc'],
+        ['containsanychar abc', 'abc'], ['containschar abc', 'abc'], ['containsanychars abc', 'abc'], ['containsallchar abc', 'abc'], ['containsallchars abc', 'abc'],
+        ['len 4', 'abcd'], ['minlen 3', 'abcd'], ['maxlen 8', 'abcd'], ['to 2026', '15/08/2026'], ['minage 18', '15/08/1990'], ['maxage 65', '15/08/1990'],
+        ['age 30', '15/08/1996'], ['latitude', '-23.5505'], ['lat', '-23.5505'], ['longitude', '-46.6333'], ['long', '-46.6333'], ['lng', '-46.6333'],
+        ['coordinate', '-23.5505 -46.6333'], ['coordinates', '-23.5505 -46.6333'], ['coord', '-23.5505 -46.6333'],
+        ['uuid', '550e8400-e29b-41d4-a716-446655440000'], ['guid', '550e8400-e29b-41d4-a716-446655440000'], ['pix', 'test@example.com'], ['chavepix', 'test@example.com'],
+        ['regex', 'abc'], ['oab', '511.061/SP'], ['state', 'SP'], ['uf', 'SP']
+    ];
+
+    var masks = [
+        ['phone', '11999999999', 'applyPhoneMask'], ['tel', '11999999999', 'applyPhoneMask'], ['cel', '11999999999', 'applyPhoneMask'],
+        ['upper', 'abc', 'applyUpperMask'], ['lower', 'ABC', 'applyLowerMask'], ['email', 'ABC@EXAMPLE.COM', 'applyLowerMask'], ['mail', 'ABC@EXAMPLE.COM', 'applyLowerMask'],
+        ['cpf', '52998224725', 'applyCPFMask'], ['cnh', '04352702100', 'applyCNHMask'], ['cep', '01001000', 'applyCEPMask'],
+        ['cnpj', '04252011000110', 'applyCNPJMask'], ['cpfcnpj', '52998224725', 'applyCPForCNPJMask'], ['cnpjcpf', '04252011000110', 'applyCPForCNPJMask'],
+        ['creditcard', '4111111111111111', 'applyCreditCardMask'], ['debitcard', '4111111111111111', 'applyCreditCardMask'], ['date', '15082026', 'applyDateMask'], ['data', '15082026', 'applyDateMask'],
+        ['monthyear', '082026', 'applyMonthYearMask'], ['number', '123456', 'applyNumberMask'], ['num', '123456', 'applyNumberMask'], ['month', '12', 'applyNumberMask'],
+        ['money', '123456', 'applyNumberMask'], ['decimal', '1234', 'applyNumberMask'], ['integer', '123456', 'applyNumberMask'], ['int', '123456', 'applyNumberMask'],
+        ['len 4', '123456', 'noop'], ['time', '1230', 'applyTimeMask'], ['shorttime', '1230', 'applyShortTimeMask'], ['timeshort', '1230', 'applyShortTimeMask'], ['minutesecond', '1230', 'applyShortTimeMask'],
+        ['datetime', '150820261230', 'applyDateTimeMask'], ['datetimeshort', '150820261230', 'applyDateShortMask'], ['dateshorttime', '150820261230', 'applyDateShortMask'], ['alpha', 'abc 123', 'applyAlphaMask'],
+        ['alphanum', 'abc !123', 'applyAlphaNumericMask'], ['alphanumeric', 'abc !123', 'applyAlphaNumericMask'], ['uf', 'sp1', 'applyUFMask'], ['state', 'sp1', 'applyUFMask'], ['nospace', 'a b c', 'applyNoSpaceMask'],
+        ['maxlen 4', '123456', 'noop'], ['leadingzero len 5', '12', 'noop'], ['daterange', '15082026', 'applyDateRangeMask'], ['monthyearrange', '082026', 'applyMonthYearRangeMask'],
+        ['shortmonthyearrange', '0826', 'applyShortMonthYearRangeMask'], ['uuid', '550e8400e29b41d4a716446655440000', 'applyUUIDMask'],
+        ['oab', '511061SP', 'applyOABMask'], ['latitude', '-23,5505123', 'applyLatitudeMask'], ['longitude', '-46,6333123', 'applyLongitudeMask']
+    ];
+
+    var apiCases = [
+        ['validateCEP valid', InnerForm.validateCEP, ['01001-000'], true], ['validateCEP invalid', InnerForm.validateCEP, ['123'], false],
+        ['validateCPF valid', InnerForm.validateCPF, ['529.982.247-25'], true], ['validateCPF invalid', InnerForm.validateCPF, ['111.111.111-11'], false],
+        ['validateCNPJ valid', InnerForm.validateCNPJ, ['04.252.011/0001-10'], true], ['validateCNPJ invalid', InnerForm.validateCNPJ, ['00.000.000/0000-00'], false],
+        ['validateTime valid', InnerForm.validateTime, ['23:59:59'], true], ['validateTime invalid junk', InnerForm.validateTime, ['1a:2'], false],
+        ['validateLatitude invalid junk', InnerForm.validateLatitude, ['12abc'], false], ['validateLongitude invalid junk', InnerForm.validateLongitude, ['-45xyz'], false],
+        ['validateUUID valid', InnerForm.validateUUID, ['550e8400-e29b-41d4-a716-446655440000'], true],
+        ['validateOAB valid', InnerForm.validateOAB, ['511.061/SP'], true], ['validateUF invalid', InnerForm.validateUF, ['XX'], false],
+        ['checkLuhn valid', InnerForm.checkLuhn, ['4111111111111111'], true], ['checkLuhn empty', InnerForm.checkLuhn, [''], false],
+        ['validateCardBrand Visa', InnerForm.validateCardBrand, ['4111111111111111'], 'visa'],
+        ['validateCoordinate valid', InnerForm.validateCoordinate, ['-23.5505 -46.6333'], true],
+        ['validateCoordinate invalid', InnerForm.validateCoordinate, ['12,34,56'], false],
+        ['parseDate null', InnerForm.parseDateInt, [null], null]
+    ];
+
+    apiCases.forEach(function (entry) {
+        test('API', entry[0], function () { return entry[1].apply(InnerForm, entry[2]) === entry[3]; });
+    });
+
+    masks.forEach(function (entry) {
+        test('Máscara', entry[0], function () {
+            var input = document.createElement('input');
+            input.value = entry[1];
+            if (entry[0].indexOf('number') >= 0) input.setAttribute('data-thousand', '.');
+            if (entry[2] !== 'noop') InnerForm[entry[2]](input);
+            return typeof input.value === 'string';
+        });
+    });
+
+    var matrix = document.getElementById('matrix');
+    masks.forEach(function (mask) {
+        validators.forEach(function (validator) {
+            test('Combinação', mask[0] + ' + ' + validator[0], function () {
+                var input = document.createElement('input');
+                input.className = mask[0] + ' ' + validator[0];
+                input.value = validator[1];
+                matrix.appendChild(input);
+                InnerForm.startMasks(input);
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                InnerForm(input).isValid(validator[0]);
+                matrix.removeChild(input);
+                return true;
+            });
+        });
+    });
+
+    test('Coleção', 'change dispara evento', function () {
+        var input = document.createElement('input');
+        var fired = false;
+        input.addEventListener('change', function () { fired = true; });
+        InnerForm(input).change();
+        return fired;
+    });
+    test('Coleção', 'startMasks é encadeável', function () { return !!InnerForm(matrix).startMasks(); });
+    test('Coleção', 'coleção vazia não lança exceção', function () { return InnerForm([]).isValid() === false; });
+
+    document.getElementById('passed').textContent = passed;
+    document.getElementById('failed').textContent = failed;
+    document.getElementById('total').textContent = passed + failed;
+    var status = document.getElementById('status');
+    status.textContent = failed ? 'Teste concluído com falhas.' : 'Teste concluído sem falhas.';
+    status.className = failed ? 'fail' : 'pass';
+    window.browserTestResult = { passed: passed, failed: failed, total: passed + failed };
+}());
+</script>
+</body>
+</html>
