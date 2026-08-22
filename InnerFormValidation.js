@@ -1,6 +1,6 @@
 (function (root) {
 
-    var InnerForm = function () {
+    InnerForm = function () {
         var inputSelector = "input, select, textarea, button";
         var toArray = function (value) {
             return Array.prototype.slice.call(value || []);
@@ -73,9 +73,9 @@
         return query;
     }
 
-
-    var baseMethods = Object.keys(InnerForm.fn);
     root.InnerForm = InnerForm;
+    var baseMethods = Object.keys(InnerForm.fn);
+
 
     /**
      * InnerFormValidation Configuration and Functions
@@ -90,7 +90,7 @@
      */
     InnerForm.onTypeTimeout = 900;
 
-    InnerForm.isDeleting = false;
+    var isDeleting = false;
 
     /**
      * Logs messages to the console when verbose mode is enabled.
@@ -842,7 +842,7 @@
 
     InnerForm.applyDateMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        if (InnerForm.isDeleting == false) {
+        if (isDeleting == false) {
             text = InnerForm.formatDate(text);
         }
         if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
@@ -1119,7 +1119,7 @@
 
     InnerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        if (InnerForm.isDeleting == false) {
+        if (isDeleting == false) {
             text = InnerForm.parseMonthYearPartial(text);
         }
         if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
@@ -1135,7 +1135,7 @@
      * @param {HTMLInputElement} input 
      */
     InnerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
-        if (InnerForm.isDeleting == true) {
+        if (isDeleting == true) {
             return;
         }
         // formato DD/MM/AAAA ~ DD/MM/AAAA
@@ -1525,7 +1525,7 @@
      * @param {HTMLInputElement} input 
      */
     InnerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
-        if (InnerForm.isDeleting == true) {
+        if (isDeleting == true) {
             return;
         }
         // formato MM/AAAA ~ MM/AAAA
@@ -1573,7 +1573,7 @@
      * @param {HTMLInputElement} input 
      */
     InnerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
-        if (InnerForm.isDeleting == true) {
+        if (isDeleting == true) {
             return;
         }
         // formato MM/AA ~ MM/AA
@@ -2772,9 +2772,9 @@
         setTimeout(function () {
             InnerForm(document).on("keydown", ":input", function (e) {
                 if (e.key === "Backspace" || e.key === "Delete") {
-                    InnerForm.isDeleting = true;
+                    isDeleting = true;
                 } else {
-                    InnerForm.isDeleting = false;
+                    isDeleting = false;
                 }
 
             });
