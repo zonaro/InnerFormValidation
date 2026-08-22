@@ -20,8 +20,8 @@
 
 <body>
     <header class="topbar"><a class="brand" href="#inicio">🦞InnerFormValidation</a>
-        <nav aria-label="Navegação"><a href="#inicio">Início</a><a href="#laboratorio">Laboratório</a><a
-                href="#integracoes">Integrações</a><a href="#api">API</a></nav><select id="language"
+                <nav aria-label="Navegação"><a href="#inicio">Início</a><a href="#laboratorio">Laboratório</a><a
+                href="#cep">Integrações</a><a href="#api">API</a></nav><select id="language"
             aria-label="Idioma">
             <option value="pt">PT-BR</option>
             <option value="en">EN</option>
@@ -60,8 +60,9 @@ InnerForm.validateCPF(value)</code></pre>
                     Básicas</a><a href="#strings">02
                     Caracteres</a><a href="#tamanho">03 Comprimento</a><a href="#documentos">04 Documentos</a><a
                     href="#datas">05 Data e hora</a><a href="#comparacoes">06 Idade e comparação</a><a href="#senha">07
-                    Senhas</a><a href="#cartoes">08 Cartões</a><a href="#conteudo">09 Conteúdo</a><a
-                    href="#integracoes">10 CEP e geo</a><a href="#callbacks">11 Callbacks</a><a href="#api">12 API</a>
+                    Senhas</a><a href="#cartoes">08 Cartões</a><a href="#conteudo">09 Conteúdo</a><a href="#cep">10
+                    Autocomplete de CEP</a><a href="#geolocation">11 Geolocalização</a><a href="#callbacks">12 Callbacks
+                    declarativos</a><a href="#css-variaveis">13 CSS por variáveis</a><a href="#api">14 API</a>
             </aside>
             <div class="content">
                 <section id="configuracao" class="section configuration">
@@ -103,6 +104,9 @@ InnerForm('#codigo').isValid('regex');</code></pre>
                     <div class="configuration-grid">
                         <article class="panel">
                             <h3>Quando validar</h3>
+                            <p>Para validar automaticamente enquanto o usuário digita, adicione <code>onkeyup</code> ao
+                                campo. O plugin aguarda <code>InnerForm.onTypeTimeout</code> após a última tecla antes de
+                                executar as regras e atualizar <code>success</code> ou <code>error</code>.</p>
                             <table class="config-table">
                                 <tbody>
                                     <tr>
@@ -124,7 +128,13 @@ InnerForm('#codigo').isValid('regex');</code></pre>
                                     </tr>
                                 </tbody>
                             </table>
-                            <pre><code>InnerForm.onTypeTimeout = 1200;</code></pre>
+                            <pre><code>&lt;input class="obg email onkeyup"&gt;
+
+InnerForm.onTypeTimeout = 1200;</code></pre>
+                            <p class="hint">O evento é configurado automaticamente quando o formulário usa
+                                <code>validate</code>, <code>data-validate="true"</code>, <code>data-validation="true"</code>
+                                ou <code>forcevalidate</code>. <code>notonblur</code> e <code>notonchange</code> desativam
+                                apenas esses eventos, não o <code>onkeyup</code>.</p>
                         </article>
                         <article class="panel">
                             <h3>Classes que controlam a aparência</h3>
@@ -327,48 +337,56 @@ input.error { border-color: #dc3545; }
                                 conteúdo</button><output></output></form>
                     </section>
                 </section>
-                <section id="integracoes" class="section integrations">
+                <section id="cep" class="section integrations">
                     <p class="eyebrow">10 / browser APIs</p>
-                    <h2>Integrações que fazem o formulário viver</h2>
-                    <div class="integration-grid">
-                        <article id="cep">
-                            <h3>Autocomplete por CEP</h3>
-                            <p>O CEP é o primeiro campo. A busca ViaCEP preenche endereço, complemento, bairro, cidade,
-                                UF, IBGE, GIA, DDD, SIAFI e endereço completo.</p>
-                            <form id="cep-form" class="address-form"><label>CEP<input id="cep-input" class="mask cep"
-                                        placeholder="01001-000"></label><label>Número<input
-                                        class="autocomplete homenum"></label><label>Logradouro<input
-                                        class="autocomplete address" readonly></label><label>Complemento<input
-                                        class="autocomplete complement" readonly></label><label>Bairro<input
-                                        class="autocomplete neighborhood" readonly></label><label>Cidade<input
-                                        class="autocomplete city" readonly></label><label>UF<input
-                                        class="autocomplete state" readonly></label><label>IBGE<input
-                                        class="autocomplete ibge" readonly></label><label>DDD<input
-                                        class="autocomplete ddd" readonly></label><output
-                                    id="cep-status"></output><button type="button" id="cep-button"
-                                    class="button light">Buscar na ViaCEP</button></form>
-                            <pre><code>InnerForm.searchViaCEP(cep, numero, 0, callback)</code></pre>
-                        </article>
-                        <article id="geolocation">
-                            <h3>Geolocalização</h3>
-                            <p>Use HTTPS e permissão do navegador. <code>getLocation</code> retorna coordenadas,
-                                precisão, altitude, horário e links de mapa; <code>watchLocation</code> acompanha
-                                mudanças.</p>
-                            <div class="geo-actions"><button id="geo-get" class="button light">Obter
-                                    localização</button><button id="geo-watch" class="button outline">Iniciar
-                                    monitoramento</button><button id="geo-stop" class="button outline">Parar
-                                    monitoramento</button></div><output id="geo-status" role="status">Aguardando
-                                ação.</output>
-                            <dl id="geo-result" class="geo-result"></dl>
-                            <pre><code>InnerForm.getLocation(options)
+                    <h2>Autocomplete de CEP</h2>
+                    <article>
+                        <p>O CEP é o primeiro campo. A busca ViaCEP preenche endereço, complemento, bairro, cidade,
+                            UF, IBGE, GIA, DDD, SIAFI e endereço completo.</p>
+                        <h3>Classes de autocomplete</h3>
+                        <p>Use <code>autocomplete cep mask</code> no campo do CEP para iniciar a busca no evento
+                            <code>input</code>. Nos campos de destino, mantenha <code>autocomplete</code> junto da classe
+                            correspondente: <code>address</code>, <code>complement</code>, <code>neighborhood</code>,
+                            <code>city</code>, <code>state</code>, <code>ibge</code>, <code>gia</code>, <code>ddd</code>,
+                            <code>siafi</code>, <code>citystate</code> ou <code>fulladdress</code>.</p>
+                        <form id="cep-form" class="address-form"><label>CEP<input id="cep-input" class="autocomplete mask cep"
+                                    placeholder="01001-000"></label><label>Número<input
+                                    class="autocomplete homenum"></label><label>Logradouro<input
+                                    class="autocomplete address" readonly></label><label>Complemento<input
+                                    class="autocomplete complement" readonly></label><label>Bairro<input
+                                    class="autocomplete neighborhood" readonly></label><label>Cidade<input
+                                    class="autocomplete city" readonly></label><label>UF<input
+                                    class="autocomplete state" readonly></label><label>IBGE<input
+                                    class="autocomplete ibge" readonly></label><label>DDD<input class="autocomplete ddd"
+                                    readonly></label><output id="cep-status"></output><button type="button"
+                                id="cep-button" class="button light">Buscar na ViaCEP</button></form>
+                        <pre><code>InnerForm.searchViaCEP(cep, numero, 0, callback)</code></pre>
+                        <p class="hint">O campo de número pode usar <code>homenum</code>, <code>homenumber</code>,
+                            <code>number</code> ou <code>num</code>. Campos que não sejam inputs também podem receber os
+                            dados como texto.</p>
+                    </article>
+                </section>
+                <section id="geolocation" class="section integrations">
+                    <p class="eyebrow">11 / browser APIs</p>
+                    <h2>Geolocalização</h2>
+                    <article>
+                        <p>Use HTTPS e permissão do navegador. <code>getLocation</code> retorna coordenadas,
+                            precisão, altitude, horário e links de mapa; <code>watchLocation</code> acompanha
+                            mudanças.</p>
+                        <div class="geo-actions"><button id="geo-get" class="button light">Obter
+                                localização</button><button id="geo-watch" class="button outline">Iniciar
+                                monitoramento</button><button id="geo-stop" class="button outline">Parar
+                                monitoramento</button></div><output id="geo-status" role="status">Aguardando
+                            ação.</output>
+                        <dl id="geo-result" class="geo-result"></dl>
+                        <pre><code>InnerForm.getLocation(options)
 InnerForm.watchLocation(onSuccess, onError, options)
 InnerForm.clearLocationWatch(watchId)</code></pre>
-                        </article>
-                    </div>
+                    </article>
                 </section>
                 <section id="callbacks" class="section">
-                    <p class="eyebrow">11 / extensibilidade</p>
-                    <h2>Callbacks e visual customizável</h2>
+                    <p class="eyebrow">12 / extensibilidade</p>
+                    <h2>Callbacks declarativos</h2>
                     <div class="columns">
                         <article class="panel">
                             <h3>Callbacks declarativos</h3>
@@ -381,21 +399,34 @@ InnerForm.clearLocationWatch(watchId)</code></pre>
                                 placeholder="Deixe vazio e depois preencha"><button id="callback-button"
                                 class="button primary">Executar callback</button><output id="callback-status"></output>
                         </article>
+                            </div>
+                </section>
+                <section id="css-variaveis" class="section">
+                    <p class="eyebrow">13 / personalização</p>
+                    <h2>CSS por variáveis</h2>
+                    <div class="columns">
                         <article class="panel">
-                            <h3>CSS por variáveis</h3>
-                            <p>O tema da documentação usa variáveis simples. Altere a cor de destaque para visualizar a
-                                ideia.</p><label>Cor de destaque<input type="color" id="accent-picker"
-                                    value="#d8f36b"></label>
+                                                        <p>O plugin aplica <code>success</code> aos campos válidos e <code>error</code> aos campos
+                                                                inválidos. Use variáveis CSS para personalizar esses estados sem alterar a biblioteca.</p>
                             <pre><code>:root {
-  --lime: #d8f36b;
-  --teal: #0d6b63;
-  --orange: #ff815d;
+    --validation-success: #0d6b63;
+    --validation-error: #ff815d;
+}
+
+input.success {
+    border-color: var(--validation-success);
+}
+
+input.error {
+    border-color: var(--validation-error);
 }</code></pre>
+                                                        <p class="hint">Em layouts Bootstrap ou semelhantes, o ancestral <code>.form-group</code>
+                                                                também recebe <code>has-error</code> quando o campo é inválido.</p>
                         </article>
                     </div>
                 </section>
                 <section id="api" class="section api">
-                    <p class="eyebrow">12 / referência</p>
+                    <p class="eyebrow">14 / referência</p>
                     <h2>API pública</h2>
                     <p class="intro">A função <code>InnerFormValidation</code> também é o seletor nativo da biblioteca:
                         use <code>InnerForm(selector)</code> para obter uma coleção encadeável. Todos os

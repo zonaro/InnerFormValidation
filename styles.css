@@ -586,6 +586,11 @@ a {
     gap: 20px
 }
 
+#callbacks .columns,
+#css-variaveis .columns {
+    grid-template-columns: minmax(0, 760px)
+}
+
 .panel,
 .demo-form,
 .mask-grid,

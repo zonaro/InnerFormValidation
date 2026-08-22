@@ -2,7 +2,7 @@
     var api = window.InnerForm;
     var fieldMenu = document.getElementById('field-menu');
     var activeField = null;
-    document.querySelectorAll('form input, form select, form textarea, #callback-demo, #accent-picker').forEach(function (field, index) {
+    document.querySelectorAll('form input, form select, form textarea, #callback-demo').forEach(function (field, index) {
         if (field.closest('.field-tools')) return;
         var tools = document.createElement('span');
         tools.className = 'field-tools';
@@ -57,9 +57,9 @@
     document.getElementById('geo-watch').addEventListener('click', function () { if (geoWatchId !== null) return; geoWatchId = api.watchLocation(showLocation, showGeoError, { enableHighAccuracy: true, maximumAge: 5000 }); document.getElementById('geo-status').textContent = geoWatchId === null ? 'Geolocalização indisponível.' : 'Monitoramento ativo.'; });
     document.getElementById('geo-stop').addEventListener('click', function () { if (geoWatchId !== null) api.clearLocationWatch(geoWatchId); geoWatchId = null; document.getElementById('geo-status').textContent = 'Monitoramento parado.'; });
     document.getElementById('callback-button').addEventListener('click', function () { api.isValid(document.getElementById('callback-demo')); });
-    document.getElementById('accent-picker').addEventListener('input', function (event) { document.documentElement.style.setProperty('--lime', event.target.value); });
     var translations = {
         en: {
+            '10 Autocomplete de CEP': '10 ZIP code autocomplete', '11 Geolocalização': '11 Geolocation', '12 Callbacks declarativos': '12 Declarative callbacks', '13 CSS por variáveis': '13 CSS variables', '14 API': '14 API', 'Autocomplete de CEP': 'ZIP code autocomplete',
             '00 Configuração': '00 Configuration', 'Configure o plugin de verdade': 'Configure the plugin for real', 'Ativação automática': 'Automatic activation', 'Ativação manual': 'Manual activation', 'Quando validar': 'When to validate', 'Classes que controlam a aparência': 'Classes that control appearance', 'Atributos': 'Attributes', 'para personalizar a experiência': 'to customize the experience',
             'Início': 'Start', 'Laboratório': 'Lab', 'Integrações': 'Integrations', 'Valide cada detalhe do seu formulário.': 'Validate every detail of your form.',
             'JavaScript toolkit · documentação completa': 'JavaScript toolkit · complete documentation', 'Máscaras, regras brasileiras, conteúdo, datas, cartões, callbacks, CEP e geolocalização. Tudo funciona com JavaScript puro. Se jQuery existir, os plugins legados são conectados sem alterar o $.': 'Masks, Brazilian rules, content, dates, cards, callbacks, ZIP code and geolocation. Everything works with plain JavaScript. If jQuery exists, legacy plugins are connected without changing $.',
@@ -71,6 +71,7 @@
             'Integrações que fazem o formulário viver': 'Integrations that bring forms to life', 'Autocomplete por CEP': 'ZIP code autocomplete', 'O CEP é o primeiro campo. A busca ViaCEP preenche endereço, complemento, bairro, cidade, UF, IBGE, GIA, DDD, SIAFI e endereço completo.': 'ZIP code comes first. ViaCEP fills in the street, complement, neighborhood, city, state, IBGE, GIA, area code, SIAFI and full address.', 'Buscar na ViaCEP': 'Search ViaCEP', 'Geolocalização': 'Geolocation', 'Obter localização': 'Get location', 'Iniciar monitoramento': 'Start watching', 'Parar monitoramento': 'Stop watching', 'Aguardando ação.': 'Waiting for action.', 'Callbacks e visual customizável': 'Callbacks and customizable visuals', 'Callbacks declarativos': 'Declarative callbacks', 'CSS por variáveis': 'CSS variables', 'API pública': 'Public API', 'Referência': 'Reference', 'Válido': 'Valid', 'Revise os campos destacados': 'Review highlighted fields', 'Copiar classes CSS de validação': 'Copy validation CSS classes', 'Copiar HTML': 'Copy HTML'
         },
         es: {
+            '10 Autocomplete de CEP': '10 Autocompletado de código postal', '11 Geolocalização': '11 Geolocalización', '12 Callbacks declarativos': '12 Callbacks declarativos', '13 CSS por variáveis': '13 CSS por variables', '14 API': '14 API', 'Autocomplete de CEP': 'Autocompletado de código postal',
             '00 Configuração': '00 Configuración', 'Configure o plugin de verdade': 'Configura el plugin de verdad', 'Ativação automática': 'Activación automática', 'Ativação manual': 'Activación manual', 'Quando validar': 'Cuándo validar', 'Classes que controlam a aparência': 'Clases que controlan la apariencia', 'Atributos': 'Atributos', 'para personalizar a experiência': 'para personalizar la experiencia',
             'Início': 'Inicio', 'Laboratório': 'Laboratorio', 'Integrações': 'Integraciones', 'Valide cada detalhe do seu formulário.': 'Valida cada detalle de tu formulario.',
             'JavaScript toolkit · documentação completa': 'JavaScript toolkit · documentación completa', 'Máscaras, regras brasileiras, conteúdo, datas, cartões, callbacks, CEP e geolocalização. Tudo funciona com JavaScript puro. Se jQuery existir, os plugins legados são conectados sem alterar o $.': 'Máscaras, reglas brasileñas, contenido, fechas, tarjetas, callbacks, código postal y geolocalización. Todo funciona con JavaScript puro. Si existe jQuery, los plugins heredados se conectan sin modificar $.',
