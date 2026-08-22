@@ -1,12 +1,12 @@
 # 🚀 InnerFormValidation
 
-**Uma biblioteca JavaScript completa para mascaramento e validação de formulários, independente de jQuery e compatível com o plugin jQuery.**
+**Uma biblioteca JavaScript completa para mascaramento e validação de formulários, sem dependências e com API callable nativa.**
 
 ## Documentação
 
 Consulte o [site completo de documentação](docs/index.html), com exemplos interativos, referência da API, instalação standalone, compatibilidade jQuery, autocomplete de CEP e geolocalização.
 
-[![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerFormValidation.js)
+[![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerForm.js)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Standalone](https://img.shields.io/badge/JavaScript-standalone-brightgreen)](docs/index.html)
 
@@ -22,7 +22,7 @@ Consulte o [site completo de documentação](docs/index.html), com exemplos inte
 8. [Geolocalização](#geolocalização)
 9. [Exemplos Práticos](#exemplos-práticos)
 10. [API JavaScript](#api-javascript)
-11. [Funções do $.innerForm](#funções-do-windowinnerform)
+11. [Funções do InnerFormValidation](#funções-do-innerformvalidation)
 12. [Personalização Visual](#personalização-visual)
 
 ---
@@ -34,36 +34,37 @@ Consulte o [site completo de documentação](docs/index.html), com exemplos inte
 <!-- Recomendado: funciona sem jQuery -->
 <script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
 <script>
-    InnerFormValidation.validateCPF('529.982.247-25');
+    InnerForm.validateCPF('529.982.247-25');
 </script>
 ```
 
 Para usar como plugin jQuery, carregue jQuery antes do mesmo endereço CDN:
 ```html
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script>$.innerForm = { verbose: true }</script>
-<script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
+<script>jQuery.innerForm = { verbose: true }</script>
+<script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerForm.js"></script>
 ```
 
 ### Download Local
 1. Baixe o arquivo `InnerFormValidation.js`
 2. Inclua no seu projeto:
 ```html
-<script>$.innerForm = { verbose: true }</script>
+<script>InnerForm.verbose = true</script>
 <script src="path/to/InnerFormValidation.js"></script>
 ```
 
 ### Dependências
 - Nenhuma para a API standalone.
-- jQuery 3.0+ é opcional e habilita os métodos de plugin legados.
+- jQuery é opcional e habilita os métodos de plugin legados em `jQuery.fn`.
+- A biblioteca nunca sobrescreve `$` nem usa jQuery no núcleo.
 
 ### API standalone
 ```html
 <script src="InnerFormValidation.js"></script>
 <script>
-    const valid = InnerFormValidation.validateCPF('529.982.247-25');
-    InnerFormValidation.applyCPFMask(document.querySelector('#cpf'));
-    InnerFormValidation.isValid(document.querySelector('form'));
+    const valid = InnerForm.validateCPF('529.982.247-25');
+    InnerForm.applyCPFMask(document.querySelector('#cpf'));
+    InnerForm.isValid(document.querySelector('form'));
 </script>
 ```
 
@@ -86,10 +87,13 @@ Para usar como plugin jQuery, carregue jQuery antes do mesmo endereço CDN:
 
 ### 3. Configuração Global
 ```javascript
-$.innerForm = {
-    verbose: true,           // Exibir logs detalhados no console
-    onTypeTimeout: 1000     // Delay para validação durante digitação (ms)
-};
+InnerForm.verbose = true;
+InnerForm.onTypeTimeout = 1000;
+```
+
+Para selecionar elementos com a API nativa, use a própria função:
+```javascript
+InnerForm('#meu-formulario').isValid();
 ```
 
 ---
@@ -204,16 +208,16 @@ Campos com as classes `num` ou `number` agora suportam os seguintes atributos pa
 
 ### API JavaScript disponível
 ```js
-$.innerForm.validateUF('RJ');           // true
-$.innerForm.validateUF('ZZ');           // false
-$.innerForm.validateOAB('511061SP');    // true
-$.innerForm.validateOAB('511.061/SP');  // true
-$.innerForm.validateOAB('12345RJ');     // true
-$.innerForm.validateOAB('123456SA');    // false (UF inválida)
+InnerForm.validateUF('RJ');           // true
+InnerForm.validateUF('ZZ');           // false
+InnerForm.validateOAB('511061SP');    // true
+InnerForm.validateOAB('511.061/SP');  // true
+InnerForm.validateOAB('12345RJ');     // true
+InnerForm.validateOAB('123456SA');    // false (UF inválida)
 
-$.innerForm.validateCNH('98765432100'); // true/false conforme DV
-$.innerForm.validateCNH('00000000000'); // false
-$.innerForm.validarCNH('987.654.321-00'); // true/false
+InnerForm.validateCNH('98765432100'); // true/false conforme DV
+InnerForm.validateCNH('00000000000'); // false
+InnerForm.validarCNH('987.654.321-00'); // true/false
 ```
 ---
 
@@ -515,13 +519,13 @@ O InnerFormValidation inclui integração com a API **ViaCEP** para autocompleta
 
 O InnerFormValidation inclui funções avançadas de geolocalização que utilizam a API nativa do navegador para obter informações de localização do usuário.
 
-### **Função Principal: `$.innerForm.getLocation()`**
+### **Função Principal: `InnerForm.getLocation()`**
 
 Obtém a localização atual do usuário de forma assíncrona usando Promises.
 
 ```javascript
 // Uso básico
-$.innerForm.getLocation()
+InnerForm.getLocation()
     .then(function(location) {
         console.log('Latitude:', location.latitude);
         console.log('Longitude:', location.longitude);
@@ -537,7 +541,7 @@ $.innerForm.getLocation()
     });
 
 // Uso com opções customizadas
-$.innerForm.getLocation({
+InnerForm.getLocation({
     enableHighAccuracy: true,  // Alta precisão
     timeout: 15000,           // Timeout de 15 segundos
     maximumAge: 60000         // Cache de 60 segundos
@@ -619,14 +623,14 @@ Os campos com classes de geolocalização são automaticamente preenchidos quand
 ```javascript
 // Quando esta função é chamada, os campos .autocomplete.latitude 
 // e .autocomplete.longitude são automaticamente preenchidos!
-$.innerForm.getLocation().then(function(location) {
+InnerForm.getLocation().then(function(location) {
     console.log('Campos preenchidos automaticamente!');
     // location.latitude -> .autocomplete.latitude
     // location.longitude -> .autocomplete.longitude
 });
 
 // No monitoramento, os campos são atualizados em tempo real
-var watchId = $.innerForm.watchLocation(function(location) {
+var watchId = InnerForm.watchLocation(function(location) {
     // Campos atualizados automaticamente a cada mudança
     console.log('Posição atualizada:', location.coordinates);
 });
@@ -638,7 +642,7 @@ Para aplicações que precisam acompanhar mudanças na localização:
 
 ```javascript
 // Iniciar monitoramento
-var watchId = $.innerForm.watchLocation(
+var watchId = InnerForm.watchLocation(
     function(location) {
         // Callback chamado a cada atualização de posição
         console.log('Nova posição:', location.coordinates);
@@ -653,7 +657,7 @@ var watchId = $.innerForm.watchLocation(
         console.error('Erro no monitoramento:', error.userMessage);
         
         // Parar monitoramento em caso de erro
-        $.innerForm.clearLocationWatch(watchId);
+        InnerForm.clearLocationWatch(watchId);
     },
     {
         enableHighAccuracy: true,
@@ -663,7 +667,7 @@ var watchId = $.innerForm.watchLocation(
 );
 
 // Parar monitoramento quando necessário
-$.innerForm.clearLocationWatch(watchId);
+InnerForm.clearLocationWatch(watchId);
 ```
 
 ### **Integração com Formulários**
@@ -695,7 +699,7 @@ function obterLocalizacao() {
     $('#latitude').val('Obtendo...');
     $('#longitude').val('Obtendo...');
     
-    $.innerForm.getLocation()
+    InnerForm.getLocation()
         .then(function(location) {
             // Preencher campos
             $('#latitude').val(location.latitude);
@@ -720,7 +724,7 @@ function obterLocalizacao() {
 A API de geolocalização pode falhar por diversos motivos. A biblioteca fornece mensagens amigáveis:
 
 ```javascript
-$.innerForm.getLocation()
+InnerForm.getLocation()
     .catch(function(error) {
         switch (error.error) {
             case 'PERMISSION_DENIED':
@@ -767,13 +771,13 @@ Veja os arquivos de exemplo incluídos:
 
 ```javascript
 // Função principal - obter localização única
-$.innerForm.getLocation(options) // Retorna Promise
+InnerForm.getLocation(options) // Retorna Promise
 
 // Monitoramento contínuo
-$.innerForm.watchLocation(successCallback, errorCallback, options) // Retorna watchId
+InnerForm.watchLocation(successCallback, errorCallback, options) // Retorna watchId
 
 // Parar monitoramento  
-$.innerForm.clearLocationWatch(watchId)
+InnerForm.clearLocationWatch(watchId)
 ```
 
 ---
@@ -922,7 +926,7 @@ $('#uuid').uuidMask();
 ### **Busca de CEP Programática**
 
 ```javascript
-$.innerForm.searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
+InnerForm.searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
     console.log('Endereço encontrado:', dadosEndereco);
     // dadosEndereco contém: logradouro, bairro, localidade, uf, etc.
 });
@@ -948,7 +952,7 @@ $('#campo').setOrReplaceVal('Novo valor');
 
 ```javascript
 // Obter localização única
-$.innerForm.getLocation()
+InnerForm.getLocation()
     .then(function(location) {
         $('#latitude').val(location.latitude);
         $('#longitude').val(location.longitude);
@@ -959,7 +963,7 @@ $.innerForm.getLocation()
     });
 
 // Obter localização com opções customizadas
-$.innerForm.getLocation({
+InnerForm.getLocation({
     enableHighAccuracy: true,
     timeout: 15000,
     maximumAge: 60000
@@ -970,7 +974,7 @@ $.innerForm.getLocation({
 });
 
 // Monitorar localização continuamente
-var watchId = $.innerForm.watchLocation(
+var watchId = InnerForm.watchLocation(
     function(location) {
         // Callback de sucesso - chamado a cada atualização
         $('#coordenadas').text(location.coordinates);
@@ -988,34 +992,34 @@ var watchId = $.innerForm.watchLocation(
 );
 
 // Parar monitoramento
-$.innerForm.clearLocationWatch(watchId);
+InnerForm.clearLocationWatch(watchId);
 ```
 
 ---
 
-## 🛠️ Funções do $.innerForm
+## 🛠️ Funções do InnerFormValidation
 
-A biblioteca expõe diversas funções utilitárias através do objeto `$.innerForm`. Abaixo estão documentadas as principais funções disponíveis:
+A biblioteca expõe diversas funções utilitárias através do objeto `InnerFormValidation`. Abaixo estão documentadas as principais funções disponíveis:
 
 ### **Funções de Logging e Debug**
 
 #### `log(...arguments)`
 Registra mensagens no console quando o modo verbose está ativo.
 ```javascript
-$.innerForm.verbose = true;
-$.innerForm.log('Mensagem de debug', dados);
+InnerForm.verbose = true;
+InnerForm.log('Mensagem de debug', dados);
 ```
 
 #### `error(...arguments)` 
 Registra mensagens de erro no console quando o modo verbose está ativo.
 ```javascript
-$.innerForm.error('Erro encontrado:', erro);
+InnerForm.error('Erro encontrado:', erro);
 ```
 
 #### `warn(...arguments)`
 Registra avisos no console quando o modo verbose está ativo.
 ```javascript
-$.innerForm.warn('Aviso:', dados);
+InnerForm.warn('Aviso:', dados);
 ```
 
 ### **Funções Utilitárias**
@@ -1023,28 +1027,28 @@ $.innerForm.warn('Aviso:', dados);
 #### `addLeadingZeros(num, totalLength)`
 Adiciona zeros à esquerda para atingir o comprimento especificado.
 ```javascript
-$.innerForm.addLeadingZeros(123, 5); // "00123"
-$.innerForm.addLeadingZeros(-45, 4);  // "-045"
+InnerForm.addLeadingZeros(123, 5); // "00123"
+InnerForm.addLeadingZeros(-45, 4);  // "-045"
 ```
 
 #### `barcodeCheckSum(code)`
 Calcula o dígito verificador de códigos de barras usando algoritmos padrão.
 ```javascript
-$.innerForm.barcodeCheckSum("1234567"); // Retorna número do checksum
+InnerForm.barcodeCheckSum("1234567"); // Retorna número do checksum
 ```
 
 #### `getAge(birthDate, fromDate)`
 Calcula a idade com base na data de nascimento e data de referência.
 ```javascript
-$.innerForm.getAge("15/03/1990"); // Idade atual
-$.innerForm.getAge("15/03/1990", new Date("2025-01-01")); // Idade em 2025
+InnerForm.getAge("15/03/1990"); // Idade atual
+InnerForm.getAge("15/03/1990", new Date("2025-01-01")); // Idade em 2025
 ```
 
 #### `expandYear(year, pastDistance, futureDistance)`
 Expande um ano de 2 dígitos (YY) para 4 dígitos (YYYY) baseado no século atual.
 ```javascript
-$.innerForm.expandYear(25, 20, 5); // 2025 (próximo de 2024)
-$.innerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
+InnerForm.expandYear(25, 20, 5); // 2025 (próximo de 2024)
+InnerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
 ```
 
 ### **Funções de Validação**
@@ -1052,130 +1056,130 @@ $.innerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
 #### `validateUUID(value)`
 Valida se uma string é um UUID/GUID válido. Aceita formatos flexíveis, não apenas RFC 4122.
 ```javascript
-$.innerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
-$.innerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
-$.innerForm.validateUUID("invalid-uuid"); // false
+InnerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
+InnerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
+InnerForm.validateUUID("invalid-uuid"); // false
 ```
 
 #### `validateLatitude(value)` - **🆕 NOVA**
 Valida se um valor é uma coordenada de latitude válida (-90 a +90 graus).
 ```javascript
-$.innerForm.validateLatitude("-23.550520"); // true
-$.innerForm.validateLatitude("45.5");       // true
-$.innerForm.validateLatitude("91");         // false (fora do limite)
-$.innerForm.validateLatitude("-90.5");      // false (fora do limite)
+InnerForm.validateLatitude("-23.550520"); // true
+InnerForm.validateLatitude("45.5");       // true
+InnerForm.validateLatitude("91");         // false (fora do limite)
+InnerForm.validateLatitude("-90.5");      // false (fora do limite)
 ```
 
 #### `validateLongitude(value)` - **🆕 NOVA**
 Valida se um valor é uma coordenada de longitude válida (-180 a +180 graus).
 ```javascript
-$.innerForm.validateLongitude("-46.633308"); // true
-$.innerForm.validateLongitude("180");        // true
-$.innerForm.validateLongitude("181");        // false (fora do limite)
-$.innerForm.validateLongitude("-180.1");     // false (fora do limite)
+InnerForm.validateLongitude("-46.633308"); // true
+InnerForm.validateLongitude("180");        // true
+InnerForm.validateLongitude("181");        // false (fora do limite)
+InnerForm.validateLongitude("-180.1");     // false (fora do limite)
 ```
 
 #### `validateCoordinate(value)` - **🆕 NOVA**
 Valida se um valor contém um par de coordenadas válido em vários formatos.
 ```javascript
-$.innerForm.validateCoordinate("-23.550520,-46.633308"); // true
-$.innerForm.validateCoordinate("-23.5 -46.6");           // true
-$.innerForm.validateCoordinate("45;90");                 // true
-$.innerForm.validateCoordinate("91,200");                // false (coordenadas inválidas)
+InnerForm.validateCoordinate("-23.550520,-46.633308"); // true
+InnerForm.validateCoordinate("-23.5 -46.6");           // true
+InnerForm.validateCoordinate("45;90");                 // true
+InnerForm.validateCoordinate("91,200");                // false (coordenadas inválidas)
 ```
 
 #### `parseShortMonthYearPartial(part)`
 Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada.
 ```javascript
-$.innerForm.parseShortMonthYearPartial("0325"); // "03/25"
-$.innerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
+InnerForm.parseShortMonthYearPartial("0325"); // "03/25"
+InnerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
 ```
 
 #### `parseMonthYearPartial(part)`
 Analisa e formata uma string parcial de mês/ano "MM/YYYY" durante a entrada.
 ```javascript
-$.innerForm.parseMonthYearPartial("032025"); // "03/2025"
-$.innerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
+InnerForm.parseMonthYearPartial("032025"); // "03/2025"
+InnerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
 ```
 
 #### `parseDatePartial(part)`
 Analisa e formata uma string parcial de data "DD/MM/YYYY" durante a entrada com validação inteligente.
 ```javascript
-$.innerForm.parseDatePartial("25122024"); // "25/12/2024"
-$.innerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
+InnerForm.parseDatePartial("25122024"); // "25/12/2024"
+InnerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
 ```
 
 #### `validDate(value)`
 Valida se uma string representa uma data válida no formato DD/MM/YYYY.
 ```javascript
-$.innerForm.validDate("31/12/2023"); // true
-$.innerForm.validDate("31/02/2023"); // false
-$.innerForm.validDate("15/03/90");   // true (ano expandido)
+InnerForm.validDate("31/12/2023"); // true
+InnerForm.validDate("31/02/2023"); // false
+InnerForm.validDate("15/03/90");   // true (ano expandido)
 ```
 
 #### `parseDate(value)`
 Converte uma string de data em objeto Date.
 ```javascript
-$.innerForm.parseDate("25/12/2023"); // Objeto Date
-$.innerForm.parseDate("12/2023");    // 01/12/2023
-$.innerForm.parseDate("25/12/23");   // 25/12/2023 (ano expandido)
+InnerForm.parseDate("25/12/2023"); // Objeto Date
+InnerForm.parseDate("12/2023");    // 01/12/2023
+InnerForm.parseDate("25/12/23");   // 25/12/2023 (ano expandido)
 ```
 
 #### `validDateRange(value)`
 Valida um período de datas no formato "DD/MM/YYYY ~ DD/MM/YYYY".
 ```javascript
-$.innerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
-$.innerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (ordem)
+InnerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
+InnerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (ordem)
 ```
 
 #### `validMonthYearRange(value)`
 Valida um período de mês/ano no formato "MM/YYYY ~ MM/YYYY".
 ```javascript
-$.innerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
-$.innerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false
+InnerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
+InnerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false
 ```
 
 #### `validShortMonthYearRange(value)`
 Valida um período de mês/ano abreviado no formato "MM/YY ~ MM/YY".
 ```javascript
-$.innerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
-$.innerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false
+InnerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
+InnerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false
 ```
 
 #### `validateTime(value, minutesSeconds)`
 Valida formatos de tempo (HH:MM:SS, HH:MM ou MM:SS).
 ```javascript
-$.innerForm.validateTime("14:30:45");        // true
-$.innerForm.validateTime("14:30");           // true  
-$.innerForm.validateTime("90:30", true);     // true (MM:SS)
-$.innerForm.validateTime("25:30");           // false
+InnerForm.validateTime("14:30:45");        // true
+InnerForm.validateTime("14:30");           // true  
+InnerForm.validateTime("90:30", true);     // true (MM:SS)
+InnerForm.validateTime("25:30");           // false
 ```
 
 #### `validateEAN(value)`
 Valida códigos de barras EAN (European Article Number) com verificação de checksum.
 ```javascript
-$.innerForm.validateEAN("1234567890123"); // Valida se o checksum está correto
+InnerForm.validateEAN("1234567890123"); // Valida se o checksum está correto
 ```
 
 #### `validateNotChar(value, chars)`
 Valida que uma string NÃO contém nenhum dos caracteres especificados.
 ```javascript
-$.innerForm.validateNotChar("abc123", "xyz"); // true
-$.innerForm.validateNotChar("abc123", "abc"); // false
+InnerForm.validateNotChar("abc123", "xyz"); // true
+InnerForm.validateNotChar("abc123", "abc"); // false
 ```
 
 #### `validateAnyChar(value, chars)`
 Valida que uma string contém PELO MENOS UM dos caracteres especificados.
 ```javascript
-$.innerForm.validateAnyChar("senha123", "123"); // true
-$.innerForm.validateAnyChar("senha", "123");    // false
+InnerForm.validateAnyChar("senha123", "123"); // true
+InnerForm.validateAnyChar("senha", "123");    // false
 ```
 
 #### `validateAllChar(value, chars)`
 Valida que uma string contém TODOS os caracteres especificados.
 ```javascript
-$.innerForm.validateAllChar("senha123", "123"); // true
-$.innerForm.validateAllChar("senha12", "123");  // false
+InnerForm.validateAllChar("senha123", "123"); // true
+InnerForm.validateAllChar("senha12", "123");  // false
 ```
 
 ### **Novas Funções de Validação**
@@ -1183,51 +1187,51 @@ $.innerForm.validateAllChar("senha12", "123");  // false
 #### `validShortMonthYearRange(value)`
 Valida um intervalo de mês/ano curto no formato "MM/YY ~ MM/YY".
 ```javascript
-$.innerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
-$.innerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false (primeira > segunda)
+InnerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
+InnerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false (primeira > segunda)
 ```
 
 #### `validMonthYearRange(value)`
 Valida um intervalo de mês/ano no formato "MM/YYYY ~ MM/YYYY".
 ```javascript
-$.innerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
-$.innerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false (primeira > segunda)
+InnerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
+InnerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false (primeira > segunda)
 ```
 
 #### `validDateRange(value)`
 Valida um intervalo de datas no formato "DD/MM/YYYY ~ DD/MM/YYYY".
 ```javascript
-$.innerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
-$.innerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (primeira > segunda)
+InnerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
+InnerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (primeira > segunda)
 ```
 
 #### `validateUUID(value)` - **🆕 ATUALIZADA**
 Valida se uma string é um UUID/GUID válido. **Agora aceita formatos mais flexíveis**, não apenas RFC 4122.
 ```javascript
-$.innerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
-$.innerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
-$.innerForm.validateUUID("invalid-uuid"); // false
+InnerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
+InnerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
+InnerForm.validateUUID("invalid-uuid"); // false
 ```
 
 #### `validateNotChar(value, chars)`
 Valida que um valor não contém nenhum dos caracteres especificados.
 ```javascript
-$.innerForm.validateNotChar("teste123", "!@#"); // true
-$.innerForm.validateNotChar("test@123", "@#"); // false
+InnerForm.validateNotChar("teste123", "!@#"); // true
+InnerForm.validateNotChar("test@123", "@#"); // false
 ```
 
 #### `validateAnyChar(value, chars)`
 Valida que um valor contém pelo menos um dos caracteres especificados.
 ```javascript
-$.innerForm.validateAnyChar("teste123", "123"); // true
-$.innerForm.validateAnyChar("teste", "123"); // false
+InnerForm.validateAnyChar("teste123", "123"); // true
+InnerForm.validateAnyChar("teste", "123"); // false
 ```
 
 #### `validateAllChar(value, chars)`
 Valida que um valor contém todos os caracteres especificados.
 ```javascript
-$.innerForm.validateAllChar("teste123!", "t3!"); // true
-$.innerForm.validateAllChar("teste", "tx"); // false
+InnerForm.validateAllChar("teste123!", "t3!"); // true
+InnerForm.validateAllChar("teste", "tx"); // false
 ```
 
 ### **Novas Funções de Parsing Inteligente**
@@ -1235,26 +1239,26 @@ $.innerForm.validateAllChar("teste", "tx"); // false
 #### `parseShortMonthYearPartial(part)` - **🆕 NOVA**
 Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada com validação inteligente.
 ```javascript
-$.innerForm.parseShortMonthYearPartial("0325"); // "03/25"
-$.innerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
-$.innerForm.parseShortMonthYearPartial("1323"); // "12/23" (limita mês a 12)
+InnerForm.parseShortMonthYearPartial("0325"); // "03/25"
+InnerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
+InnerForm.parseShortMonthYearPartial("1323"); // "12/23" (limita mês a 12)
 ```
 
 #### `parseMonthYearPartial(part)` - **🆕 NOVA**
 Analisa e formata uma string parcial de mês/ano "MM/YYYY" durante a entrada com validação inteligente.
 ```javascript
-$.innerForm.parseMonthYearPartial("032025"); // "03/2025"
-$.innerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
-$.innerForm.parseMonthYearPartial("1320245"); // "12/2024 ~ 05" (limita mês a 12)
+InnerForm.parseMonthYearPartial("032025"); // "03/2025"
+InnerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
+InnerForm.parseMonthYearPartial("1320245"); // "12/2024 ~ 05" (limita mês a 12)
 ```
 
 #### `parseDatePartial(part)` - **🔄 MELHORADA**
 Analisa e formata uma string parcial de data "DD/MM/YYYY" durante a entrada com validação inteligente melhorada.
 ```javascript
-$.innerForm.parseDatePartial("25122024"); // "25/12/2024"
-$.innerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
-$.innerForm.parseDatePartial("32122024"); // "31/12/2024" (limita dia a 31)
-$.innerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
+InnerForm.parseDatePartial("25122024"); // "25/12/2024"
+InnerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
+InnerForm.parseDatePartial("32122024"); // "31/12/2024" (limita dia a 31)
+InnerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
 ```
 
 ### **Funções de Máscara**
@@ -1262,67 +1266,67 @@ $.innerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
 #### `applyNoSpaceMask(input)`
 Aplica máscara que remove todos os espaços da entrada.
 ```javascript
-$.innerForm.applyNoSpaceMask(document.getElementById('campo'));
+InnerForm.applyNoSpaceMask(document.getElementById('campo'));
 ```
 
 #### `applyAlphaMask(input)`
 Aplica máscara que permite apenas letras e espaços.
 ```javascript
-$.innerForm.applyAlphaMask(document.getElementById('nome'));
+InnerForm.applyAlphaMask(document.getElementById('nome'));
 ```
 
 #### `applyAlphaNumericMask(input)`
 Aplica máscara que permite letras, números e espaços.
 ```javascript
-$.innerForm.applyAlphaNumericMask(document.getElementById('codigo'));
+InnerForm.applyAlphaNumericMask(document.getElementById('codigo'));
 ```
 
 #### `applyPhoneMask(input)`
 Aplica máscara de telefone brasileiro (formato automático).
 ```javascript
-$.innerForm.applyPhoneMask(document.getElementById('telefone'));
+InnerForm.applyPhoneMask(document.getElementById('telefone'));
 ```
 
 #### `formatDate(text)`
 Formata uma string de dígitos como data (DD/MM/YYYY).
 ```javascript
-$.innerForm.formatDate("25122023"); // "25/12/2023"
+InnerForm.formatDate("25122023"); // "25/12/2023"
 ```
 
 #### `applyDateTimeMask(input)`
 Aplica máscara de data e hora (DD/MM/YYYY HH:MM:SS).
 ```javascript
-$.innerForm.applyDateTimeMask(document.getElementById('dataHora'));
+InnerForm.applyDateTimeMask(document.getElementById('dataHora'));
 ```
 
 #### `applyDateRangeMask(input)`
 Aplica máscara para período de datas (DD/MM/YYYY ~ DD/MM/YYYY).
 ```javascript
-$.innerForm.applyDateRangeMask(document.getElementById('periodo'));
+InnerForm.applyDateRangeMask(document.getElementById('periodo'));
 ```
 
 #### `applyMonthYearRangeMask(input)`
 Aplica máscara para período de mês/ano (MM/YYYY ~ MM/YYYY) com parsing inteligente.
 ```javascript
-$.innerForm.applyMonthYearRangeMask(document.getElementById('periodoMensal'));
+InnerForm.applyMonthYearRangeMask(document.getElementById('periodoMensal'));
 ```
 
 #### `applyShortMonthYearRangeMask(input)`
 Aplica máscara para período de mês/ano curto (MM/YY ~ MM/YY) com parsing inteligente.
 ```javascript
-$.innerForm.applyShortMonthYearRangeMask(document.getElementById('periodoMensalCurto'));
+InnerForm.applyShortMonthYearRangeMask(document.getElementById('periodoMensalCurto'));
 ```
 
 #### `applyUUIDMask(input)`
 Aplica máscara para UUID/GUID com formatação automática de hífens.
 ```javascript
-$.innerForm.applyUUIDMask(document.getElementById('uuid'));
+InnerForm.applyUUIDMask(document.getElementById('uuid'));
 ```
 
 #### `applyLatitudeMask(input)` - **🆕 NOVA**
 Aplica máscara para coordenadas de latitude com validação de limites (-90 a +90).
 ```javascript
-$.innerForm.applyLatitudeMask(document.getElementById('latitude'));
+InnerForm.applyLatitudeMask(document.getElementById('latitude'));
 // Suporte a classe 'precision' para limitar casas decimais
 // Exemplo: <input class="mask latitude precision 6">
 ```
@@ -1330,7 +1334,7 @@ $.innerForm.applyLatitudeMask(document.getElementById('latitude'));
 #### `applyLongitudeMask(input)` - **🆕 NOVA**
 Aplica máscara para coordenadas de longitude com validação de limites (-180 a +180).
 ```javascript
-$.innerForm.applyLongitudeMask(document.getElementById('longitude'));
+InnerForm.applyLongitudeMask(document.getElementById('longitude'));
 // Suporte a classe 'precision' para limitar casas decimais
 // Exemplo: <input class="mask longitude precision 4">
 ```
@@ -1338,7 +1342,7 @@ $.innerForm.applyLongitudeMask(document.getElementById('longitude'));
 #### `applyShortMonthYearRangeMask(input)`
 Aplica máscara para período de mês/ano abreviado (MM/YY ~ MM/YY).
 ```javascript
-$.innerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev'));
+InnerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev'));
 ```
 
 ### **Funções Especializadas**
@@ -1346,33 +1350,33 @@ $.innerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev')
 #### `checkLuhn(cardNumber)`
 Valida número de cartão de crédito usando o algoritmo de Luhn.
 ```javascript
-$.innerForm.checkLuhn("4111111111111111"); // true (Visa válido)
+InnerForm.checkLuhn("4111111111111111"); // true (Visa válido)
 ```
 
 #### `validateCardBrand(cardNumber)`
 Identifica a bandeira do cartão de crédito e valida o formato.
 ```javascript
-$.innerForm.validateCardBrand("4111111111111111"); // "visa"
-$.innerForm.validateCardBrand("5555555555554444"); // "mastercard"
+InnerForm.validateCardBrand("4111111111111111"); // "visa"
+InnerForm.validateCardBrand("5555555555554444"); // "mastercard"
 ```
 
 #### `validateCNPJ(CNPJNumber)`
 Valida CNPJ brasileiro com verificação de dígitos verificadores.
 ```javascript
-$.innerForm.validateCNPJ("11.222.333/0001-81"); // true/false
+InnerForm.validateCNPJ("11.222.333/0001-81"); // true/false
 ```
 
 #### `validatePassword(input)`
 Analisa a força de uma senha baseada em critérios múltiplos.
 ```javascript
-$.innerForm.validatePassword("MinhaSenh@123"); 
+InnerForm.validatePassword("MinhaSenh@123"); 
 // Retorna objeto com: score, hasUpper, hasLower, hasNumber, hasSymbol
 ```
 
 #### `searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction)`
 Busca dados de endereço na API ViaCEP e executa callback com os resultados.
 ```javascript
-$.innerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
+InnerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
     console.log("Logradouro:", dados.logradouro);
     console.log("Bairro:", dados.bairro);
     console.log("Cidade:", dados.localidade);
@@ -1386,7 +1390,7 @@ $.innerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
 Obtém a localização atual do usuário usando a API de Geolocalização do navegador.
 ```javascript
 // Uso básico
-$.innerForm.getLocation()
+InnerForm.getLocation()
     .then(function(location) {
         console.log('Latitude:', location.latitude);
         console.log('Longitude:', location.longitude);
@@ -1398,7 +1402,7 @@ $.innerForm.getLocation()
     });
 
 // Com opções customizadas
-$.innerForm.getLocation({
+InnerForm.getLocation({
     enableHighAccuracy: true,   // Alta precisão (GPS)
     timeout: 15000,            // Timeout de 15 segundos
     maximumAge: 60000          // Cache de 60 segundos
@@ -1427,7 +1431,7 @@ $.innerForm.getLocation({
 #### `watchLocation(successCallback, errorCallback, options)`
 Monitora continuamente a localização do usuário, chamando o callback a cada atualização.
 ```javascript
-var watchId = $.innerForm.watchLocation(
+var watchId = InnerForm.watchLocation(
     function(location) {
         // Callback de sucesso - chamado a cada nova posição
         console.log('Nova posição:', location.coordinates);
@@ -1454,11 +1458,11 @@ console.log('Watch ID:', watchId);
 Para o monitoramento de localização ativo.
 ```javascript
 // Parar monitoramento específico
-$.innerForm.clearLocationWatch(watchId);
+InnerForm.clearLocationWatch(watchId);
 
 // Em aplicações SPA, sempre pare o monitoramento ao trocar de página
 window.addEventListener('beforeunload', function() {
-    $.innerForm.clearLocationWatch(watchId);
+    InnerForm.clearLocationWatch(watchId);
 });
 ```
 
@@ -1471,7 +1475,7 @@ window.addEventListener('beforeunload', function() {
 // - GEOLOCATION_NOT_SUPPORTED: Navegador não suporta
 // - UNKNOWN_ERROR: Erro desconhecido
 
-$.innerForm.getLocation()
+InnerForm.getLocation()
     .catch(function(error) {
         switch (error.error) {
             case 'PERMISSION_DENIED':
@@ -1494,10 +1498,10 @@ $.innerForm.getLocation()
 #### Propriedades Configuráveis:
 ```javascript
 // Ativar logs detalhados
-$.innerForm.verbose = true;
+InnerForm.verbose = true;
 
 // Timeout para validação durante digitação (ms)
-$.innerForm.onTypeTimeout = 900;
+InnerForm.onTypeTimeout = 900;
 ```
 
 ### **Uso Avançado**
@@ -1510,13 +1514,13 @@ function validarFormularioCustomizado() {
     let isValid = true;
     
     // Validar data
-    if (!$.innerForm.validDate($('#data').val())) {
+    if (!InnerForm.validDate($('#data').val())) {
         isValid = false;
         alert('Data inválida!');
     }
     
     // Validar idade
-    if ($.innerForm.getAge($('#nascimento').val()) < 18) {
+    if (InnerForm.getAge($('#nascimento').val()) < 18) {
         isValid = false;
         alert('Menor de idade!');
     }
@@ -1526,11 +1530,11 @@ function validarFormularioCustomizado() {
 
 // Aplicar máscaras programaticamente
 $('#telefone').on('input', function() {
-    $.innerForm.applyPhoneMask(this);
+    InnerForm.applyPhoneMask(this);
 });
 
 // Buscar CEP com tratamento de erro
-$.innerForm.searchViaCEP(cep, num, 0, function(dados) {
+InnerForm.searchViaCEP(cep, num, 0, function(dados) {
     if (dados.erro) {
         console.warn('CEP não encontrado');
         return;
@@ -1648,16 +1652,14 @@ var bandeiraCartao = $('#cartao').attr('data-flagcard');
 ### **Ativar Logs Detalhados**
 ```html
 <script>
-$.innerForm = { 
-    verbose: true  // Ativa logs detalhados no console
-};
+InnerForm.verbose = true; // Ativa logs detalhados no console
 </script>
 ```
 
 ### **Logs Disponíveis**
-- ✅ **Sucesso**: `$.innerForm.log()`
-- ⚠️ **Aviso**: `$.innerForm.warn()`  
-- ❌ **Erro**: `$.innerForm.error()`
+- ✅ **Sucesso**: `InnerForm.log()`
+- ⚠️ **Aviso**: `InnerForm.warn()`  
+- ❌ **Erro**: `InnerForm.error()`
 
 ### **Exemplo de Debug**
 ```javascript
@@ -1673,7 +1675,7 @@ $.innerForm = {
 
 1. **Ordem das Classes**: A ordem das classes pode importar em validações complexas
 2. **Performance**: Para formulários grandes, considere usar `notonblur` em campos menos críticos
-3. **Compatibilidade**: Testado com jQuery 3.0+ e Bootstrap 4+
+3. **Compatibilidade**: jQuery é opcional; quando presente, os plugins legados são conectados em `jQuery.fn` sem alterar `$`
 4. **Campos Vazios**: A maioria das validações permite campos vazios (exceto `obg`/`required`)
 5. **Máscaras vs Validação**: Nem toda validação tem máscara equivalente e vice-versa
 
@@ -1737,9 +1739,9 @@ Contribuições são bem-vindas! Por favor, abra uma issue ou faça um pull requ
 ### **v2.6.0 - Outubro 2025**
 
 #### **🌍 Sistema de Geolocalização Completo - NOVO!**
-- **Nova função**: `$.innerForm.getLocation()` - Obtém localização atual do usuário
-- **Nova função**: `$.innerForm.watchLocation()` - Monitoramento contínuo de localização  
-- **Nova função**: `$.innerForm.clearLocationWatch()` - Para monitoramento ativo
+- **Nova função**: `InnerForm.getLocation()` - Obtém localização atual do usuário
+- **Nova função**: `InnerForm.watchLocation()` - Monitoramento contínuo de localização  
+- **Nova função**: `InnerForm.clearLocationWatch()` - Para monitoramento ativo
 - **Recursos avançados**: 
   - Promise-based API moderna
   - Objeto de resposta rico com coordenadas, precisão, altitude, velocidade

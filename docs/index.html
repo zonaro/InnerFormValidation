@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description"
-        content="Documentação completa do InnerFormValidation: validações brasileiras, máscaras, callbacks, ViaCEP, geolocalização e API JavaScript sem jQuery.">
+        content="Documentação completa do InnerFormValidation: validações brasileiras, máscaras, callbacks, ViaCEP, geolocalização e API JavaScript sem dependências.">
     <meta name="keywords"
-        content="InnerFormValidation, JavaScript, CPF, CNPJ, CNH, OAB, PIX, CEP, ViaCEP, geolocalização, máscara, validação, jQuery">
+        content="InnerFormValidation, JavaScript, CPF, CNPJ, CNH, OAB, PIX, CEP, ViaCEP, geolocalização, máscara, validação">
     <meta property="og:title" content="InnerFormValidation | Laboratório e documentação">
-    <meta property="og:description" content="Teste todas as validações, máscaras e integrações do InnerFormValidation.">
+    <meta property="og:description" content="Teste todas as validações, máscaras e integrações do InnerForm.">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://zonaro.github.io/InnerFormValidation/docs/">
     <link rel="stylesheet" href="styles.css">
@@ -34,9 +34,10 @@
                 <p class="eyebrow">JavaScript toolkit · documentação completa</p>
                 <h1>Valide cada detalhe do seu formulário.</h1>
                 <p class="lede">Máscaras, regras brasileiras, conteúdo, datas, cartões, callbacks, CEP e geolocalização.
-                    Tudo funciona com JavaScript puro. Se jQuery existir, o plugin legado continua disponível.</p>
+                    Tudo funciona com JavaScript puro. Se jQuery existir, os plugins legados são conectados sem alterar
+                    o <code>$</code>.</p>
                 <p class="chips">
-                    <code>CDN jsDelivr</code><code>zero dependencies</code><code>jQuery compatible</code><code>pt · en · es</code>
+                    <code>CDN jsDelivr</code><code>zero dependencies</code><code>callable API</code><code>pt · en · es</code>
                 </p>
             </div>
             <aside class="hero-note"><strong>InnerFormValidation</strong>
@@ -51,8 +52,8 @@
                 <p>O caminho recomendado para começar. Não exige jQuery.</p>
             </div>
             <pre><code>&lt;script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"&gt;&lt;/script&gt;
-InnerFormValidation.isValid(form)
-InnerFormValidation.validateCPF(value)</code></pre>
+InnerForm.isValid(form)
+InnerForm.validateCPF(value)</code></pre>
         </section>
         <div class="layout wrap">
             <aside class="toc"><strong>Conteúdo</strong><a href="#basicas">01 Básicas</a><a href="#strings">02
@@ -249,7 +250,7 @@ InnerFormValidation.validateCPF(value)</code></pre>
                                         class="autocomplete ddd" readonly></label><output
                                     id="cep-status"></output><button type="button" id="cep-button"
                                     class="button light">Buscar na ViaCEP</button></form>
-                            <pre><code>InnerFormValidation.searchViaCEP(cep, numero, 0, callback)</code></pre>
+                            <pre><code>InnerForm.searchViaCEP(cep, numero, 0, callback)</code></pre>
                         </article>
                         <article id="geolocation">
                             <h3>Geolocalização</h3>
@@ -262,9 +263,9 @@ InnerFormValidation.validateCPF(value)</code></pre>
                                     monitoramento</button></div><output id="geo-status" role="status">Aguardando
                                 ação.</output>
                             <dl id="geo-result" class="geo-result"></dl>
-                            <pre><code>InnerFormValidation.getLocation(options)
-InnerFormValidation.watchLocation(onSuccess, onError, options)
-InnerFormValidation.clearLocationWatch(watchId)</code></pre>
+                            <pre><code>InnerForm.getLocation(options)
+InnerForm.watchLocation(onSuccess, onError, options)
+InnerForm.clearLocationWatch(watchId)</code></pre>
                         </article>
                     </div>
                 </section>
@@ -299,8 +300,11 @@ InnerFormValidation.clearLocationWatch(watchId)</code></pre>
                 <section id="api" class="section api">
                     <p class="eyebrow">12 / referência</p>
                     <h2>API pública</h2>
-                    <p class="intro">Todas as funções estão disponíveis em <code>InnerFormValidation</code>. Com jQuery,
-                        o mesmo objeto fica em <code>$.innerForm</code>.</p>
+                    <p class="intro">A função <code>InnerFormValidation</code> também é o seletor nativo da biblioteca:
+                        use <code>InnerForm(selector)</code> para obter uma coleção encadeável. Todos os
+                        métodos
+                        públicos ficam diretamente nela. Se jQuery existir, <code>jQuery.innerForm</code> aponta para a
+                        mesma API e os plugins legados são conectados ao <code>jQuery.fn</code>.</p>
                     <div class="api-list">
                         <div><code>validateCPF</code><span>CPF brasileiro</span></div>
                         <div><code>validateCNPJ</code><span>CNPJ brasileiro</span></div>
@@ -325,7 +329,7 @@ InnerFormValidation.clearLocationWatch(watchId)</code></pre>
     <div id="field-menu" class="field-menu" hidden role="menu"><button type="button" data-field-action="classes"
             role="menuitem">Copiar classes CSS de validação</button><button type="button" data-field-action="html"
             role="menuitem">Copiar HTML</button></div>
-    <script src="../InnerFormValidation.js"></script>
+    <script src="../InnerForm.js"></script>
     <script src="docs.js"></script>
 </body>
 

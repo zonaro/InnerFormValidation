@@ -7,7 +7,9 @@ InnerFormValidation is a dependency-free JavaScript library for form validation,
 - ../README.md
 
 ## Primary API
-Load `InnerFormValidation.js`, then call `InnerFormValidation.validateCPF(value)`, `validateCNPJ`, `validateEmail`, `validDate`, `validateUF`, `validateOAB`, `validatePix`, `applyCPFMask(input)`, `applyCEPMask(input)`, `isValid(element, ...rules)`, `startMasks(element)` and `startValidation(element)`.
+Load `InnerFormValidation.js`, then call `InnerForm.validateCPF(value)`, `validateCNPJ`, `validateEmail`, `validDate`, `validateUF`, `validateOAB`, `validatePix`, `applyCPFMask(input)`, `applyCEPMask(input)`, `isValid(element, ...rules)`, `startMasks(element)` and `startValidation(element)`.
 
-## jQuery compatibility
-When jQuery is available, the same object is exposed as `$.innerForm` and legacy plugin methods remain available, including `isValid`, `startMasks`, `startValidation`, `validateOnBlur` and `validateOnType`.
+## Callable API and jQuery compatibility
+`InnerForm` is both the public API and the native selector wrapper. Call `InnerForm(selector)` to get a chainable collection, or call methods directly such as `InnerForm.validateCPF(value)` and `InnerForm.isValid(element)`.
+
+When jQuery is available, `jQuery.innerForm` points to the same `InnerForm` function. Legacy plugin methods are connected to `jQuery.fn`, without replacing `$` or using jQuery inside the core.

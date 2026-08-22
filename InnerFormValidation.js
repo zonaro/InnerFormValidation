@@ -75,7 +75,7 @@
 
 
     var baseMethods = Object.keys(InnerForm.fn);
-    root.InnerFormValidation = InnerForm;
+    root.InnerForm = InnerForm;
 
     /**
      * InnerFormValidation Configuration and Functions
@@ -3424,6 +3424,8 @@
         }
     };
 
+
+    /// implements jQuery plugin if jQuery is present
     if (root.jQuery && root.jQuery.fn) {
         var previousJQueryConfig = root.jQuery.innerForm;
         if (previousJQueryConfig && previousJQueryConfig !== InnerForm) {
