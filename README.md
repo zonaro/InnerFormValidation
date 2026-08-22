@@ -4,11 +4,11 @@
 
 ## Documentation
 
-See the [complete documentation site](docs/index.html), with interactive examples, API reference, standalone installation, jQuery compatibility, postal-code autocomplete, and geolocation.
+See the [complete documentation site](index.html), with interactive examples, API reference, standalone installation, jQuery compatibility, postal-code autocomplete, and geolocation.
 
 [![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Standalone](https://img.shields.io/badge/JavaScript-standalone-brightgreen)](docs/index.html)
+[![Standalone](https://img.shields.io/badge/JavaScript-standalone-brightgreen)](index.html)
 
 ## 📖 Table of Contents
 
@@ -460,22 +460,22 @@ InnerFormValidation includes integration with the **ViaCEP** API for Brazilian a
 
 ### **Autocomplete Classes**
 
-| Class                               | Description                       | Example                                     |
-| ----------------------------------- | --------------------------------- | ------------------------------------------- |
-| `autocomplete cep`                  | Postal-code field that searches for an address      | `<input class="autocomplete cep mask">`     |
-| `autocomplete address`              | Recebe logradouro                 | `<input class="autocomplete address">`      |
-| `autocomplete neighborhood`         | Recebe bairro                     | `<input class="autocomplete neighborhood">` |
-| `autocomplete city`                 | Recebe cidade                     | `<input class="autocomplete city">`         |
-| `autocomplete state`                | Recebe estado (UF)                | `<input class="autocomplete state">`        |
-| `autocomplete fulladdress`          | Receives the complete address          | `<p class="autocomplete fulladdress"></p>`  |
-| `autocomplete num` `number`         | Number field (receives focus)        | `<input class="autocomplete num">`          |
-| `autocomplete homenum` `homenumber` | House number (alphanumeric) | `<input class="autocomplete homenum">`      |
-| `autocomplete ddd`                  | Regional area code              | `<input class="autocomplete ddd">`          |
-| `autocomplete ibge`                 | IBGE code                       | `<input class="autocomplete ibge">`         |
-| `autocomplete gia`                  | GIA code                        | `<input class="autocomplete gia">`          |
-| `autocomplete latitude` `lat`       | Recebe latitude automaticamente   | `<input class="autocomplete latitude">`     |
-| `autocomplete longitude` `long`     | Recebe longitude automaticamente  | `<input class="autocomplete longitude">`    |
-| `autocomplete siafi`                | SIAFI code                      | `<input class="autocomplete siafi">`        |
+| Class                               | Description                                    | Example                                     |
+| ----------------------------------- | ---------------------------------------------- | ------------------------------------------- |
+| `autocomplete cep`                  | Postal-code field that searches for an address | `<input class="autocomplete cep mask">`     |
+| `autocomplete address`              | Recebe logradouro                              | `<input class="autocomplete address">`      |
+| `autocomplete neighborhood`         | Recebe bairro                                  | `<input class="autocomplete neighborhood">` |
+| `autocomplete city`                 | Recebe cidade                                  | `<input class="autocomplete city">`         |
+| `autocomplete state`                | Recebe estado (UF)                             | `<input class="autocomplete state">`        |
+| `autocomplete fulladdress`          | Receives the complete address                  | `<p class="autocomplete fulladdress"></p>`  |
+| `autocomplete num` `number`         | Number field (receives focus)                  | `<input class="autocomplete num">`          |
+| `autocomplete homenum` `homenumber` | House number (alphanumeric)                    | `<input class="autocomplete homenum">`      |
+| `autocomplete ddd`                  | Regional area code                             | `<input class="autocomplete ddd">`          |
+| `autocomplete ibge`                 | IBGE code                                      | `<input class="autocomplete ibge">`         |
+| `autocomplete gia`                  | GIA code                                       | `<input class="autocomplete gia">`          |
+| `autocomplete latitude` `lat`       | Recebe latitude automaticamente                | `<input class="autocomplete latitude">`     |
+| `autocomplete longitude` `long`     | Recebe longitude automaticamente               | `<input class="autocomplete longitude">`    |
+| `autocomplete siafi`                | SIAFI code                                     | `<input class="autocomplete siafi">`        |
 
 ### **Complete Address Example**
 ```html
@@ -747,11 +747,11 @@ InnerForm.getLocation()
 
 ### **Configuration Options**
 
-| Option                | Type    | Default | Description                                    |
-| -------------------- | ------- | ------ | -------------------------------------------- |
-| `enableHighAccuracy` | boolean | true   | Requests high accuracy (GPS when possible) |
-| `timeout`            | number  | 10000  | Tempo limite em milissegundos                |
-| `maximumAge`         | number  | 60000  | Maximum acceptable cache age (ms)         |
+| Option               | Type    | Default | Description                                |
+| -------------------- | ------- | ------- | ------------------------------------------ |
+| `enableHighAccuracy` | boolean | true    | Requests high accuracy (GPS when possible) |
+| `timeout`            | number  | 10000   | Tempo limite em milissegundos              |
+| `maximumAge`         | number  | 60000   | Maximum acceptable cache age (ms)          |
 
 ### **Requirements and Limitations**
 
@@ -1626,12 +1626,12 @@ var bandeiraCartao = $('#cartao').attr('data-flagcard');
 
 ### **Behavior Control**
 
-| Class         | Description                                 |
-| ------------- | ------------------------------------------- |
-| `onkeyup`     | Validar conforme digita (com delay)         |
-    | `notonblur`   | Do NOT validate on blur                     |
-    | `notonchange` | Do NOT validate when the value changes     |
-    | `noreplace`   | Autocomplete does not replace existing value |
+| Class         | Description                                  |
+| ------------- | -------------------------------------------- |
+| `onkeyup`     | Validar conforme digita (com delay)          |
+| `notonblur`   | Do NOT validate on blur                      |
+| `notonchange` | Do NOT validate when the value changes       |
+| `noreplace`   | Autocomplete does not replace existing value |
 
 ### **Special Use Cases**
 ```html
