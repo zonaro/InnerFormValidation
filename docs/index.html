@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description"
+        content="Documentação completa do InnerFormValidation: validações brasileiras, máscaras, callbacks, ViaCEP, geolocalização e API JavaScript sem jQuery.">
+    <meta name="keywords"
+        content="InnerFormValidation, JavaScript, CPF, CNPJ, CNH, OAB, PIX, CEP, ViaCEP, geolocalização, máscara, validação, jQuery">
+    <meta property="og:title" content="InnerFormValidation | Laboratório e documentação">
+    <meta property="og:description" content="Teste todas as validações, máscaras e integrações do InnerFormValidation.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://zonaro.github.io/InnerFormValidation/docs/">
+    <link rel="stylesheet" href="styles.css">
+    <title>InnerFormValidation | Documentação completa</title>
+    <script
+        type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"InnerFormValidation: documentação completa","description":"API JavaScript independente de jQuery para validação, máscaras, ViaCEP e geolocalização.","url":"https://zonaro.github.io/InnerFormValidation/docs/","programmingLanguage":"JavaScript","license":"https://opensource.org/licenses/MIT"}</script>
+</head>
+
+<body>
+    <header class="topbar"><a class="brand" href="#inicio"><b>IFV</b> InnerFormValidation</a>
+        <nav aria-label="Navegação"><a href="#inicio">Início</a><a href="#laboratorio">Laboratório</a><a
+                href="#integracoes">Integrações</a><a href="#api">API</a></nav><select id="language"
+            aria-label="Idioma">
+            <option value="pt">PT-BR</option>
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+        </select>
+    </header>
+    <main>
+        <section id="inicio" class="hero wrap">
+            <div>
+                <p class="eyebrow">JavaScript toolkit · documentação completa</p>
+                <h1>Valide cada detalhe do seu formulário.</h1>
+                <p class="lede">Máscaras, regras brasileiras, conteúdo, datas, cartões, callbacks, CEP e geolocalização.
+                    Tudo funciona com JavaScript puro. Se jQuery existir, o plugin legado continua disponível.</p>
+                <p class="chips">
+                    <code>CDN jsDelivr</code><code>zero dependencies</code><code>jQuery compatible</code><code>pt · en · es</code>
+                </p>
+            </div>
+            <aside class="hero-note"><strong>InnerFormValidation</strong>
+                <p>Validação declarativa, máscaras e integrações para formulários reais.</p><a class="button primary"
+                    href="#laboratorio">Abrir laboratório</a>
+            </aside>
+        </section>
+        <section id="cdn" class="cdn-strip wrap">
+            <div>
+                <p class="eyebrow">Primeiro passo</p>
+                <h2>Integre pelo CDN jsDelivr</h2>
+                <p>O caminho recomendado para começar. Não exige jQuery.</p>
+            </div>
+            <pre><code>&lt;script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"&gt;&lt;/script&gt;
+InnerFormValidation.isValid(form)
+InnerFormValidation.validateCPF(value)</code></pre>
+        </section>
+        <div class="layout wrap">
+            <aside class="toc"><strong>Conteúdo</strong><a href="#basicas">01 Básicas</a><a href="#strings">02
+                    Caracteres</a><a href="#tamanho">03 Comprimento</a><a href="#documentos">04 Documentos</a><a
+                    href="#datas">05 Data e hora</a><a href="#comparacoes">06 Idade e comparação</a><a href="#senha">07
+                    Senhas</a><a href="#cartoes">08 Cartões</a><a href="#conteudo">09 Conteúdo</a><a
+                    href="#integracoes">10 CEP e geo</a><a href="#callbacks">11 Callbacks</a><a href="#api">12 API</a>
+            </aside>
+            <div class="content">
+                <section id="laboratorio" class="section">
+                    <p class="eyebrow">Laboratório interativo</p>
+                    <h2>Todas as regras, em um lugar</h2>
+                    <p class="intro">Digite nos campos. A biblioteca aplica a máscara e valida as classes em tempo real.
+                        O botão testa o formulário inteiro.</p>
+                    <section id="basicas" class="demo-block">
+                        <header><span>01</span>
+                            <div>
+                                <h3>Validações básicas</h3>
+                                <p><code>obg</code> · <code>email</code> · <code>url</code> · <code>regex</code></p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Obrigatório<input class="obg"
+                                    placeholder="Campo obrigatório"></label><label>E-mail<input class="email"
+                                    placeholder="nome@dominio.com"></label><label>URL<input class="url"
+                                    placeholder="https://exemplo.com"></label><label>Regex com pattern<input
+                                    class="regex" pattern="^[A-Z]{3}-[0-9]{3}$" placeholder="ABC-123"></label><button
+                                class="button primary" type="submit">Validar bloco</button><output></output></form>
+                    </section>
+                    <section id="strings" class="demo-block">
+                        <header><span>02</span>
+                            <div>
+                                <h3>Caracteres e texto</h3>
+                                <p><code>alpha</code> · <code>alphanum</code> · <code>num</code> · <code>upper</code> ·
+                                    <code>lower</code> · <code>nospace</code>
+                                </p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid compact" data-demo-form><label>Apenas letras<input
+                                    class="mask alpha"></label><label>Alfanumérico<input
+                                    class="mask alphanum"></label><label>Número<input
+                                    class="mask num"></label><label>Maiúsculas<input
+                                    class="mask upper"></label><label>Minúsculas<input
+                                    class="mask lower"></label><label>Sem espaços<input
+                                    class="mask nospace"></label><button class="button primary" type="submit">Validar
+                                bloco</button><output></output></form>
+                    </section>
+                    <section id="tamanho" class="demo-block">
+                        <header><span>03</span>
+                            <div>
+                                <h3>Comprimento e números</h3>
+                                <p><code>len 8</code> · <code>minlen 4</code> · <code>maxlen 12</code> · separadores
+                                    personalizados</p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Exatamente 8<input
+                                    class="len 8"></label><label>Mínimo 4<input class="minlen 4"></label><label>Máximo
+                                12<input class="maxlen 12"></label><label>Inteiro com milhar<input class="mask integer"
+                                    data-thousand="."></label><label>Decimal BR<input class="mask decimal"
+                                    data-separator="," data-decimal="2" data-thousand="."></label><label>Zeros à
+                                esquerda<input class="mask num leadingzero 8" placeholder="00000000"></label><button
+                                class="button primary" type="submit">Validar bloco</button><output></output></form>
+                    </section>
+                    <section id="documentos" class="demo-block">
+                        <header><span>04</span>
+                            <div>
+                                <h3>Documentos, localização e identificadores</h3>
+                                <p>Máscara e validação para CPF, CNPJ, CNH, CEP, OAB, UF, UUID, PIX e coordenadas.</p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid compact" data-demo-form><label>CPF<input
+                                    class="mask cpf"></label><label>CNPJ<input class="mask cnpj"></label><label>CPF ou
+                                CNPJ<input class="mask cpfcnpj"></label><label>CNH<input
+                                    class="mask cnh"></label><label>CEP<input class="mask cep"></label><label>OAB<input
+                                    class="mask oab" placeholder="511061SP"></label><label>UF / state<input
+                                    class="mask uf"></label><label>UUID / GUID<input
+                                    class="mask uuid"></label><label>PIX / chavepix<input
+                                    class="pix"></label><label>Latitude<input
+                                    class="mask latitude precision 6"></label><label>Longitude<input
+                                    class="mask longitude precision 6"></label><label>Coordenadas<input
+                                    class="coordinate" placeholder="-23.55,-46.63"></label><button
+                                class="button primary" type="submit">Validar documentos</button><output></output></form>
+                    </section>
+                    <section id="datas" class="demo-block">
+                        <header><span>05</span>
+                            <div>
+                                <h3>Data, hora e períodos</h3>
+                                <p><code>date</code> · <code>time</code> · <code>datetime</code> ·
+                                    <code>monthyear</code> · ranges
+                                </p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid compact" data-demo-form><label>Data<input
+                                    class="mask date"></label><label>Data e hora<input
+                                    class="mask datetime"></label><label>Hora<input
+                                    class="mask time"></label><label>Hora curta<input
+                                    class="mask shorttime"></label><label>Minutos e segundos<input
+                                    class="mask minutesecond"></label><label>Mês e ano<input
+                                    class="mask monthyear"></label><label>Período de datas<input class="mask daterange"
+                                    placeholder="01/01/2024 ~ 31/12/2024"></label><label>Período mês/ano<input
+                                    class="mask monthyearrange"></label><label>Período curto<input
+                                    class="mask shortmonthyearrange"></label><button class="button primary"
+                                type="submit">Validar datas</button><output></output></form>
+                    </section>
+                    <section id="comparacoes" class="demo-block">
+                        <header><span>06</span>
+                            <div>
+                                <h3>Idade e comparação</h3>
+                                <p><code>minage</code> · <code>maxage</code> · <code>age</code> · <code>after</code> ·
+                                    <code>before</code> · <code>to</code>
+                                </p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Maior de 18<input
+                                    class="mask date minage 18" placeholder="Data de nascimento"></label><label>Menor de
+                                65<input class="mask date maxage 65"></label><label>Exatamente 30<input
+                                    class="mask date age 30"></label><label>Maior que 10<input
+                                    class="num after 10"></label><label>Menor que 100<input
+                                    class="num before 100"></label><label>Entre 1 e 10<input
+                                    class="num 1 to 10"></label><label>Após hoje<input
+                                    class="mask date after today"></label><label>Antes de uma data<input
+                                    class="mask date before 31/12/2030"></label><button class="button primary"
+                                type="submit">Validar comparações</button><output></output></form>
+                    </section>
+                    <section id="senha" class="demo-block">
+                        <header><span>07</span>
+                            <div>
+                                <h3>Força de senha</h3>
+                                <p><code>password strong</code> · <code>medium</code> · <code>weak</code> e atributo
+                                    <code>data-pwstrength</code>
+                                </p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Forte<input type="password"
+                                    class="password strong minlen 8"><small class="password-strength">4 critérios:
+                                    maiúscula, minúscula, número e símbolo</small></label><label>Média<input
+                                    type="password" class="password medium minlen 6"><small class="password-strength">3
+                                    critérios</small></label><label>Customizada<input type="password"
+                                    class="password 2 minlen 4"><small class="password-strength">2
+                                    critérios</small></label><button class="button primary" type="submit">Validar
+                                senhas</button><output></output></form>
+                    </section>
+                    <section id="cartoes" class="demo-block">
+                        <header><span>08</span>
+                            <div>
+                                <h3>Cartões de crédito</h3>
+                                <p>Luhn e bandeiras: Visa, Mastercard, Amex, Elo, Hiper, Diners, Discover, JCB, Aura e
+                                    outras.</p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Qualquer bandeira<input
+                                    class="mask creditcard" placeholder="4111 1111 1111 1111"></label><label>Somente
+                                Visa<input class="mask creditcard visa"></label><label>Mastercard<input
+                                    class="mask creditcard mastercard"></label><button class="button primary"
+                                type="submit">Validar cartões</button><output></output></form>
+                    </section>
+                    <section id="conteudo" class="demo-block">
+                        <header><span>09</span>
+                            <div>
+                                <h3>Conteúdo e igualdade</h3>
+                                <p><code>contains</code> · <code>containsanychar</code> · <code>containsallchar</code> ·
+                                    <code>notchar</code> · <code>eq</code> · <code>eqv</code>
+                                </p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Contém texto<input
+                                    class="contains @empresa.com"
+                                    placeholder="Inclua @empresa.com"></label><label>Contém qualquer<input
+                                    class="containsanychar {}()" placeholder="Qualquer: {}()"></label><label>Contém
+                                todos<input class="containsallchar ABC" placeholder="Todos: A, B e C"></label><label>Não
+                                contém<input class="notcontainschar ABC"></label><label>Senha<input id="demo-password"
+                                    type="password"></label><label>Igual ao campo<input
+                                    class="eq #demo-password"></label><label>Valor admin<input
+                                    class="eqv admin"></label><button class="button primary" type="submit">Validar
+                                conteúdo</button><output></output></form>
+                    </section>
+                </section>
+                <section id="integracoes" class="section integrations">
+                    <p class="eyebrow">10 / browser APIs</p>
+                    <h2>Integrações que fazem o formulário viver</h2>
+                    <div class="integration-grid">
+                        <article id="cep">
+                            <h3>Autocomplete por CEP</h3>
+                            <p>O CEP é o primeiro campo. A busca ViaCEP preenche endereço, complemento, bairro, cidade,
+                                UF, IBGE, GIA, DDD, SIAFI e endereço completo.</p>
+                            <form id="cep-form" class="address-form"><label>CEP<input id="cep-input" class="mask cep"
+                                        placeholder="01001-000"></label><label>Número<input
+                                        class="autocomplete homenum"></label><label>Logradouro<input
+                                        class="autocomplete address" readonly></label><label>Complemento<input
+                                        class="autocomplete complement" readonly></label><label>Bairro<input
+                                        class="autocomplete neighborhood" readonly></label><label>Cidade<input
+                                        class="autocomplete city" readonly></label><label>UF<input
+                                        class="autocomplete state" readonly></label><label>IBGE<input
+                                        class="autocomplete ibge" readonly></label><label>DDD<input
+                                        class="autocomplete ddd" readonly></label><output
+                                    id="cep-status"></output><button type="button" id="cep-button"
+                                    class="button light">Buscar na ViaCEP</button></form>
+                            <pre><code>InnerFormValidation.searchViaCEP(cep, numero, 0, callback)</code></pre>
+                        </article>
+                        <article id="geolocation">
+                            <h3>Geolocalização</h3>
+                            <p>Use HTTPS e permissão do navegador. <code>getLocation</code> retorna coordenadas,
+                                precisão, altitude, horário e links de mapa; <code>watchLocation</code> acompanha
+                                mudanças.</p>
+                            <div class="geo-actions"><button id="geo-get" class="button light">Obter
+                                    localização</button><button id="geo-watch" class="button outline">Iniciar
+                                    monitoramento</button><button id="geo-stop" class="button outline">Parar
+                                    monitoramento</button></div><output id="geo-status" role="status">Aguardando
+                                ação.</output>
+                            <dl id="geo-result" class="geo-result"></dl>
+                            <pre><code>InnerFormValidation.getLocation(options)
+InnerFormValidation.watchLocation(onSuccess, onError, options)
+InnerFormValidation.clearLocationWatch(watchId)</code></pre>
+                        </article>
+                    </div>
+                </section>
+                <section id="callbacks" class="section">
+                    <p class="eyebrow">11 / extensibilidade</p>
+                    <h2>Callbacks e visual customizável</h2>
+                    <div class="columns">
+                        <article class="panel">
+                            <h3>Callbacks declarativos</h3>
+                            <p>Os atributos <code>data-beforevalidatecallback</code>, <code>data-validcallback</code>,
+                                <code>data-invalidcallback</code>, <code>data-aftervalidatecallback</code> e
+                                <code>data-invalidmessage</code> conectam sua UI ao ciclo de validação.
+                            </p><input id="callback-demo" class="obg"
+                                data-validcallback="document.querySelector('#callback-status').textContent='Campo válido'"
+                                data-invalidcallback="document.querySelector('#callback-status').textContent='Campo inválido'"
+                                placeholder="Deixe vazio e depois preencha"><button id="callback-button"
+                                class="button primary">Executar callback</button><output id="callback-status"></output>
+                        </article>
+                        <article class="panel">
+                            <h3>CSS por variáveis</h3>
+                            <p>O tema da documentação usa variáveis simples. Altere a cor de destaque para visualizar a
+                                ideia.</p><label>Cor de destaque<input type="color" id="accent-picker"
+                                    value="#d8f36b"></label>
+                            <pre><code>:root {
+  --lime: #d8f36b;
+  --teal: #0d6b63;
+  --orange: #ff815d;
+}</code></pre>
+                        </article>
+                    </div>
+                </section>
+                <section id="api" class="section api">
+                    <p class="eyebrow">12 / referência</p>
+                    <h2>API pública</h2>
+                    <p class="intro">Todas as funções estão disponíveis em <code>InnerFormValidation</code>. Com jQuery,
+                        o mesmo objeto fica em <code>$.innerForm</code>.</p>
+                    <div class="api-list">
+                        <div><code>validateCPF</code><span>CPF brasileiro</span></div>
+                        <div><code>validateCNPJ</code><span>CNPJ brasileiro</span></div>
+                        <div><code>validateCNH</code><span>CNH brasileira</span></div>
+                        <div><code>validateEmail · validateURL · validatePix</code><span>formatos</span></div>
+                        <div><code>validateUF · validateOAB · validateUUID</code><span>identificadores</span></div>
+                        <div><code>validDate · validDateRange · validMonthYearRange</code><span>datas e períodos</span>
+                        </div>
+                        <div><code>validateTime · expandYear · getAge</code><span>tempo e idade</span></div>
+                        <div><code>checkLuhn · validateCardBrand</code><span>cartões</span></div>
+                        <div><code>applyCPFMask · applyCNPJMask · applyCEPMask · applyNumberMask</code><span>máscaras
+                                DOM</span></div>
+                        <div><code>searchViaCEP · getLocation · watchLocation</code><span>integrações</span></div>
+                        <div><code>isValid · startMasks · startValidation</code><span>formulários</span></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    <footer class="wrap footer"><b>InnerFormValidation</b><span>MIT · documentação humana e AI-friendly</span><a
+            href="../README.md">README</a></footer>
+    <div id="field-menu" class="field-menu" hidden role="menu"><button type="button" data-field-action="classes"
+            role="menuitem">Copiar classes CSS de validação</button><button type="button" data-field-action="html"
+            role="menuitem">Copiar HTML</button></div>
+    <script src="../InnerFormValidation.js"></script>
+    <script src="docs.js"></script>
+</body>
+
+</html>

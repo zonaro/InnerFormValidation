@@ -1,63 +1,138 @@
-(function ($) {
+(function (root) {
+
+    var InnerForm = function () {
+        var inputSelector = "input, select, textarea, button";
+        var toArray = function (value) {
+            return Array.prototype.slice.call(value || []);
+        };
+        var normalizeSelector = function (selector) {
+            return selector.replace(/:input/g, inputSelector);
+        };
+        var select = function (selector, context) {
+            context = context || document;
+            if ((typeof document !== "undefined" && selector === document) || (typeof window !== "undefined" && selector === window)) return [selector];
+            if (selector && selector.nodeType) return [selector];
+            if (selector && selector.elements) return selector.elements;
+            if (selector && selector.jquery) return toArray(selector);
+            if (typeof selector !== "string") return [];
+            if (selector.indexOf(":input") >= 0) {
+                return selector.split(",").reduce(function (result, part) {
+                    var cleanPart = part.trim().replace(/:input/g, "") || "*";
+                    return result.concat(toArray(context.querySelectorAll(cleanPart)).filter(function (element) {
+                        return /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
+                    }));
+                }, []);
+            }
+            return toArray(context.querySelectorAll(normalizeSelector(selector)));
+        };
+        var query = function (selector, context) {
+            var elements = Array.isArray(selector) ? selector : select(selector, context);
+            var api = Object.create(query.fn);
+            api.elements = elements;
+            api.length = elements.length;
+            for (var i = 0; i < elements.length; i++) api[i] = elements[i];
+            return api;
+        };
+        var fire = function (element, type) {
+            element.dispatchEvent(new Event(type, { bubbles: true }));
+        };
+        var matches = function (element, selector) {
+            if (selector === ":checked") return !!element.checked;
+            if (selector === ":input") return /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
+            if (selector.indexOf(":input") >= 0) return matches(element, selector.replace(/:input/g, "")) && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
+            return element.matches(selector);
+        };
+        query.fn = {
+            each: function (callback) { this.elements.forEach(function (element, index) { callback.call(element, index, element); }); return this; },
+            find: function (selector) { var found = []; this.each(function () { found = found.concat(select(selector, this)); }); return query(found); },
+            get: function (index) { return index === undefined ? this.elements : this.elements[index]; },
+            first: function () { return query(this.elements.slice(0, 1)); },
+            not: function (selector) { return query(this.elements.filter(function (element) { return !matches(element, selector); })); },
+            is: function (selector) { return this.elements.some(function (element) { return matches(element, selector); }); },
+            closest: function (selector) { return query(this.elements.map(function (element) { return element.closest(selector); }).filter(Boolean)); },
+            addClass: function (name) { return this.each(function () { this.classList.add.apply(this.classList, name.split(/\s+/)); }); },
+            removeClass: function (name) { return this.each(function () { this.classList.remove.apply(this.classList, name.split(/\s+/)); }); },
+            hasClass: function (name) { return this.elements.some(function (element) { return element.classList.contains(name); }); },
+            attr: function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0].getAttribute(name) : undefined; return this.each(function () { this.setAttribute(name, value); }); },
+            removeAttr: function (name) { return this.each(function () { this.removeAttribute(name); }); },
+            prop: function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0][name] : undefined; return this.each(function () { this[name] = value; }); },
+            data: function (name, value) { name = name.replace(/^data-/, ""); if (value === undefined) return this.elements[0] ? this.elements[0].dataset[name] : undefined; return this.each(function () { this.dataset[name] = value; }); },
+            val: function (value) { if (value === undefined) return this.elements[0] && this.elements[0].value !== undefined ? this.elements[0].value : undefined; return this.each(function () { this.value = value; }); },
+            text: function (value) { if (value === undefined) return this.elements.map(function (element) { return element.textContent; }).join(""); return this.each(function () { this.textContent = value; }); },
+            append: function (html) { return this.each(function () { this.insertAdjacentHTML("beforeend", html); }); },
+            change: function () { return this.each(function () { fire(this, "change"); }); },
+            focus: function () { return this.each(function () { if (this.focus) this.focus(); }); },
+            on: function (event, selector, handler) { if (typeof selector === "function") { handler = selector; selector = null; } return this.each(function () { this.addEventListener(event, function (e) { if (!selector || matches(e.target, selector)) handler.call(e.target, e); }); }); }
+        };
+        query.trim = function (value) { return String(value == null ? "" : value).trim(); };
+        query.ajax = function (options) {
+            if (options.beforeSend) options.beforeSend();
+            fetch(options.url).then(function (response) { if (!response.ok) throw new Error(response.statusText); return response.json(); }).then(options.success).catch(function (error) { if (options.error) options.error(null, "error", error); }).finally(function () { if (options.complete) options.complete(); });
+        };
+        query.ready = function (callback) { if (typeof document === "undefined") return; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", callback); else callback(); };
+        return query;
+    }
+
+
+    var baseMethods = Object.keys(InnerForm.fn);
+    root.InnerFormValidation = InnerForm;
 
     /**
      * InnerFormValidation Configuration and Functions
      */
-    $.innerForm = $.innerForm || {};
-
     /**
      * Enables or disables verbose logging for debugging purposes.
      */
-    $.innerForm.verbose = $.innerForm.verbose || false;
+    InnerForm.verbose = false;
 
     /**
      * Timeout duration (in milliseconds) for input type events before triggering validation.
      */
-    $.innerForm.onTypeTimeout = 900;
+    InnerForm.onTypeTimeout = 900;
 
-    $.innerForm.isDeleting = false;
+    InnerForm.isDeleting = false;
 
     /**
      * Logs messages to the console when verbose mode is enabled.
      * @function log
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {...*} arguments - Arguments to log to console
      */
-    $.innerForm.log = function () {
-        if ($.innerForm.verbose) console.log("InnerFormValidation:", arguments);
+    InnerForm.log = function () {
+        if (InnerForm.verbose) console.log("InnerFormValidation:", arguments);
     }
 
     /**
      * Logs error messages to the console when verbose mode is enabled.
      * @function error
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {...*} arguments - Arguments to log as error
      */
-    $.innerForm.error = function () {
-        if ($.innerForm.verbose) console.error("InnerFormValidation:", arguments);
+    InnerForm.error = function () {
+        if (InnerForm.verbose) console.error("InnerFormValidation:", arguments);
     }
 
     /**
      * Logs warning messages to the console when verbose mode is enabled.
      * @function warn
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {...*} arguments - Arguments to log as warning
      */
-    $.innerForm.warn = function () {
-        if ($.innerForm.verbose) console.warn("InnerFormValidation:", arguments);
+    InnerForm.warn = function () {
+        if (InnerForm.verbose) console.warn("InnerFormValidation:", arguments);
     }
 
     /**
      * Adds leading zeros to a number to reach the specified total length.
      * @function addLeadingZeros
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string|number} num - The number to pad with zeros
      * @param {number} totalLength - The desired total length of the string
      * @returns {string} The padded string
      */
-    $.innerForm.addLeadingZeros = function (num, totalLength) {
+    InnerForm.addLeadingZeros = function (num, totalLength) {
         num = num || ""
-        num = jQuery.trim(`${num}`);
+        num = InnerForm.trim(`${num}`);
         if (!isNaN(num) && num < 0) {
             const withoutMinus = String(num).slice(1);
             return '-' + withoutMinus.padStart(totalLength, '0');
@@ -69,11 +144,11 @@
     /**
      * Calculates the checksum for a barcode using standard algorithms.
      * @function barcodeCheckSum
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} code - The barcode string to calculate checksum for
      * @returns {number} The calculated checksum digit
      */
-    $.innerForm.barcodeCheckSum = function (code) {
+    InnerForm.barcodeCheckSum = function (code) {
         code = code || ""
         let i = 0;
         let p = 0;
@@ -101,12 +176,12 @@
     /**
      * Validates time format (HH:MM or HH:MM:SS or MM:SS).
      * @function validateTime
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The time string to validate
      * @param {boolean} [minutesSeconds=false] - If true, validates as MM:SS format
      * @returns {boolean} True if the time format is valid, false otherwise
      */
-    $.innerForm.validateTime = function (value, minutesSeconds) {
+    InnerForm.validateTime = function (value, minutesSeconds) {
         minutesSeconds = minutesSeconds || false;
         var comp = value.split(":");
         if (comp.length == 3) {
@@ -137,16 +212,16 @@
     /**
      * Validates EAN (European Article Number) barcode format and checksum.
      * @function validateEAN
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The EAN code to validate
      * @returns {boolean} True if the EAN is valid, false otherwise
      */
-    $.innerForm.validateEAN = function (value) {
+    InnerForm.validateEAN = function (value) {
         value = value || ""
         if (!isNaN(value) && value.length > 1 && value.length <= 16) {
             let bar = value.slice(0, -1);
             let ver = value.slice(-1);
-            return $.innerForm.barcodeCheckSum(bar) == ver;
+            return InnerForm.barcodeCheckSum(bar) == ver;
         }
         return false;
     }
@@ -154,25 +229,25 @@
     /**
      * Calculates age based on birth date and reference date.
      * @function getAge
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string|Date} birthDate - The birth date
      * @param {Date} [fromDate=new Date()] - Reference date to calculate age from
      * @returns {number} The calculated age in years
      */
-    $.innerForm.getAge = function (birthDate, fromDate) {
+    InnerForm.getAge = function (birthDate, fromDate) {
         fromDate = fromDate || new Date();
-        return Math.floor((fromDate - $.innerForm.parseDateInt(birthDate)) / 3.15576e+10);
+        return Math.floor((fromDate - InnerForm.parseDateInt(birthDate)) / 3.15576e+10);
     };
 
     /**
      * Validates that a value does not contain any of the specified characters.
      * @function validateNotChar
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The input value to check
      * @param {string} chars - String of characters that should not be present
      * @returns {boolean} True if none of the characters are found, false otherwise
      */
-    $.innerForm.validateNotChar = function (value, chars) {
+    InnerForm.validateNotChar = function (value, chars) {
         chars = chars.split("");
         for (var i = 0; i < chars.length; i++) {
             if (value.indexOf(chars[i]) >= 0) {
@@ -186,11 +261,11 @@
      * Validates if a value is a valid UUID (Universally Unique Identifier).
      * Accepts both RFC 4122 compliant UUIDs and more flexible GUID formats.
      * @function validateUUID
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The UUID string to validate
      * @returns {boolean} True if the value is a valid UUID, false otherwise
      */
-    $.innerForm.validateUUID = function (value) {
+    InnerForm.validateUUID = function (value) {
         value = value || "";
         // More flexible UUID pattern that accepts any hexadecimal characters
         // Format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -201,12 +276,12 @@
     /**
      * Validates if a value is a valid Brazilian state abbreviation (UF).
      * @function validateUF
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The UF string to validate (e.g., "SP", "RJ")
      * @returns {boolean} True if the value is a valid UF, false otherwise
      * @see https://en.wikipedia.org/wiki/States_of_Brazil
      */
-    $.innerForm.validateUF = function (value) {
+    InnerForm.validateUF = function (value) {
         value = value || "";
         var ufsValidas = [
             "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
@@ -221,11 +296,11 @@
      * Validates a Brazilian OAB registration number in the format NUMERIC(1-6) + UF.
      * Accepts raw values (511061SP) or formatted values (511.061/SP).
      * @function validateOAB
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The OAB number to validate (e.g., "511061SP", "511.061/SP")
      * @returns {boolean} True if the OAB is valid, false otherwise
      */
-    $.innerForm.validateOAB = function (value) {
+    InnerForm.validateOAB = function (value) {
         value = value || "";
         var clean = value.trim().toUpperCase().replace(/[^0-9A-Z]/g, "");
 
@@ -237,7 +312,7 @@
         var uf = clean.slice(-2);
         var num = clean.slice(0, -2);
 
-        if (!$.innerForm.validateUF(uf)) {
+        if (!InnerForm.validateUF(uf)) {
             return false;
         }
 
@@ -251,18 +326,18 @@
     /**
      * Alias em português para validarOAB
      * @function validarOAB
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      */
-    $.innerForm.validarOAB = $.innerForm.validateOAB;
+    InnerForm.validarOAB = InnerForm.validateOAB;
 
     /**
      * Validates latitude coordinate values.
      * @function validateLatitude
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The latitude value to validate
      * @returns {boolean} True if the value is a valid latitude (-90 to +90), false otherwise
      */
-    $.innerForm.validateLatitude = function (value) {
+    InnerForm.validateLatitude = function (value) {
         value = value || "";
 
         // Remove espaços e substitui vírgula por ponto
@@ -278,11 +353,11 @@
     /**
      * Validates longitude coordinate values.
      * @function validateLongitude
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The longitude value to validate
      * @returns {boolean} True if the value is a valid longitude (-180 to +180), false otherwise
      */
-    $.innerForm.validateLongitude = function (value) {
+    InnerForm.validateLongitude = function (value) {
         value = value || "";
 
         // Remove espaços e substitui vírgula por ponto
@@ -298,11 +373,11 @@
     /**
      * Validates coordinate pairs in various formats.
      * @function validateCoordinate
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The coordinate value to validate (e.g., "lat,lng" or "lat lng")
      * @returns {boolean} True if the value contains valid coordinates, false otherwise
      */
-    $.innerForm.validateCoordinate = function (value) {
+    InnerForm.validateCoordinate = function (value) {
         value = value || "";
 
         // Remove espaços extras e substitui vírgulas por pontos nos decimais
@@ -329,18 +404,18 @@
         var lng = coords[1].trim().replace(',', '.');
 
         // Valida ambas as coordenadas
-        return $.innerForm.validateLatitude(lat) && $.innerForm.validateLongitude(lng);
+        return InnerForm.validateLatitude(lat) && InnerForm.validateLongitude(lng);
     };
 
     /**
      * Validates that a value contains at least one of the specified characters.
      * @function validateAnyChar
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The input value to check
      * @param {string} chars - String of characters where at least one should be present
      * @returns {boolean} True if any of the characters are found, false otherwise
      */
-    $.innerForm.validateAnyChar = function (value, chars) {
+    InnerForm.validateAnyChar = function (value, chars) {
         chars = chars.split("");
         var v = [];
         for (var i = 0; i < chars.length; i++) {
@@ -354,12 +429,12 @@
     /**
      * Validates that a value contains all of the specified characters.
      * @function validateAllChar
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The input value to check
      * @param {string} chars - String of characters that must all be present
      * @returns {boolean} True if all characters are found, false otherwise
      */
-    $.innerForm.validateAllChar = function (value, chars) {
+    InnerForm.validateAllChar = function (value, chars) {
         chars = chars.split("");
         var v = [];
         for (var i = 0; i < chars.length; i++) {
@@ -373,36 +448,36 @@
     /**
      * Validates if a date string represents a valid date.
      * @function validDate
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The date string to validate (DD/MM/YYYY format)
      * @returns {boolean} True if the date is valid, false otherwise
      */
-    $.innerForm.validDate = function (value) {
-        var datenumber = $.innerForm.parseDateInt(value);
+    InnerForm.validDate = function (value) {
+        var datenumber = InnerForm.parseDateInt(value);
         return datenumber != null && !isNaN(datenumber);
     }
 
     /**
      * Parses a date string and returns a int object.
      * @function parseDate
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The date string to parse (DD/MM/YYYY or MM/YYYY format)
      * @returns {Date|null} The parsed Date object or null if invalid
      */
-    $.innerForm.parseDateInt = function (value) {
+    InnerForm.parseDateInt = function (value) {
         var dt = 0;
         var d = 0;
         var m = 0;
         var y = 0;
         var comp = value.split(" ")[0].split("/") ?? value.split("/");
         if (comp.length == 3) {
-            comp[2] = comp[2].length == 2 ? $.innerForm.expandYear(comp[2]) : comp[2];
+            comp[2] = comp[2].length == 2 ? InnerForm.expandYear(comp[2]) : comp[2];
             d = parseInt(comp[0], 10);
             m = parseInt(comp[1], 10) - 1;
             y = parseInt(comp[2], 10);
         }
         if (comp.length == 2) {
-            comp[1] = comp[1].length == 2 ? $.innerForm.expandYear(comp[1]) : comp[1];
+            comp[1] = comp[1].length == 2 ? InnerForm.expandYear(comp[1]) : comp[1];
             d = 1
             m = parseInt(comp[0], 10) - 1;
             y = parseInt(comp[1], 10);
@@ -417,13 +492,13 @@
     /**
      * Parses a date string and returns a Date object.
      * @function parseDate
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - The date string to parse (DD/MM/YYYY or MM/YYYY format)
      * @returns {Date|null} The parsed Date object or null if invalid
      */
-    $.innerForm.parseDate = function (value) {
+    InnerForm.parseDate = function (value) {
         value = value || "";
-        var datenumber = $.innerForm.parseDateInt(value);
+        var datenumber = InnerForm.parseDateInt(value);
         if (datenumber != null) {
             return new Date(datenumber);
         }
@@ -434,7 +509,7 @@
      * @param {string} value - Date range string
      * @returns {boolean} True if both dates are valid and first date <= second date
      */
-    $.innerForm.validDateRange = function (value) {
+    InnerForm.validDateRange = function (value) {
         if (!value || typeof value !== 'string') return false;
 
         var parts = value.split(' ~ ');
@@ -444,13 +519,13 @@
         var date2 = parts[1].trim();
 
         // Validate both dates individually
-        if (!$.innerForm.validDate(date1) || !$.innerForm.validDate(date2)) {
+        if (!InnerForm.validDate(date1) || !InnerForm.validDate(date2)) {
             return false;
         }
 
         // Parse both dates to compare
-        var parsedDate1 = $.innerForm.parseDateInt(date1);
-        var parsedDate2 = $.innerForm.parseDateInt(date2);
+        var parsedDate1 = InnerForm.parseDateInt(date1);
+        var parsedDate2 = InnerForm.parseDateInt(date2);
 
         // First date should be <= second date
         return parsedDate1 <= parsedDate2;
@@ -461,7 +536,7 @@
      * @param {string} value - Month/year range string
      * @returns {boolean} True if both month/years are valid and first <= second
      */
-    $.innerForm.validMonthYearRange = function (value) {
+    InnerForm.validMonthYearRange = function (value) {
         if (!value || typeof value !== 'string') return false;
 
         var parts = value.split(' ~ ');
@@ -473,17 +548,17 @@
         // Validate both month/years individually (add day 01 for validation)
         var testDate1 = "01/" + monthYear1;
         var testDate2 = "01/" + monthYear2;
-        return $.innerForm.validDateRange(testDate1 + " ~ " + testDate2);
+        return InnerForm.validDateRange(testDate1 + " ~ " + testDate2);
     }
 
     /**
      * Validates a short month/year range string in format "MM/YY ~ MM/YY"
      * @function validShortMonthYearRange
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} value - Short month/year range string  
      * @returns {boolean} True if both month/years are valid and first <= second
      */
-    $.innerForm.validShortMonthYearRange = function (value) {
+    InnerForm.validShortMonthYearRange = function (value) {
         if (!value || typeof value !== 'string') return false;
 
         var parts = value.split(' ~ ');
@@ -499,13 +574,13 @@
         if (comp1.length !== 2 || comp2.length !== 2) return false;
 
         // Expand short years to full years
-        var fullYear1 = $.innerForm.expandYear(parseInt(comp1[1], 10), 20, 5);
-        var fullYear2 = $.innerForm.expandYear(parseInt(comp2[1], 10), 20, 5);
+        var fullYear1 = InnerForm.expandYear(parseInt(comp1[1], 10), 20, 5);
+        var fullYear2 = InnerForm.expandYear(parseInt(comp2[1], 10), 20, 5);
 
         var fullMonthYear1 = comp1[0] + "/" + fullYear1;
         var fullMonthYear2 = comp2[0] + "/" + fullYear2;
 
-        return $.innerForm.validMonthYearRange(fullMonthYear1 + " ~ " + fullMonthYear2);
+        return InnerForm.validMonthYearRange(fullMonthYear1 + " ~ " + fullMonthYear2);
     }
 
     /**
@@ -513,13 +588,13 @@
      * If the expanded year is outside the range of (currentYear - pastDistance) to (currentYear + futureDistance),
      * it is adjusted to the previous century.
      * @function expandYear
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {number} year - The short year to expand.
      * @param {number} pastDistance - The number of years to consider for the past.
      * @param {number} futureDistance - The number of years to consider for the future.
      * @returns {number} The expanded full year
      */
-    $.innerForm.expandYear = function (year, pastDistance, futureDistance) {
+    InnerForm.expandYear = function (year, pastDistance, futureDistance) {
         const currentYear = new Date().getFullYear();
         const century = Math.floor(currentYear / 100) * 100;
         pastDistance = pastDistance || (currentYear - century);
@@ -527,22 +602,22 @@
 
 
 
-        if ($.innerForm.isNumber(pastDistance)) {
+        if (InnerForm.isNumber(pastDistance)) {
             pastDistance = parseInt(pastDistance, 10);
         } else {
             pastDistance = currentYear - century;
         }
 
-        if ($.innerForm.isNumber(futureDistance)) {
+        if (InnerForm.isNumber(futureDistance)) {
             futureDistance = parseInt(futureDistance, 10);
         } else {
             futureDistance = 5;
         }
 
-        if ($.innerForm.isNumber(year)) {
+        if (InnerForm.isNumber(year)) {
             year = parseInt(year, 10);
         } else {
-            $.innerForm.warn("Invalid year:", year);
+            InnerForm.warn("Invalid year:", year);
             year = new Date().getFullYear();
         }
 
@@ -575,10 +650,10 @@
     /**
      * Applies a UUID mask to an input field, formatting it as a standard UUID.
      * @function applyUUIDMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyUUIDMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyUUIDMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/[^a-zA-Z0-9]/g, '');
         /// add dashes during type
@@ -593,10 +668,10 @@
     /**
      * Applies a latitude mask to format and validate latitude coordinates.
      * @function applyLatitudeMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyLatitudeMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyLatitudeMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
 
         // Remove caracteres inválidos, mantendo apenas números, ponto, vírgula e sinal de menos
@@ -647,10 +722,10 @@
     /**
      * Applies a longitude mask to format and validate longitude coordinates.
      * @function applyLongitudeMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyLongitudeMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyLongitudeMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
 
         // Remove caracteres inválidos, mantendo apenas números, ponto, vírgula e sinal de menos
@@ -701,10 +776,10 @@
     /**
      * Applies a mask that removes all spaces from the input.
      * @function applyNoSpaceMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyNoSpaceMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyNoSpaceMask = function (input = new HTMLInputElement()) {
         input.value = input.value
             .replace(/[ ]+/g, '');
     };
@@ -712,17 +787,17 @@
     /**
      * Applies an alphabetic mask that allows only letters and spaces.
      * @function applyAlphaMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyAlphaMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyAlphaMask = function (input = new HTMLInputElement()) {
         input.value = input.value
             .replace(/[!@#$%¨&*()_+\d\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
             .replace(/[ ]+/g, ' ');
 
     };
 
-    $.innerForm.applyUFMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyUFMask = function (input = new HTMLInputElement()) {
         input.value = input.value
             .replace(/[^a-zA-Z]/g, '').toUpperCase();
         if (input.value.length > 2) {
@@ -734,10 +809,10 @@
     /**
      * Applies an alphanumeric mask that allows letters, numbers, and spaces.
      * @function applyAlphaNumericMask  
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyAlphaNumericMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyAlphaNumericMask = function (input = new HTMLInputElement()) {
         input.value = input.value
             .replace(/[!@#$%¨&*()_+\-=¹²³£¢¬§´[`{\/?°ª~\]^}º\\,.;|<>:₢«»"'¶¿®þ]/g, '')
             .replace(/[ ]+/g, ' ');
@@ -747,10 +822,10 @@
     /**
      * Applies a phone number mask (Brazilian format).
      * @function applyPhoneMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyPhoneMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyPhoneMask = function (input = new HTMLInputElement()) {
         var value = input.value;
         value = value.replace(/\D/g, "");
         value = value.replace(/^(\d{4})(\d{1,4})$/g, "$1-$2");
@@ -762,18 +837,18 @@
 
     };
 
-    $.innerForm.applyUpperMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyUpperMask = function (input = new HTMLInputElement()) {
         input.value = input.value.toUpperCase();
     };
 
-    $.innerForm.applyLowerMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyLowerMask = function (input = new HTMLInputElement()) {
         input.value = input.value.toLowerCase();
     };
 
-    $.innerForm.applyDateMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyDateMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        if ($.innerForm.isDeleting == false) {
-            text = $.innerForm.formatDate(text);
+        if (InnerForm.isDeleting == false) {
+            text = InnerForm.formatDate(text);
         }
         if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
             input.maxLength = text.length;
@@ -786,13 +861,13 @@
     /**
      * Formats a date string by adding separators (DD/MM/YYYY format).
      * @function formatDate
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {string} text - The date string to format
      * @returns {string} The formatted date string
      */
-    $.innerForm.formatDate = function (text) {
+    InnerForm.formatDate = function (text) {
         text = text || "";
-        text = $.innerForm.parseDatePartial(text);
+        text = InnerForm.parseDatePartial(text);
         // remove tudo que nao for numero ou barra
         text = text.replace(/[^\d\/]/g, "");
         if (text.length > 10) text = text.substring(0, 10);
@@ -804,10 +879,10 @@
     /**
      * Applies a date-time mask (DD/MM/YYYY HH:MM:SS format).
      * @function applyDateTimeMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input] - The input element to apply the mask to
      */
-    $.innerForm.applyDateTimeMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyDateTimeMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
         value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -819,7 +894,7 @@
 
     };
 
-    $.innerForm.applyDateShortMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyDateShortMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         value = value.replace(/^(\d{2})(\d+)$/g, "$1/$2");
         value = value.replace(/^(\d{2}\/\d{2})(\d+)$/g, "$1/$2");
@@ -830,7 +905,7 @@
 
     };
 
-    $.innerForm.applyTimeMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyTimeMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         value = value.replace(/^(\d{2})(\d+)$/g, "$1:$2");
         input.value = value.replace(/^(\d{2}:\d{2})(\d{1,2})$/g, "$1:$2");
@@ -838,7 +913,7 @@
 
     };
 
-    $.innerForm.applyShortTimeMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyShortTimeMask = function (input = new HTMLInputElement()) {
         var value = input.value.replace(/\D/g, "");
         input.value = value.replace(/^(\d{2})(\d{1,2})$/g, "$1:$2");
         input.maxLength = 5;
@@ -846,7 +921,7 @@
     };
 
 
-    $.innerForm.applyCPForCNPJMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyCPForCNPJMask = function (input = new HTMLInputElement()) {
         var value = input.value;
         value = value.replace(/\D/g, "");
         if (value.length <= 11) {
@@ -865,7 +940,7 @@
     };
 
 
-    $.innerForm.applyCPFMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyCPFMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
         text = text.replace(/^(\d{3})(\d+)/g, "$1.$2");
@@ -879,7 +954,7 @@
     };
 
 
-    $.innerForm.applyCEPMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyCEPMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
 
@@ -903,10 +978,10 @@
     /**
     * Applies a CNPJ mask to format the input as a CNPJ number.
     * @function applyCNPJMask
-    * @memberof $.innerForm
+    * @memberof InnerFormValidation
     * @param {*} input 
     */
-    $.innerForm.applyCNPJMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyCNPJMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
         text = text.replace(/^(\d{2})(\d+)/, "$1.$2");
@@ -919,7 +994,7 @@
         input.value = text;
 
     };
-    $.innerForm.applyCNHMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyCNHMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
         text = text.substring(0, 11);
@@ -939,10 +1014,10 @@
     /**
      * Applies OAB (511.061/SP) mask to an input field.
      * @function applyOABMask
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {HTMLInputElement} [input]
      */
-    $.innerForm.applyOABMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyOABMask = function (input = new HTMLInputElement()) {
         var value = input.value || "";
         value = value.toUpperCase().replace(/[^0-9A-Z]/g, "");
 
@@ -965,7 +1040,7 @@
     };
 
 
-    $.innerForm.applyCreditCardMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyCreditCardMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         text = text.replace(/\D/g, "");
         text = text.replace(/^(\d{4})(\d+)$/g, "$1 $2");
@@ -978,7 +1053,7 @@
 
     };
 
-    $.innerForm.isNumber = function (n) {
+    InnerForm.isNumber = function (n) {
         if (n === null || n === undefined) return false;
         if (typeof n === "string") n = n.trim();
         try {
@@ -994,7 +1069,7 @@
      * Aplica máscara numérica considerando separador de milhares, decimal e casas decimais.
      * @param {HTMLInputElement} input 
      */
-    $.innerForm.applyNumberMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyNumberMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
         var sep = input.getAttribute("data-separator");
         var dec = input.getAttribute("data-decimal");
@@ -1047,10 +1122,10 @@
         input.value = text;
     };
 
-    $.innerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
+    InnerForm.applyMonthYearMask = function (input = new HTMLInputElement()) {
         var text = input.value || "";
-        if ($.innerForm.isDeleting == false) {
-            text = $.innerForm.parseMonthYearPartial(text);
+        if (InnerForm.isDeleting == false) {
+            text = InnerForm.parseMonthYearPartial(text);
         }
         if (/^[\d]{2}\/[\d]{2}\/[\d]{4}$/g.test(text)) {
             input.maxLength = text.length;
@@ -1064,8 +1139,8 @@
      * The expected format is "DD/MM/YYYY ~ DD/MM/YYYY".
      * @param {HTMLInputElement} input 
      */
-    $.innerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
-        if ($.innerForm.isDeleting == true) {
+    InnerForm.applyDateRangeMask = function (input = new HTMLInputElement()) {
+        if (InnerForm.isDeleting == true) {
             return;
         }
         // formato DD/MM/AAAA ~ DD/MM/AAAA
@@ -1077,7 +1152,7 @@
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
 
-        text = $.innerForm.parseDatePartial(text);
+        text = InnerForm.parseDatePartial(text);
 
         if (text.length > 23) text = text.substring(0, 23);
 
@@ -1088,8 +1163,8 @@
             var part2 = parts[1] ? parts[1].trim() : "";
 
 
-            var date1 = $.innerForm.parseDate(part1);
-            var date2 = $.innerForm.parseDate(part2);
+            var date1 = InnerForm.parseDate(part1);
+            var date2 = InnerForm.parseDate(part2);
 
             if (date1 && date2) {
                 if (date1 > date2) {
@@ -1111,7 +1186,7 @@
      * @param {string} part - The partial short month/year string to parse
      * @returns {string} The formatted short month/year string
      */
-    $.innerForm.parseShortMonthYearPartial = function (part) {
+    InnerForm.parseShortMonthYearPartial = function (part) {
         part = part || "";
 
         // remove tudo que nao for numero, barra ou espaco ou tilde
@@ -1130,7 +1205,7 @@
         // primeiro digito do mes, deve ser 0 ou 1
         if (part.length == 1) {
             if (part != "0" && part != "1") {
-                if ($.innerForm.isNumber(part)) {
+                if (InnerForm.isNumber(part)) {
                     part = "0" + part;
                 }
             }
@@ -1138,7 +1213,7 @@
 
         // segundo digito do mes, limita a 12
         if (part.length == 2) {
-            if (!$.innerForm.isNumber(part[1])) {
+            if (!InnerForm.isNumber(part[1])) {
                 part = "0" + part[0];
             }
             var month = parseInt(part);
@@ -1156,7 +1231,7 @@
             if (part[2] == "/") {
                 // Se já tem barra, mantém
                 return part;
-            } else if ($.innerForm.isNumber(part[2])) {
+            } else if (InnerForm.isNumber(part[2])) {
                 part = part.substring(0, 2) + "/" + part[2];
             } else {
                 part = part.substring(0, 2) + "/";
@@ -1165,14 +1240,14 @@
 
         // quarto e quinto digito, ano (YY), aceita qualquer digito numerico
         if (part.length == 4 || part.length == 5) {
-            if (!$.innerForm.isNumber(part[part.length - 1])) {
+            if (!InnerForm.isNumber(part[part.length - 1])) {
                 part = part.substring(0, part.length - 1);
             }
         }
 
         // se o proximo digito for espaco ou tilde, ajusta para " ~ "
         if (part.length == 6) {
-            if ($.innerForm.isNumber(part[5])) {
+            if (InnerForm.isNumber(part[5])) {
                 //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
                 part = part.substring(0, 5) + " ~ " + part[5];
             } else if (part[5] == " " || part[5] == "~") {
@@ -1188,7 +1263,7 @@
         // se passou de 8 é porque começou uma segunda data
         if (part.length >= 8) {
             var part2 = part.substring(8, part.length);
-            part2 = $.innerForm.parseShortMonthYearPartial(part2);
+            part2 = InnerForm.parseShortMonthYearPartial(part2);
             part = part.substring(0, 8) + part2;
         }
 
@@ -1200,7 +1275,7 @@
      * @param {string} part - The partial month/year string to parse
      * @returns {string} The formatted month/year string
      */
-    $.innerForm.parseMonthYearPartial = function (part) {
+    InnerForm.parseMonthYearPartial = function (part) {
         part = part || "";
 
         // remove tudo que nao for numero, barra ou espaco ou tilde
@@ -1219,7 +1294,7 @@
         // primeiro digito do mes, deve ser 0 ou 1
         if (part.length == 1) {
             if (part != "0" && part != "1") {
-                if ($.innerForm.isNumber(part)) {
+                if (InnerForm.isNumber(part)) {
                     part = "0" + part;
                 }
             }
@@ -1227,7 +1302,7 @@
 
         // segundo digito do mes, limita a 12
         if (part.length == 2) {
-            if (!$.innerForm.isNumber(part[1])) {
+            if (!InnerForm.isNumber(part[1])) {
                 part = "0" + part[0];
             }
             var month = parseInt(part);
@@ -1245,7 +1320,7 @@
             if (part[2] == "/") {
                 // Se já tem barra, mantém
                 return part;
-            } else if ($.innerForm.isNumber(part[2])) {
+            } else if (InnerForm.isNumber(part[2])) {
                 part = part.substring(0, 2) + "/" + part[2];
             } else {
                 part = part.substring(0, 2) + "/";
@@ -1254,7 +1329,7 @@
 
         // do quarto e quinto digito, ano, aceita qualquer digito numerico
         if (part.length == 4 || part.length == 5) {
-            if (!$.innerForm.isNumber(part[part.length - 1])) {
+            if (!InnerForm.isNumber(part[part.length - 1])) {
                 part = part.substring(0, part.length - 1);
             }
         }
@@ -1262,7 +1337,7 @@
         if (part.length == 6) {
             if (part[5] == " ") {
                 var shortYear = part.substring(3, 5);
-                var fullYear = $.innerForm.expandYear(shortYear);
+                var fullYear = InnerForm.expandYear(shortYear);
                 part = part.substring(0, 3) + fullYear;
             }
         }
@@ -1271,14 +1346,14 @@
         if (part.length == 7) {
             if (part[6] == " ") {
                 var shortYear = part.substring(3, 5);
-                var fullYear = $.innerForm.expandYear(shortYear);
+                var fullYear = InnerForm.expandYear(shortYear);
                 part = part.substring(0, 3) + fullYear;
             }
         }
 
         // se o proximo digito for espaco ou tilde, ajusta para " ~ "
         if (part.length == 8) {
-            if ($.innerForm.isNumber(part[7])) {
+            if (InnerForm.isNumber(part[7])) {
                 //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
                 part = part.substring(0, 7) + " ~ " + part[7];
             } else if (part[7] == " " || part[7] == "~") {
@@ -1294,7 +1369,7 @@
         // se passou de 10 é porque começou uma segunda data
         if (part.length >= 10) {
             var part2 = part.substring(10, part.length);
-            part2 = $.innerForm.parseMonthYearPartial(part2);
+            part2 = InnerForm.parseMonthYearPartial(part2);
             part = part.substring(0, 10) + part2;
         }
 
@@ -1306,7 +1381,7 @@
      * @param {*} part 
      * @returns 
      */
-    $.innerForm.parseDatePartial = function (part) {
+    InnerForm.parseDatePartial = function (part) {
         part = part || "";
 
         // remove tudo que nao for numero, barra ou espaco ou tilde
@@ -1325,7 +1400,7 @@
         // primeiro digito
         if (part.length == 1) {
             if (part != "0" && part != "1" && part != "2" && part != "3") {
-                if ($.innerForm.isNumber(part)) {
+                if (InnerForm.isNumber(part)) {
                     part = "0" + part;
                 }
             }
@@ -1333,7 +1408,7 @@
 
         // segundo digito, limita a 31
         if (part.length == 2) {
-            if (!$.innerForm.isNumber(part[1])) {
+            if (!InnerForm.isNumber(part[1])) {
                 part = "0" + part[0];
             }
             if (parseInt(part) > 31) {
@@ -1352,7 +1427,7 @@
                 return part;
             } else if (part[2] == "0" || part[2] == "1") {
                 part = part.substring(0, 2) + "/" + part[2];
-            } else if ($.innerForm.isNumber(part[2])) {
+            } else if (InnerForm.isNumber(part[2])) {
                 part = "0" + part.substring(0, 2) + "/" + part[2];
             } else {
                 part = part.substring(0, 2) + "/";
@@ -1364,7 +1439,7 @@
             if (part[3] == "0" || part[3] == "1") {
                 //mantém
             }
-            else if ($.innerForm.isNumber(part[3])) {
+            else if (InnerForm.isNumber(part[3])) {
                 part = part.substring(0, 3) + "0" + part[3];
             } else {
                 part = part.substring(0, 3);
@@ -1374,7 +1449,7 @@
         // quinto digito, mes, segundo numero, limita a 12
         if (part.length == 5) {
             var m = part[3] + part[4];
-            if (!$.innerForm.isNumber(part[4])) {
+            if (!InnerForm.isNumber(part[4])) {
                 part = part.substring(0, 4) + "0";
             }
             m = parseInt(m);
@@ -1392,7 +1467,7 @@
             if (part[5] == "/") {
                 // Se já tem barra, mantém
                 return part;
-            } else if (!$.innerForm.isNumber(part[5])) {
+            } else if (!InnerForm.isNumber(part[5])) {
                 part = part.substring(0, 5) + "/" + part[5];
             } else {
                 part = part.substring(0, 5) + "/";
@@ -1401,14 +1476,14 @@
 
         // do setimo e oitavo digito, ano, aceita qualquer digito numerico
         if (part.length == 7 || part.length == 8) {
-            if (!$.innerForm.isNumber(part[part.length - 1])) part = part.substring(0, part.length - 1);
+            if (!InnerForm.isNumber(part[part.length - 1])) part = part.substring(0, part.length - 1);
         }
 
         // nona tem que ser 1 numero ou espaco. se for espaco adiciona 20 ou 19 antes dos 2 digitos do ano digitados
         if (part.length == 9) {
             if (part[8] == " ") {
                 var shortYear = part.substring(6, 8);
-                var fullYear = $.innerForm.expandYear(shortYear);
+                var fullYear = InnerForm.expandYear(shortYear);
                 part = part.substring(0, 6) + fullYear;
             }
         }
@@ -1417,14 +1492,14 @@
         if (part.length == 10) {
             if (part[9] == " ") {
                 var shortYear = part.substring(6, 9);
-                var fullYear = $.innerForm.expandYear(shortYear);
+                var fullYear = InnerForm.expandYear(shortYear);
                 part = part.substring(0, 6) + fullYear;
             }
         }
 
         // se o proximo digito for espaco ou tilde, ajusta para " ~ "
         if (part.length == 11) {
-            if ($.innerForm.isNumber(part[10])) {
+            if (InnerForm.isNumber(part[10])) {
                 //se for numero, é o primeiro digito da proxima data, entao adiciona o espaco e o tilde antes dele
                 part = part.substring(0, 10) + " ~ " + part[10];
             } else if (part[10] == " " || part[10] == "~") {
@@ -1440,7 +1515,7 @@
         // se passou de 13 é porque começou uma segunda data
         if (part.length >= 13) {
             var part2 = part.substring(13, part.length);
-            part2 = $.innerForm.parseDatePartial(part2);
+            part2 = InnerForm.parseDatePartial(part2);
             part = part.substring(0, 13) + part2;
         }
 
@@ -1454,8 +1529,8 @@
      * The expected format is "MM/YYYY ~ MM/YYYY".
      * @param {HTMLInputElement} input 
      */
-    $.innerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
-        if ($.innerForm.isDeleting == true) {
+    InnerForm.applyMonthYearRangeMask = function (input = new HTMLInputElement()) {
+        if (InnerForm.isDeleting == true) {
             return;
         }
         // formato MM/AAAA ~ MM/AAAA
@@ -1467,7 +1542,7 @@
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
 
-        text = $.innerForm.parseMonthYearPartial(text);
+        text = InnerForm.parseMonthYearPartial(text);
 
         if (text.length > 17) text = text.substring(0, 17);
 
@@ -1478,14 +1553,14 @@
             var part2 = parts[1] ? parts[1].trim() : "";
 
 
-            var date1 = $.innerForm.parseDate(part1);
-            var date2 = $.innerForm.parseDate(part2);
+            var date1 = InnerForm.parseDate(part1);
+            var date2 = InnerForm.parseDate(part2);
 
             if (date1 && date2) {
                 if (date1 > date2) {
 
-                    part2 = `${$.innerForm.addLeadingZeros(date1.getMonth() + 1, 2)}/${date1.getFullYear()}`;
-                    part1 = `${$.innerForm.addLeadingZeros(date2.getMonth() + 1, 2)}/${date2.getFullYear()}`;
+                    part2 = `${InnerForm.addLeadingZeros(date1.getMonth() + 1, 2)}/${date1.getFullYear()}`;
+                    part1 = `${InnerForm.addLeadingZeros(date2.getMonth() + 1, 2)}/${date2.getFullYear()}`;
                 }
             }
 
@@ -1502,8 +1577,8 @@
      * The expected format is "MM/YY ~ MM/YY".
      * @param {HTMLInputElement} input 
      */
-    $.innerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
-        if ($.innerForm.isDeleting == true) {
+    InnerForm.applyShortMonthYearRangeMask = function (input = new HTMLInputElement()) {
+        if (InnerForm.isDeleting == true) {
             return;
         }
         // formato MM/AA ~ MM/AA
@@ -1515,7 +1590,7 @@
         // Remover múltiplos tildes
         text = text.replace(/~+/g, "~");
 
-        text = $.innerForm.parseShortMonthYearPartial(text);
+        text = InnerForm.parseShortMonthYearPartial(text);
 
         if (text.length > 13) text = text.substring(0, 13);
 
@@ -1525,13 +1600,13 @@
             var part1 = parts[0] ? parts[0].trim() : "";
             var part2 = parts[1] ? parts[1].trim() : "";
 
-            var date1 = $.innerForm.parseDate(part1);
-            var date2 = $.innerForm.parseDate(part2);
+            var date1 = InnerForm.parseDate(part1);
+            var date2 = InnerForm.parseDate(part2);
 
             if (date1 && date2) {
                 if (date1 > date2) {
-                    part2 = `${$.innerForm.addLeadingZeros(date1.getMonth() + 1, 2)}/${date1.getFullYear().toString().substring(2, 4)}`;
-                    part1 = `${$.innerForm.addLeadingZeros(date2.getMonth() + 1, 2)}/${date2.getFullYear().toString().substring(2, 4)}`;
+                    part2 = `${InnerForm.addLeadingZeros(date1.getMonth() + 1, 2)}/${date1.getFullYear().toString().substring(2, 4)}`;
+                    part1 = `${InnerForm.addLeadingZeros(date2.getMonth() + 1, 2)}/${date2.getFullYear().toString().substring(2, 4)}`;
                 }
             }
             text = part1 + " ~ " + part2;
@@ -1540,7 +1615,7 @@
         input.value = text;
     }
 
-    $.innerForm.checkLuhn = function (cardNumber) {
+    InnerForm.checkLuhn = function (cardNumber) {
         var s = 0;
         var doubleDigit = false;
         cardNumber = cardNumber.replace(/[^\d]+/g, "");
@@ -1557,7 +1632,7 @@
         return s % 10 == 0;
     };
 
-    $.innerForm.validateCardBrand = function (cardNumber) {
+    InnerForm.validateCardBrand = function (cardNumber) {
         cardNumber = cardNumber.replace(/[^0-9]+/g, "");
         var cards = {
             visa: /^4[0-9]{12}(?:[0-9]{3})/,
@@ -1590,7 +1665,7 @@
         return false;
     };
 
-    $.innerForm.validateCPF = function (CPFNumber) {
+    InnerForm.validateCPF = function (CPFNumber) {
         CPFNumber = CPFNumber.replace(/\D/g, "");
         CPFNumber = CPFNumber.replace(/\D/g, "");
 
@@ -1635,7 +1710,7 @@
         return true;
     }
 
-    $.innerForm.validateCNPJ = function (CNPJNumber) {
+    InnerForm.validateCNPJ = function (CNPJNumber) {
         CNPJNumber = CNPJNumber.replace(/\D/g, "");
 
         if (CNPJNumber == '')
@@ -1688,7 +1763,7 @@
         return true;
     };
 
-    $.innerForm.validateCNH = function (cnh) {
+    InnerForm.validateCNH = function (cnh) {
         cnh = (cnh || "").toString();
         cnh = cnh.replace(/[^\d]/g, "");
 
@@ -1722,7 +1797,7 @@
 
 
 
-    $.innerForm.validatePassword = function (input) {
+    InnerForm.validatePassword = function (input) {
         // Create an array and push all possible values that you want in password
         var matchedCase = new Array();
         matchedCase.push(/[!@#$%^&*()_\-+=}{\]\[`~<>?/\\|±!.,]/g);
@@ -1733,12 +1808,12 @@
         // Check the conditions
         var ctr = 0;
         for (var i = 0; i < matchedCase.length; i++) {
-            if (matchedCase[i].test(jQuery(input).val())) {
+            if (matchedCase[i].test(InnerForm(input).val())) {
                 ctr++;
             }
         }
 
-        jQuery(input).attr("data-pwstrength", ctr);
+        InnerForm(input).attr("data-pwstrength", ctr);
         return ctr;
     };
 
@@ -1750,29 +1825,29 @@
             });
             return array.join(to);
         };
-        $.innerForm.log("replaceAll added to String.prototype");
+        InnerForm.log("replaceAll added to String.prototype");
     }
 
 
-    $.innerForm.searchViaCEP = function (CEPNumber, homeNumber, delay, callbackFunction) {
+    InnerForm.searchViaCEP = function (CEPNumber, homeNumber, delay, callbackFunction) {
         CEPNumber = CEPNumber || "";
         homeNumber = homeNumber || "";
         delay = delay || 0;
-        callbackFunction = callbackFunction || function (o) { $.innerForm.log('No callback defined', o); }
-        $.innerForm.log('Searching CEP', CEPNumber, homeNumber, delay);
+        callbackFunction = callbackFunction || function (o) { InnerForm.log('No callback defined', o); }
+        InnerForm.log('Searching CEP', CEPNumber, homeNumber, delay);
 
 
         if (
             (CEPNumber.length == 9 && CEPNumber.includes("-")) ||
             (CEPNumber.length == 8 && CEPNumber.includes("-") == false)
         ) {
-            jQuery.ajax({
+            InnerForm.ajax({
                 type: "GET",
                 url: "https://viacep.com.br/ws/" + CEPNumber + "/json/",
                 async: true,
                 crossorigin: true,
                 beforeSend: function () {
-                    $.innerForm.log("Getting info from ViaCEP...")
+                    InnerForm.log("Getting info from ViaCEP...")
 
                 },
                 success: function (obj) {
@@ -1785,43 +1860,43 @@
                         }
                     }
 
-                    $.innerForm.log("ViaCEP Response", obj);
+                    InnerForm.log("ViaCEP Response", obj);
 
-                    jQuery(".autocomplete.address:input")
+                    InnerForm(".autocomplete.address:input")
                         .setOrReplaceVal(obj.logradouro)
                         .change().focus();
-                    jQuery(".autocomplete.complement:input")
+                    InnerForm(".autocomplete.complement:input")
                         .setOrReplaceVal(obj.complemento)
                         .change().focus();
-                    jQuery(".autocomplete.neighborhood:input")
+                    InnerForm(".autocomplete.neighborhood:input")
                         .setOrReplaceVal(obj.bairro)
                         .change().focus();
-                    jQuery(".autocomplete.city:input")
+                    InnerForm(".autocomplete.city:input")
                         .setOrReplaceVal(obj.localidade)
                         .change().focus();
-                    jQuery(".autocomplete.state:input")
+                    InnerForm(".autocomplete.state:input")
                         .setOrReplaceVal(obj.uf)
                         .change().focus();
-                    jQuery(".autocomplete.ibge:input")
+                    InnerForm(".autocomplete.ibge:input")
                         .setOrReplaceVal(obj.ibge)
                         .change().focus();
-                    jQuery(".autocomplete.gia:input")
+                    InnerForm(".autocomplete.gia:input")
                         .setOrReplaceVal(obj.gia)
                         .change().focus();
-                    jQuery(".autocomplete.ddd:input")
+                    InnerForm(".autocomplete.ddd:input")
                         .setOrReplaceVal(obj.ddd)
                         .change().focus();
-                    jQuery(".autocomplete.siafi:input")
+                    InnerForm(".autocomplete.siafi:input")
                         .setOrReplaceVal(obj.siafi)
                         .change().focus();
-                    jQuery(".autocomplete.citystate:input")
+                    InnerForm(".autocomplete.citystate:input")
                         .setOrReplaceVal(
                             obj.localidade +
                             " - " +
                             obj.uf
                         )
                         .change().focus();
-                    jQuery(".autocomplete.fulladdress:input")
+                    InnerForm(".autocomplete.fulladdress:input")
                         .setOrReplaceVal(
                             obj.logradouro + ', ' +
                             homeNumber +
@@ -1837,84 +1912,84 @@
                         .change().focus();
 
                     /// verifica se cidade ou estado são selects e se nao existe a opcao, adiciona
-                    jQuery(".autocomplete.city:input").each(function () {
+                    InnerForm(".autocomplete.city:input").each(function () {
                         let val = obj.localidade || "";
-                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            $.innerForm.log("Setting city select to", val);
-                            if (!jQuery(this).find("option[value='" + val + "']").length) {
-                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
+                            InnerForm.log("Setting city select to", val);
+                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
+                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
                             //fire change to update any dependent selects
                         }
-                        jQuery(this).val(val).change().focus();
+                        InnerForm(this).val(val).change().focus();
                     });
 
-                    jQuery(".autocomplete.state:input").each(function () {
+                    InnerForm(".autocomplete.state:input").each(function () {
                         let val = obj.uf || "";
-                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            $.innerForm.log("Setting state select to", val);
-                            if (!jQuery(this).find("option[value='" + val + "']").length) {
-                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
+                            InnerForm.log("Setting state select to", val);
+                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
+                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
                         }
-                        jQuery(this).setOrReplaceVal(val).change().focus();
+                        InnerForm(this).setOrReplaceVal(val).change().focus();
                     });
 
-                    jQuery(".autocomplete.ibge:input").each(function () {
+                    InnerForm(".autocomplete.ibge:input").each(function () {
                         let val = obj.ibge || "";
-                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            $.innerForm.log("Setting ibge select to", val);
-                            if (!jQuery(this).find("option[value='" + val + "']").length) {
-                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
+                            InnerForm.log("Setting ibge select to", val);
+                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
+                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
                         }
-                        jQuery(this).setOrReplaceVal(val).change().focus();
+                        InnerForm(this).setOrReplaceVal(val).change().focus();
                     });
 
-                    jQuery(".autocomplete.citystate:input").each(function () {
+                    InnerForm(".autocomplete.citystate:input").each(function () {
                         let val = (obj.localidade || "") + " - " + (obj.uf || "");
-                        if (jQuery(this).prop("tagName").toUpperCase() == "SELECT") {
-                            $.innerForm.log("Setting citystate select to", val);
-                            if (!jQuery(this).find("option[value='" + val + "']").length) {
-                                jQuery(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
+                            InnerForm.log("Setting citystate select to", val);
+                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
+                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
                             }
                         }
-                        jQuery(this).setOrReplaceVal(val).change().focus();
+                        InnerForm(this).setOrReplaceVal(val).change().focus();
                     });
 
-                    jQuery(".autocomplete.address")
+                    InnerForm(".autocomplete.address")
                         .not(":input")
                         .text(obj.logradouro);
-                    jQuery(".autocomplete.complement")
+                    InnerForm(".autocomplete.complement")
                         .not(":input")
                         .text(obj.complemento);
-                    jQuery(".autocomplete.neighborhood")
+                    InnerForm(".autocomplete.neighborhood")
                         .not(":input")
                         .text(obj.bairro);
-                    jQuery(".autocomplete.city")
+                    InnerForm(".autocomplete.city")
                         .not(":input")
                         .text(obj.localidade);
-                    jQuery(".autocomplete.state")
+                    InnerForm(".autocomplete.state")
                         .not(":input")
                         .text(obj.uf);
-                    jQuery(".autocomplete.ibge")
+                    InnerForm(".autocomplete.ibge")
                         .not(":input")
                         .text(obj.ibge);
-                    jQuery(".autocomplete.gia")
+                    InnerForm(".autocomplete.gia")
                         .not(":input")
                         .text(obj.gia);
-                    jQuery(".autocomplete.siafi")
+                    InnerForm(".autocomplete.siafi")
                         .not(":input")
                         .text(obj.siafi);
-                    jQuery(".autocomplete.ddd")
+                    InnerForm(".autocomplete.ddd")
                         .not(":input")
                         .text(obj.ddd);
-                    jQuery(".autocomplete.citystate")
+                    InnerForm(".autocomplete.citystate")
                         .not(":input")
                         .text(
                             obj.localidade + " - " + obj.uf
                         );
-                    jQuery(".autocomplete.fulladdress")
+                    InnerForm(".autocomplete.fulladdress")
                         .not(":input")
                         .text(
                             obj.logradouro + ', ' +
@@ -1929,36 +2004,36 @@
 
                     if (obj.logradouro) {
                         setTimeout(function () {
-                            jQuery(".autocomplete.num:input, .autocomplete.number:input").focus();
-                            jQuery(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
+                            InnerForm(".autocomplete.num:input, .autocomplete.number:input").focus();
+                            InnerForm(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
                         }, delay);
                     } else {
-                        $.innerForm.error('Address not found');
-                        let nft = jQuery(this).attr("data-addressnotfoundtext") || jQuery(this).attr("data-notfoundtext") || "";
-                        jQuery(".autocomplete.fulladdress")
+                        InnerForm.error('Address not found');
+                        let nft = InnerForm(this).attr("data-addressnotfoundtext") || InnerForm(this).attr("data-notfoundtext") || "";
+                        InnerForm(".autocomplete.fulladdress")
                             .not(":input").text(nft);
-                        jQuery(".autocomplete.fulladdress:input")
+                        InnerForm(".autocomplete.fulladdress:input")
                             .val(nft).change();
-                        eval(jQuery(this).attr("data-addressnotfound") || jQuery(this).attr("data-notfound") || "void(0)");
+                        eval(InnerForm(this).attr("data-addressnotfound") || InnerForm(this).attr("data-notfound") || "void(0)");
                         setTimeout(function () {
-                            jQuery(".autocomplete.address:input").focus();
+                            InnerForm(".autocomplete.address:input").focus();
                         }, delay);
                     }
                     if (obj) callbackFunction(obj);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     //Error event
-                    $.innerForm.log("VIACEP error", xhr, ajaxOptions, thrownError);
+                    InnerForm.log("VIACEP error", xhr, ajaxOptions, thrownError);
                     setTimeout(function () {
-                        jQuery(".autocomplete.address:input").focus();
+                        InnerForm(".autocomplete.address:input").focus();
                     }, delay);
                 },
                 complete: function () {
-                    $.innerForm.log("VIACEP request completed");
+                    InnerForm.log("VIACEP request completed");
                 }
             });
         } else {
-            $.innerForm.log("Awaiting a valid CEP", CEPNumber);
+            InnerForm.log("Awaiting a valid CEP", CEPNumber);
         }
     }
 
@@ -1966,12 +2041,12 @@
      * Sets a value to an input if that input is empty. If this input is not empty, set the value only if it does not contain the .noreplace class
      * @param {Object} value any input value 
      */
-    jQuery.fn.setOrReplaceVal = function (value) {
-        let valor = jQuery.trim(jQuery(this).val() || "");
-        if (valor == "" || jQuery(this).is(".noreplace") == false) {
-            jQuery(this).val(value).change();
+    InnerForm.fn.setOrReplaceVal = function (value) {
+        let valor = InnerForm.trim(InnerForm(this).val() || "");
+        if (valor == "" || InnerForm(this).is(".noreplace") == false) {
+            InnerForm(this).val(value).change();
         }
-        return jQuery(this);
+        return InnerForm(this);
     }
 
 
@@ -1981,29 +2056,29 @@
      * @arguments When empty, uses the validation classes contained in the class attribute. if specified, use each argument as a validation class
      * @return {Boolean} true if is valid, otherwise false
      */
-    jQuery.fn.isValid = function () {
+    InnerForm.fn.isValid = function () {
         let results = [];
 
-        if (jQuery(this).length > 1 || jQuery(this).prop("tagName") == "FORM") {
-            eval(jQuery(this).attr("data-beforevalidatecallback") || "void(0)");
+        if (InnerForm(this).length > 1 || InnerForm(this).prop("tagName") == "FORM") {
+            eval(InnerForm(this).attr("data-beforevalidatecallback") || "void(0)");
             var elements = [];
             var config = Array.prototype.slice.call(arguments)[0];
-            jQuery(this)
+            InnerForm(this)
                 .find(":input.prevFocus" + (config || ""))
                 .each(function () {
-                    results.push(jQuery(this).isValid());
-                    elements.push(jQuery(this));
+                    results.push(InnerForm(this).isValid());
+                    elements.push(InnerForm(this));
                 });
 
             for (var mm = 0; mm < results.length; mm++) {
                 if (results[mm] === false) {
-                    eval(jQuery(this).attr("data-invalidcallback") || "void(0)");
-                    eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
+                    eval(InnerForm(this).attr("data-invalidcallback") || "void(0)");
+                    eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
                     return false;
                 }
             }
-            eval(jQuery(this).attr("data-validcallback") || "void(0)");
-            eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
+            eval(InnerForm(this).attr("data-validcallback") || "void(0)");
+            eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
             return true;
         } else {
             this.removeClass("error");
@@ -2032,7 +2107,7 @@
                     let currentValid = valids[i].toLowerCase();
                     switch (currentValid) {
                         case "nospace":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2044,14 +2119,14 @@
                         case "integer":
                         case "int":
                         case "num": {
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
 
-                            var sep = jQuery(this).attr("data-separator");
-                            var dec = jQuery(this).attr("data-decimal");
-                            var thousand = jQuery(this).attr("data-thousand");
+                            var sep = InnerForm(this).attr("data-separator");
+                            var dec = InnerForm(this).attr("data-decimal");
+                            var thousand = InnerForm(this).attr("data-thousand");
                             var hasSep = typeof sep === "string" && sep.length > 0;
                             var hasDec = typeof dec === "string" && dec.length > 0 && !isNaN(dec);
                             var hasThousand = typeof thousand === "string" && thousand.length > 0;
@@ -2100,47 +2175,47 @@
                             break;
                         }
                         case "ean":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateEAN(value));
+                            results.push(InnerForm.validateEAN(value));
                             break;
                         case "upper":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(!$.innerForm.validateRegex(value, /[a-z]/));
+                            results.push(!InnerForm.validateRegex(value, /[a-z]/));
                             break;
                         case "lower":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(!$.innerForm.validateRegex(value, /[A-Z]/));
+                            results.push(!InnerForm.validateRegex(value, /[A-Z]/));
 
                             break;
                         case "alphanumeric":
                         case "alphanum":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateRegex(value, /^[A-Za-z0-9 ]+$/));
+                            results.push(InnerForm.validateRegex(value, /^[A-Za-z0-9 ]+$/));
                             break;
                         case "alpha":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateRegex(value, /^[A-Za-z ]+$/));
+                            results.push(InnerForm.validateRegex(value, /^[A-Za-z ]+$/));
                             break;
                         case "tel":
                         case "cel":
                         case "telephone":
                         case "mobilephone":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2154,72 +2229,72 @@
                         case "mail":
                         case "email":
                         case "e-mail":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             var re = /^[\w-]+(\.[\w-]+)*@[\w]+(\.[a-z]{2,6})*(\.[a-z]{2,6})$/gi;
-                            results.push($.innerForm.validateRegex(value, re));
+                            results.push(InnerForm.validateRegex(value, re));
                             break;
                         case "required":
                         case "req":
                         case "obg":
                             if (type == "checkbox" || type == "radio") {
-                                results.push(jQuery(this).is(":checked"));
+                                results.push(InnerForm(this).is(":checked"));
                             } else {
-                                results.push(!(!value || $.innerForm.isBlank(value)));
+                                results.push(!(!value || InnerForm.isBlank(value)));
                             }
                             break;
                         case "url":
                         case "link":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
 
                             var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
-                            results.push($.innerForm.validateRegex(value, re));
+                            results.push(InnerForm.validateRegex(value, re));
                             break;
                         case "data":
                         case "date":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             results.push(value.split("/").length == 3)
-                            results.push($.innerForm.validDate(value));
+                            results.push(InnerForm.validDate(value));
                             break;
                         case "daterange":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validDateRange(value));
+                            results.push(InnerForm.validDateRange(value));
                             break;
                         case "monthyearrange":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validMonthYearRange(value));
+                            results.push(InnerForm.validMonthYearRange(value));
                             break;
                         case "shortmonthyearrange":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validShortMonthYearRange(value));
+                            results.push(InnerForm.validShortMonthYearRange(value));
                             break;
                         case "datetime":
                         case "dateshorttime":
                         case "datetimeshort":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             var comp = value.split(" ");
                             if (comp.length == 2) {
-                                results.push($.innerForm.validDate(comp[0]) && $.innerForm.validateTime(comp[1]));
+                                results.push(InnerForm.validDate(comp[0]) && InnerForm.validateTime(comp[1]));
                                 break;
                             }
                             results.push(false);
@@ -2228,23 +2303,23 @@
                         case "shorttime":
                         case "timeshort":
                         case "minutesecond":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateTime(value, currentValid == "minutesecond"));
+                            results.push(InnerForm.validateTime(value, currentValid == "minutesecond"));
                             break;
                         case "month":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push(jQuery(this).isValid("int"));
+                            results.push(InnerForm(this).isValid("int"));
                             var num = parseInt(value);
                             results.push(num > 0 && num <= 12);
                             break;
                         case "monthyear":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2262,7 +2337,7 @@
                             results.push(false);
                             break;
                         case "cep":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2272,48 +2347,48 @@
                         case "cnpjcpf":
                         case "cnpj":
                         case "cpf":
-                            jQuery(this).removeAttr('data-doc');
-                            if ($.innerForm.isBlank(value)) {
+                            InnerForm(this).removeAttr('data-doc');
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             if (currentValid == "cpf") {
-                                const validCpf = $.innerForm.validateCPF(value);
+                                const validCpf = InnerForm.validateCPF(value);
                                 results.push(validCpf);
-                                if (validCpf) jQuery(this).attr('data-doc', 'cpf');
+                                if (validCpf) InnerForm(this).attr('data-doc', 'cpf');
                             } else if (currentValid == "cnpj") {
-                                const validCnpj = $.innerForm.validateCNPJ(value);
+                                const validCnpj = InnerForm.validateCNPJ(value);
                                 results.push(validCnpj);
-                                if (validCnpj) jQuery(this).attr('data-doc', 'cnpj');
+                                if (validCnpj) InnerForm(this).attr('data-doc', 'cnpj');
                             } else {
-                                results.push(jQuery(this).isValid("cpf") || jQuery(this).isValid("cnpj"));
+                                results.push(InnerForm(this).isValid("cpf") || InnerForm(this).isValid("cnpj"));
                             }
                             break;
                         case "cnh":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateCNH(value));
+                            results.push(InnerForm.validateCNH(value));
                             break;
                         case "debitcard":
                         case "creditcard":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            var vlu = $.innerForm.checkLuhn(value);
+                            var vlu = InnerForm.checkLuhn(value);
 
                             if (vlu) {
-                                var flagcard = $.innerForm.validateCardBrand(value);
-                                jQuery(this).attr("data-flagcard", flagcard.toString());
+                                var flagcard = InnerForm.validateCardBrand(value);
+                                InnerForm(this).attr("data-flagcard", flagcard.toString());
                                 if (
-                                    jQuery(this).is(
+                                    InnerForm(this).is(
                                         ".visa, .mastercard, .diners, .amex, .discover, .hiper, .elo, .jcb, .aura, .maestro, .laser, .blanche, .switch, .korean, .union, .solo, .insta, .bcglobal, .rupay"
                                     )
                                 ) {
                                     if (flagcard) {
-                                        results.push(jQuery(this).hasClass(flagcard.toString()));
+                                        results.push(InnerForm(this).hasClass(flagcard.toString()));
                                     } else {
                                         results.push(false);
                                     }
@@ -2321,12 +2396,12 @@
                                     results.push(flagcard !== false);
                                 }
                             } else {
-                                jQuery(this).attr("data-flagcard", false);
+                                InnerForm(this).attr("data-flagcard", false);
                                 results.push(false);
                             }
                             break;
                         case "password":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2355,13 +2430,13 @@
                                     break;
                             }
 
-                            results.push($.innerForm.validatePassword(this) >= strenght);
+                            results.push(InnerForm.validatePassword(this) >= strenght);
                             break;
 
                         case "after":
                         case "before":
 
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2371,12 +2446,12 @@
                             }
 
                             var num = valids[i + 1] || "0";
-                            if ((num.indexOf("today") || num.indexOf("/")) && $.innerForm.validDate(value)) {
-                                value = $.innerForm.parseDateInt(value);
+                            if ((num.indexOf("today") || num.indexOf("/")) && InnerForm.validDate(value)) {
+                                value = InnerForm.parseDateInt(value);
                                 if (num == "today") {
                                     num = Date.now();
                                 } else {
-                                    num = $.innerForm.parseDateInt(num);
+                                    num = InnerForm.parseDateInt(num);
                                 }
                             }
                             if (valids[i] == "after") {
@@ -2387,7 +2462,7 @@
                             break;
                         case "eq":
                         case "equal":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2396,12 +2471,12 @@
                                 break;
                             }
                             var selector =
-                                jQuery(this).attr("data-eq") ||
-                                jQuery(this).data("data-equal") ||
+                                InnerForm(this).attr("data-eq") ||
+                                InnerForm(this).data("data-equal") ||
                                 valids[i + 1] ||
                                 null;
-                            var valor1 = jQuery(this).val();
-                            var valor2 = jQuery(selector).val() || jQuery(selector).text();
+                            var valor1 = InnerForm(this).val();
+                            var valor2 = InnerForm(selector).val() || InnerForm(selector).text();
                             results.push(valor1 == valor2);
                             break;
                         case "notchars":
@@ -2423,25 +2498,25 @@
                         case "containsallchar":
                         case "containsallchars":
 
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
 
                             var valor2 =
-                                jQuery(this).attr("data-cnts") ||
-                                jQuery(this).attr("data-contains") ||
-                                jQuery(this).attr("data-string") ||
-                                jQuery(this).attr("data-value") ||
+                                InnerForm(this).attr("data-cnts") ||
+                                InnerForm(this).attr("data-contains") ||
+                                InnerForm(this).attr("data-string") ||
+                                InnerForm(this).attr("data-value") ||
                                 valids[i + 1] ||
                                 "";
 
-                            if ($.innerForm.isBlank(valor2)) {
+                            if (InnerForm.isBlank(valor2)) {
                                 results.push(false);
                                 break;
                             }
 
-                            var valor1 = jQuery(this).val() || "";
+                            var valor1 = InnerForm(this).val() || "";
                             valor1 = valor1.toString().replace("&nbsp;", " ");
                             if (valor2.toLowerCase() == "_space" || valor2.toLowerCase() == "_espaco" || valor2.toLowerCase() == "&nbsp;") {
                                 valor2 = " ";
@@ -2450,12 +2525,12 @@
                             switch (currentValid) {
                                 case "containsanychar":
                                 case "containsanychars":
-                                    results.push($.innerForm.validateAnyChar(valor1, valor2));
+                                    results.push(InnerForm.validateAnyChar(valor1, valor2));
                                     break;
                                 case "containschar":
                                 case "containsallchar":
                                 case "containsallchars":
-                                    results.push($.innerForm.validateAllChar(valor1, valor2));
+                                    results.push(InnerForm.validateAllChar(valor1, valor2));
                                     break;
                                 case "eqv":
                                 case "equalvalue":
@@ -2469,7 +2544,7 @@
                                 case "containsnotchars":
                                 case "notcontainschars":
                                 case "notcontainschar":
-                                    results.push($.innerForm.validateNotChar(valor1, valor2));
+                                    results.push(InnerForm.validateNotChar(valor1, valor2));
                                     break;
                                 default:
                                     results.push(valor1.includes(valor2));
@@ -2478,7 +2553,7 @@
                             break;
 
                         case "len":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2489,7 +2564,7 @@
                             results.push(value.length == parseInt(valids[i + 1]));
                             break;
                         case "minlen":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2500,7 +2575,7 @@
                             results.push(value.length >= parseInt(valids[i + 1]));
                             break;
                         case "maxlen":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2511,7 +2586,7 @@
                             results.push(value.length <= parseInt(valids[i + 1]));
                             break;
                         case "to":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
@@ -2523,106 +2598,106 @@
                                 results.push(false);
                                 break;
                             }
-                            var v1 = jQuery(this).isValid("after " + valids[i - 1]);
-                            var v2 = jQuery(this).isValid("before " + valids[i + 1]);
+                            var v1 = InnerForm(this).isValid("after " + valids[i - 1]);
+                            var v2 = InnerForm(this).isValid("before " + valids[i + 1]);
                             results.push(v1 && v2);
                             break;
                         case "minage":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            var idade = $.innerForm.getAge(value);
+                            var idade = InnerForm.getAge(value);
                             results.push(idade >= parseInt(valids[i + 1]));
                             break;
                         case "maxage":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            var idade = $.innerForm.getAge(value);
+                            var idade = InnerForm.getAge(value);
                             results.push(idade <= parseInt(valids[i + 1]));
                             break;
                         case "age":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            var idade = $.innerForm.getAge(value);
+                            var idade = InnerForm.getAge(value);
                             results.push(idade == parseInt(valids[i + 1]));
                             break;
                         case "latitude":
                         case "lat":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateLatitude(value));
+                            results.push(InnerForm.validateLatitude(value));
                             break;
                         case "longitude":
                         case "long":
                         case "lng":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateLongitude(value));
+                            results.push(InnerForm.validateLongitude(value));
                             break;
                         case "coordinate":
                         case "coordinates":
                         case "coord":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateCoordinate(value));
+                            results.push(InnerForm.validateCoordinate(value));
                             break;
                         case "uuid":
                         case "guid":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateUUID(value));
+                            results.push(InnerForm.validateUUID(value));
                             break;
 
                         case 'pix':
                         case 'chavepix':
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
 
-                            results.push($.innerForm.validatePix(value));
+                            results.push(InnerForm.validatePix(value));
 
                             break;
                         case 'regex':
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
                             var regext = $(this).attr('pattern') || $(this).data('regex') || "";
                             var flags = $(this).attr('data-regex-flags') || "";
-                            if ($.innerForm.isBlank(regext)) {
+                            if (InnerForm.isBlank(regext)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateRegex(value, regext, flags));
+                            results.push(InnerForm.validateRegex(value, regext, flags));
                             break;
                         case "oab":
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateOAB(value));
+                            results.push(InnerForm.validateOAB(value));
                             break;
                         case 'state':
                         case 'uf':
-                            if ($.innerForm.isBlank(value)) {
+                            if (InnerForm.isBlank(value)) {
                                 results.push(true);
                                 break;
                             }
-                            results.push($.innerForm.validateUF(value));
+                            results.push(InnerForm.validateUF(value));
                             break;
 
                         default:
@@ -2636,56 +2711,61 @@
 
             for (var i = 0; i < results.length; i++) {
                 if (results[i] === false) {
-                    jQuery(this).addClass("error");
-                    jQuery(this)
+                    InnerForm(this).addClass("error");
+                    InnerForm(this)
                         .closest(".form-group")
                         .addClass("has-error");
-                    jQuery(this)
+                    InnerForm(this)
                         .get(0)
-                        .setCustomValidity(jQuery(this).attr("data-invalidmessage") || "");
-                    eval(jQuery(this).attr("data-invalidcallback") || "void(0)");
-                    eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
+                        .setCustomValidity(InnerForm(this).attr("data-invalidmessage") || "");
+                    eval(InnerForm(this).attr("data-invalidcallback") || "void(0)");
+                    eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
                     return false;
                 }
             }
 
-            if (jQuery.trim(value) !== "") {
-                jQuery(this).addClass("success");
+            if (InnerForm.trim(value) !== "") {
+                InnerForm(this).addClass("success");
             }
-            jQuery(this).removeClass("error");
-            eval(jQuery(this).attr("data-validcallback") || "void(0)");
-            eval(jQuery(this).attr("data-aftervalidatecallback") || "void(0)");
+            InnerForm(this).removeClass("error");
+            eval(InnerForm(this).attr("data-validcallback") || "void(0)");
+            eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
             return true;
         }
     };
 
-
-
-    $.innerForm.isBlank = function (value) {
-        return value === null || value === undefined || jQuery.trim(value) === "";
+    InnerForm.isValid = function (element) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return InnerForm(element).isValid.apply(InnerForm(element), args);
     };
 
-    $.innerForm.validateRegex = function (value, pattern, flags) {
+
+
+    InnerForm.isBlank = function (value) {
+        return value === null || value === undefined || InnerForm.trim(value) === "";
+    };
+
+    InnerForm.validateRegex = function (value, pattern, flags) {
         var regex = new RegExp(pattern, flags);
         return regex.test(value);
     }
 
 
-    $.innerForm.validatePix = function (value) {
+    InnerForm.validatePix = function (value) {
         /// Validar se é um email, cpf, cnpj ou telefone válido, ou se é uma chave aleatória válida (UUID)
-        return $.innerForm.validateEmail(value) ||
-            $.innerForm.validateCPF(value) ||
-            $.innerForm.validateCNPJ(value) ||
-            $.innerForm.validatePhone(value) ||
-            $.innerForm.validateUUID(value);
+        return InnerForm.validateEmail(value) ||
+            InnerForm.validateCPF(value) ||
+            InnerForm.validateCNPJ(value) ||
+            InnerForm.validatePhone(value) ||
+            InnerForm.validateUUID(value);
     }
 
 
 
 
-    $.innerForm.validateEmail = function (value) {
+    InnerForm.validateEmail = function (value) {
         var re = /^[\w-]+(\.[\w-]+)*@[\w]+(\.[a-z]{2,6})*(\.[a-z]{2,6})$/gi;
-        return $.innerForm.validateRegex(value, re);
+        return InnerForm.validateRegex(value, re);
 
     }
 
@@ -2693,87 +2773,97 @@
 
 
 
-    jQuery(document).ready(function () {
-        jQuery(document).on("keydown", ":input", function (e) {
-            if (e.key === "Backspace" || e.key === "Delete") {
-                $.innerForm.isDeleting = true;
-            } else {
-                $.innerForm.isDeleting = false;
-            }
+    if (typeof document !== "undefined") InnerForm.ready(function () {
+        setTimeout(function () {
+            InnerForm(document).on("keydown", ":input", function (e) {
+                if (e.key === "Backspace" || e.key === "Delete") {
+                    InnerForm.isDeleting = true;
+                } else {
+                    InnerForm.isDeleting = false;
+                }
 
-        });
-        jQuery('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
-        jQuery(":input").each(function () {
-            jQuery(this).focus(function () {
-                jQuery(this).addClass("prevFocus");
             });
-        });
+            InnerForm('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
+            InnerForm(":input").each(function () {
+                InnerForm(this).focus(function () {
+                    InnerForm(this).addClass("prevFocus");
+                });
+            });
+        }, 0);
     });
 
 
-    jQuery.fn.startMasks = function () {
+    InnerForm.fn.startMasks = function () {
 
-        jQuery(this).find(".mask.phone, .mask.tel, .mask.cel").phoneMask();
-        jQuery(this).find(".mask.upper").upperMask();
-        jQuery(this).find(".mask.lower, .mask.email, .mask.mail").lowerMask();
-        jQuery(this).find(".mask.cpf").cpfMask();
-        jQuery(this).find(".mask.cnh").cnhMask();
-        jQuery(this).find(".mask.cep").cepMask();
-        jQuery(this).find(".mask.cnpj").cnpjMask();
-        jQuery(this).find(".mask.cpfcnpj, .mask.cnpjcpf").cpfCnpjMask();
-        jQuery(this).find(".mask.creditcard, .mask.debitcard").creditCardMask();
-        jQuery(this).find(".mask.date, .mask.data").dateMask();
-        jQuery(this).find(".mask.monthyear").monthYearMask();
-        jQuery(this).find(".mask.num, .mask.number, .mask.month, .mask.money, .mask.decimal, .mask.integer, .mask.int").numberMask();
-        jQuery(this).find(".mask.len").lenMask();
-        jQuery(this).find(".autocomplete.cep").cepAutoComplete();
-        jQuery(this).find(".mask.time").timeMask();
-        jQuery(this).find(".mask.shorttime, .mask.timeshort, .mask.minutesecond").shortTimeMask();
-        jQuery(this).find(".mask.dateshorttime, .mask.datetimeshort").dateShortTimeMask();
-        jQuery(this).find(".mask.datetime").dateTimeMask();
-        jQuery(this).find(".mask.alpha").alphaMask();
-        jQuery(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
-        jQuery(this).find(".mask.state, .mask.uf").ufMask();
-        jQuery(this).find(".mask.nospace").noSpaceMask();
-        jQuery(this).find(".mask.maxlen").maxLenMask();
-        jQuery(this).find(".mask.leadingzero").leadingZeroMask();
-        jQuery(this).find(".mask.daterange").dateRangeMask();
-        jQuery(this).find(".mask.monthyearrange").monthYearRangeMask();
-        jQuery(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
-        jQuery(this).find(".mask.uuid").uuidMask();
-        jQuery(this).find(".mask.oab").oabMask();
-        jQuery(this).find(".mask.latitude, .mask.lat").latitudeMask();
-        jQuery(this).find(".mask.longitude, .mask.long, .mask.lng").longitudeMask();
+        InnerForm(this).find(".mask.phone, .mask.tel, .mask.cel").phoneMask();
+        InnerForm(this).find(".mask.upper").upperMask();
+        InnerForm(this).find(".mask.lower, .mask.email, .mask.mail").lowerMask();
+        InnerForm(this).find(".mask.cpf").cpfMask();
+        InnerForm(this).find(".mask.cnh").cnhMask();
+        InnerForm(this).find(".mask.cep").cepMask();
+        InnerForm(this).find(".mask.cnpj").cnpjMask();
+        InnerForm(this).find(".mask.cpfcnpj, .mask.cnpjcpf").cpfCnpjMask();
+        InnerForm(this).find(".mask.creditcard, .mask.debitcard").creditCardMask();
+        InnerForm(this).find(".mask.date, .mask.data").dateMask();
+        InnerForm(this).find(".mask.monthyear").monthYearMask();
+        InnerForm(this).find(".mask.num, .mask.number, .mask.month, .mask.money, .mask.decimal, .mask.integer, .mask.int").numberMask();
+        InnerForm(this).find(".mask.len").lenMask();
+        InnerForm(this).find(".autocomplete.cep").cepAutoComplete();
+        InnerForm(this).find(".mask.time").timeMask();
+        InnerForm(this).find(".mask.shorttime, .mask.timeshort, .mask.minutesecond").shortTimeMask();
+        InnerForm(this).find(".mask.dateshorttime, .mask.datetimeshort").dateShortTimeMask();
+        InnerForm(this).find(".mask.datetime").dateTimeMask();
+        InnerForm(this).find(".mask.alpha").alphaMask();
+        InnerForm(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
+        InnerForm(this).find(".mask.state, .mask.uf").ufMask();
+        InnerForm(this).find(".mask.nospace").noSpaceMask();
+        InnerForm(this).find(".mask.maxlen").maxLenMask();
+        InnerForm(this).find(".mask.leadingzero").leadingZeroMask();
+        InnerForm(this).find(".mask.daterange").dateRangeMask();
+        InnerForm(this).find(".mask.monthyearrange").monthYearRangeMask();
+        InnerForm(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
+        InnerForm(this).find(".mask.uuid").uuidMask();
+        InnerForm(this).find(".mask.oab").oabMask();
+        InnerForm(this).find(".mask.latitude, .mask.lat").latitudeMask();
+        InnerForm(this).find(".mask.longitude, .mask.long, .mask.lng").longitudeMask();
 
     }
 
-    jQuery.fn.startValidation = function () {
-        jQuery(this).not(".notonblur").validateOnBlur();
-        jQuery(this).not(".notonchange").validateOnChange();
-        jQuery(this).find(".onkeyup").validateOnType();
-        return jQuery(this).on("submit", function () {
-            jQuery(this).find(":input").addClass('prevFocus');
-            return jQuery(this).isValid();
+    InnerForm.fn.startValidation = function () {
+        InnerForm(this).not(".notonblur").validateOnBlur();
+        InnerForm(this).not(".notonchange").validateOnChange();
+        InnerForm(this).find(".onkeyup").validateOnType();
+        return InnerForm(this).on("submit", function () {
+            InnerForm(this).find(":input").addClass('prevFocus');
+            return InnerForm(this).isValid();
         });
 
     }
 
+    InnerForm.startMasks = function (element) {
+        return InnerForm(element).startMasks();
+    };
 
-    jQuery.fn.validateOnType = function (time) {
-        time = time || $.innerForm.onTypeTimeout;
-        let x = jQuery(this)
+    InnerForm.startValidation = function (element) {
+        return InnerForm(element).startValidation();
+    };
+
+
+    InnerForm.fn.validateOnType = function (time) {
+        time = time || InnerForm.onTypeTimeout;
+        let x = InnerForm(this)
             .on("keyup", function () {
-                var p = jQuery(this);
+                var p = InnerForm(this);
                 p.removeClass("error");
                 p.closest(".form-group").removeClass("has-error");
-                if ($.innerForm.onTypeTimeoutFunction) {
-                    clearTimeout($.innerForm.onTypeTimeoutFunction);
+                if (InnerForm.onTypeTimeoutFunction) {
+                    clearTimeout(InnerForm.onTypeTimeoutFunction);
                 }
-                $.innerForm.onTypeTimeoutFunction = setTimeout(function () {
+                InnerForm.onTypeTimeoutFunction = setTimeout(function () {
                     p.isValid();
                 }, time);
             });
-        $.innerForm.log("InnerFormValidation:", "Validation on Type started", x, "delay", time);
+        InnerForm.log("InnerFormValidation:", "Validation on Type started", x, "delay", time);
         return x;
     }
 
@@ -2781,159 +2871,159 @@
      * Fires validation when the input loses focus
      * @returns 
      */
-    jQuery.fn.validateOnBlur = function () {
-        return jQuery(this).validateOn("blur");
+    InnerForm.fn.validateOnBlur = function () {
+        return InnerForm(this).validateOn("blur");
     }
     /**
      * Fires validation on the given event
      * @param {string} event 
      * @returns 
      */
-    jQuery.fn.validateOn = function (event) {
-        let x = jQuery(this)
+    InnerForm.fn.validateOn = function (event) {
+        let x = InnerForm(this)
             .on(event, function () {
-                jQuery(this).isValid();
+                InnerForm(this).isValid();
             });
-        $.innerForm.log("InnerFormValidation:", "Validation on " + event + " started", x);
+        InnerForm.log("InnerFormValidation:", "Validation on " + event + " started", x);
         return x;
     }
 
-    jQuery.fn.validateOnChange = function () {
-        return jQuery(this).validateOn("change");
+    InnerForm.fn.validateOnChange = function () {
+        return InnerForm(this).validateOn("change");
     }
 
 
-    jQuery.fn.phoneMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyPhoneMask(this);
+    InnerForm.fn.phoneMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyPhoneMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "PhoneMask started", x);
+        InnerForm.log("InnerFormValidation:", "PhoneMask started", x);
         return x;
     }
 
 
-    jQuery.fn.upperMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyUpperMask(this);
+    InnerForm.fn.upperMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyUpperMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "UpperMask started", x);
+        InnerForm.log("InnerFormValidation:", "UpperMask started", x);
         return x;
     }
 
 
-    jQuery.fn.lowerMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyLowerMask(this);
+    InnerForm.fn.lowerMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyLowerMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "LowerMask started", x);
+        InnerForm.log("InnerFormValidation:", "LowerMask started", x);
         return x;
     }
 
-    jQuery.fn.cpfMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyCPFMask(this);
+    InnerForm.fn.cpfMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyCPFMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "CpfMask started", x);
+        InnerForm.log("InnerFormValidation:", "CpfMask started", x);
         return x;
     }
 
 
-    jQuery.fn.cepMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyCEPMask(this);
+    InnerForm.fn.cepMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyCEPMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "CepMask started", x);
+        InnerForm.log("InnerFormValidation:", "CepMask started", x);
         return x;
     }
 
 
-    jQuery.fn.cnpjMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyCNPJMask(this);
+    InnerForm.fn.cnpjMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyCNPJMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "CnpjMask started", x);
+        InnerForm.log("InnerFormValidation:", "CnpjMask started", x);
         return x;
     }
 
 
-    jQuery.fn.cnhMask = function () {
-        let x = jQuery(this).on('input', function () {
-            $.innerForm.applyCNHMask(this);
+    InnerForm.fn.cnhMask = function () {
+        let x = InnerForm(this).on('input', function () {
+            InnerForm.applyCNHMask(this);
         });
-        $.innerForm.log('InnerFormValidation:', 'CNHMask started', x);
+        InnerForm.log('InnerFormValidation:', 'CNHMask started', x);
         return x;
     }
 
-    jQuery.fn.cpfCnpjMask = function () {
-        let x = jQuery(this).on('input', function () {
-            $.innerForm.applyCPForCNPJMask(this);
+    InnerForm.fn.cpfCnpjMask = function () {
+        let x = InnerForm(this).on('input', function () {
+            InnerForm.applyCPForCNPJMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "CpfCnpjMask started", x);
+        InnerForm.log("InnerFormValidation:", "CpfCnpjMask started", x);
         return x;
     }
 
 
-    jQuery.fn.creditCardMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyCreditCardMask(this);
+    InnerForm.fn.creditCardMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyCreditCardMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "CreditCardMask started", x);
+        InnerForm.log("InnerFormValidation:", "CreditCardMask started", x);
         return x;
     }
 
-    jQuery.fn.dateMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyDateMask(this);
+    InnerForm.fn.dateMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyDateMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "DateMask started", x);
+        InnerForm.log("InnerFormValidation:", "DateMask started", x);
         return x;
     }
 
-    jQuery.fn.monthYearMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyMonthYearMask(this);
+    InnerForm.fn.monthYearMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyMonthYearMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "MonthYearMask started", x);
+        InnerForm.log("InnerFormValidation:", "MonthYearMask started", x);
         return x;
     }
 
-    jQuery.fn.numberMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyNumberMask(this);
+    InnerForm.fn.numberMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyNumberMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "NumberMask started", x);
+        InnerForm.log("InnerFormValidation:", "NumberMask started", x);
         return x;
     }
 
-    jQuery.fn.dateRangeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyDateRangeMask(this);
+    InnerForm.fn.dateRangeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyDateRangeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "DateRangeMask started", x);
+        InnerForm.log("InnerFormValidation:", "DateRangeMask started", x);
         return x;
     }
 
-    jQuery.fn.shortMonthYearRangeMask = function () {
+    InnerForm.fn.shortMonthYearRangeMask = function () {
 
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyShortMonthYearRangeMask(this);
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyShortMonthYearRangeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "ShortMonthYearRangeMask started", x);
+        InnerForm.log("InnerFormValidation:", "ShortMonthYearRangeMask started", x);
         return x;
 
     }
-    jQuery.fn.monthYearRangeMask = function () {
+    InnerForm.fn.monthYearRangeMask = function () {
 
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyMonthYearRangeMask(this);
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyMonthYearRangeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "MonthYearRangeMask started", x);
+        InnerForm.log("InnerFormValidation:", "MonthYearRangeMask started", x);
         return x;
     }
 
-    jQuery.fn.lenMask = function (tam) {
-        let x = jQuery(this).on("input", function () {
-            var array = jQuery(this)
+    InnerForm.fn.lenMask = function (tam) {
+        let x = InnerForm(this).on("input", function () {
+            var array = InnerForm(this)
                 .attr("class")
                 .split(" ")
                 .filter(function (el) {
@@ -2941,131 +3031,131 @@
                 });
             tam = tam || parseInt(array[array.indexOf("len") + 1]);
             if (!isNaN(tam)) {
-                jQuery(this).attr("maxlength", tam);
-                jQuery(this).val(
-                    jQuery(this)
+                InnerForm(this).attr("maxlength", tam);
+                InnerForm(this).val(
+                    InnerForm(this)
                         .val()
                         .substring(0, tam)
                 );
             }
         });
-        $.innerForm.log("InnerFormValidation:", "LenMax started", x);
+        InnerForm.log("InnerFormValidation:", "LenMax started", x);
         return x;
     }
 
-    jQuery.fn.cepAutoComplete = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.searchViaCEP(
-                jQuery(this).val(),
-                jQuery(".autocomplete.homenum").val() || jQuery(".autocomplete.homenumber").val() || jQuery(".autocomplete.number").val() || jQuery(".autocomplete.num").val(),
-                jQuery(this).data('timeout') || 0
+    InnerForm.fn.cepAutoComplete = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.searchViaCEP(
+                InnerForm(this).val(),
+                InnerForm(".autocomplete.homenum").val() || InnerForm(".autocomplete.homenumber").val() || InnerForm(".autocomplete.number").val() || InnerForm(".autocomplete.num").val(),
+                InnerForm(this).data('timeout') || 0
             );
         });
-        $.innerForm.log("InnerFormValidation:", "Autocomplete for CEP started", x);
+        InnerForm.log("InnerFormValidation:", "Autocomplete for CEP started", x);
         return x;
     }
 
-    jQuery.fn.timeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyTimeMask(this);
+    InnerForm.fn.timeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyTimeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "TimeMask started", x);
+        InnerForm.log("InnerFormValidation:", "TimeMask started", x);
         return x;
     }
 
-    jQuery.fn.shortTimeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyShortTimeMask(this);
+    InnerForm.fn.shortTimeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyShortTimeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "ShortTimeMask started", x);
+        InnerForm.log("InnerFormValidation:", "ShortTimeMask started", x);
         return x;
 
     }
 
-    jQuery.fn.dateShortTimeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyDateShortMask(this);
+    InnerForm.fn.dateShortTimeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyDateShortMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "DateShortTimeMask started", x);
+        InnerForm.log("InnerFormValidation:", "DateShortTimeMask started", x);
         return x;
     }
 
-    jQuery.fn.dateTimeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyDateTimeMask(this);
+    InnerForm.fn.dateTimeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyDateTimeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "DateTimeMask started", x);
+        InnerForm.log("InnerFormValidation:", "DateTimeMask started", x);
         return x;
     }
 
-    jQuery.fn.alphaMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyAlphaMask(this);
+    InnerForm.fn.alphaMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyAlphaMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "AlphaMask started", x);
+        InnerForm.log("InnerFormValidation:", "AlphaMask started", x);
         return x;
     }
 
-    jQuery.fn.alphaNumericMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyAlphaNumericMask(this);
+    InnerForm.fn.alphaNumericMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyAlphaNumericMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "AlphaNumericMask started", x);
+        InnerForm.log("InnerFormValidation:", "AlphaNumericMask started", x);
         return x;
     }
 
-    jQuery.fn.ufMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyUFMask(this);
+    InnerForm.fn.ufMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyUFMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "UFMask started", x);
+        InnerForm.log("InnerFormValidation:", "UFMask started", x);
         return x;
     }
 
 
-    jQuery.fn.noSpaceMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyNoSpaceMask(this);
+    InnerForm.fn.noSpaceMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyNoSpaceMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "NoSpaceMask started", x);
+        InnerForm.log("InnerFormValidation:", "NoSpaceMask started", x);
         return x;
     }
 
-    jQuery.fn.uuidMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyUUIDMask(this);
+    InnerForm.fn.uuidMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyUUIDMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "UUIDMask started", x);
+        InnerForm.log("InnerFormValidation:", "UUIDMask started", x);
         return x;
     }
 
-    jQuery.fn.oabMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyOABMask(this);
+    InnerForm.fn.oabMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyOABMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "OABMask started", x);
+        InnerForm.log("InnerFormValidation:", "OABMask started", x);
         return x;
     }
 
-    jQuery.fn.latitudeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyLatitudeMask(this);
+    InnerForm.fn.latitudeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyLatitudeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "LatitudeMask started", x);
+        InnerForm.log("InnerFormValidation:", "LatitudeMask started", x);
         return x;
     }
 
-    jQuery.fn.longitudeMask = function () {
-        let x = jQuery(this).on("input", function () {
-            $.innerForm.applyLongitudeMask(this);
+    InnerForm.fn.longitudeMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            InnerForm.applyLongitudeMask(this);
         });
-        $.innerForm.log("InnerFormValidation:", "LongitudeMask started", x);
+        InnerForm.log("InnerFormValidation:", "LongitudeMask started", x);
         return x;
     }
 
-    jQuery.fn.maxLenMask = function () {
-        let x = jQuery(this).on("input", function () {
-            var array = jQuery(this)
+    InnerForm.fn.maxLenMask = function () {
+        let x = InnerForm(this).on("input", function () {
+            var array = InnerForm(this)
                 .attr("class")
                 .split(" ")
                 .filter(function (el) {
@@ -3073,23 +3163,23 @@
                 });
             var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("maxlen") + 1]);
             if (!isNaN(tam)) {
-                jQuery(this).attr("maxlength", tam);
-                jQuery(this).val(
-                    jQuery(this)
+                InnerForm(this).attr("maxlength", tam);
+                InnerForm(this).val(
+                    InnerForm(this)
                         .val()
                         .substring(0, tam + 1)
                 );
             }
         });
-        $.innerForm.log("InnerFormValidation:", "MaxLenMask started", x);
+        InnerForm.log("InnerFormValidation:", "MaxLenMask started", x);
         return x;
     }
 
 
 
-    jQuery.fn.leadingZeroMask = function () {
-        let x = jQuery(this).on("blur", function () {
-            var array = jQuery(this)
+    InnerForm.fn.leadingZeroMask = function () {
+        let x = InnerForm(this).on("blur", function () {
+            var array = InnerForm(this)
                 .attr("class")
                 .split(" ")
                 .filter(function (el) {
@@ -3097,26 +3187,26 @@
                 });
             var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("minlen") + 1]);
             if (!isNaN(tam)) {
-                jQuery(this).val(
-                    $.innerForm.addLeadingZeros(jQuery(this).val(), tam)
+                InnerForm(this).val(
+                    InnerForm.addLeadingZeros(InnerForm(this).val(), tam)
                 ).isValid();
             }
         });
-        $.innerForm.log("InnerFormValidation:", "LeadingZeroMask started", x);
+        InnerForm.log("InnerFormValidation:", "LeadingZeroMask started", x);
         return x;
     }
 
     /**
      * Obtém a localização atual do usuário usando a API de Geolocalização do navegador
      * @function getLocation
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {Object} [options] - Opções para a geolocalização
      * @param {number} [options.timeout=10000] - Tempo limite em milissegundos
      * @param {number} [options.maximumAge=60000] - Idade máxima aceitável para uma posição em cache (ms)
      * @param {boolean} [options.enableHighAccuracy=true] - Solicitar alta precisão
      * @returns {Promise} Promise que resolve com objeto contendo informações de localização
      */
-    $.innerForm.getLocation = function (options) {
+    InnerForm.getLocation = function (options) {
         return new Promise(function (resolve, reject) {
             // Verifica se a API de geolocalização está disponível
             if (!navigator.geolocation) {
@@ -3135,9 +3225,9 @@
             };
 
             // Mescla as opções fornecidas com as padrão
-            var geoOptions = $.extend({}, defaultOptions, options || {});
+            var geoOptions = Object.assign({}, defaultOptions, options || {});
 
-            $.innerForm.log('Obtendo localização do usuário...', geoOptions);
+            InnerForm.log('Obtendo localização do usuário...', geoOptions);
 
             // Função de sucesso
             function onSuccess(position) {
@@ -3172,22 +3262,22 @@
                 };
 
                 // Preenche automaticamente os campos de latitude e longitude
-                jQuery(".autocomplete.latitude:input, .autocomplete.lat:input")
+                InnerForm(".autocomplete.latitude:input, .autocomplete.lat:input")
                     .setOrReplaceVal(coords.latitude)
                     .change().focus();
-                jQuery(".autocomplete.longitude:input, .autocomplete.long:input")
+                InnerForm(".autocomplete.longitude:input, .autocomplete.long:input")
                     .setOrReplaceVal(coords.longitude)
                     .change().focus();
 
                 // Preenche elementos não-input também
-                jQuery(".autocomplete.latitude, .autocomplete.lat")
+                InnerForm(".autocomplete.latitude, .autocomplete.lat")
                     .not(":input")
                     .text(coords.latitude);
-                jQuery(".autocomplete.longitude, .autocomplete.long")
+                InnerForm(".autocomplete.longitude, .autocomplete.long")
                     .not(":input")
                     .text(coords.longitude);
 
-                $.innerForm.log('Localização obtida com sucesso:', locationData);
+                InnerForm.log('Localização obtida com sucesso:', locationData);
                 resolve(locationData);
             }
 
@@ -3217,7 +3307,7 @@
                         break;
                 }
 
-                $.innerForm.error('Erro ao obter localização:', errorInfo);
+                InnerForm.error('Erro ao obter localização:', errorInfo);
                 reject(errorInfo);
             }
 
@@ -3229,13 +3319,13 @@
     /**
      * Monitora continuamente a localização do usuário
      * @function watchLocation
-     * @memberof $.innerForm  
+    * @memberof InnerFormValidation
      * @param {Function} callback - Função chamada a cada atualização de posição
      * @param {Function} [errorCallback] - Função chamada em caso de erro
      * @param {Object} [options] - Opções para a geolocalização
      * @returns {number} ID do watcher que pode ser usado para parar o monitoramento
      */
-    $.innerForm.watchLocation = function (callback, errorCallback, options) {
+    InnerForm.watchLocation = function (callback, errorCallback, options) {
         if (!navigator.geolocation) {
             if (errorCallback) {
                 errorCallback({
@@ -3252,9 +3342,9 @@
             maximumAge: 5000 // Para monitoramento, queremos dados mais frescos
         };
 
-        var geoOptions = $.extend({}, defaultOptions, options || {});
+        var geoOptions = Object.assign({}, defaultOptions, options || {});
 
-        $.innerForm.log('Iniciando monitoramento de localização...', geoOptions);
+        InnerForm.log('Iniciando monitoramento de localização...', geoOptions);
 
         function onSuccess(position) {
             var coords = position.coords;
@@ -3275,18 +3365,18 @@
             };
 
             // Preenche automaticamente os campos de latitude e longitude
-            jQuery(".autocomplete.latitude:input, .autocomplete.lat:input")
+            InnerForm(".autocomplete.latitude:input, .autocomplete.lat:input")
                 .setOrReplaceVal(coords.latitude)
                 .change().focus();
-            jQuery(".autocomplete.longitude:input, .autocomplete.long:input")
+            InnerForm(".autocomplete.longitude:input, .autocomplete.long:input")
                 .setOrReplaceVal(coords.longitude)
                 .change().focus();
 
             // Preenche elementos não-input também
-            jQuery(".autocomplete.latitude, .autocomplete.lat")
+            InnerForm(".autocomplete.latitude, .autocomplete.lat")
                 .not(":input")
                 .text(coords.latitude);
-            jQuery(".autocomplete.longitude, .autocomplete.long")
+            InnerForm(".autocomplete.longitude, .autocomplete.long")
                 .not(":input")
                 .text(coords.longitude);
 
@@ -3329,15 +3419,33 @@
     /**
      * Para o monitoramento de localização
      * @function clearLocationWatch
-     * @memberof $.innerForm
+     * @memberof InnerFormValidation
      * @param {number} watchId - ID retornado por watchLocation
      */
-    $.innerForm.clearLocationWatch = function (watchId) {
+    InnerForm.clearLocationWatch = function (watchId) {
         if (watchId && navigator.geolocation) {
             navigator.geolocation.clearWatch(watchId);
-            $.innerForm.log('Monitoramento de localização parado:', watchId);
+            InnerForm.log('Monitoramento de localização parado:', watchId);
         }
     };
 
-    $.innerForm.log('InnerFormValidation Loaded');
-})(jQuery);
+    if (root.jQuery && root.jQuery.fn) {
+        var previousJQueryConfig = root.jQuery.innerForm;
+        if (previousJQueryConfig && previousJQueryConfig !== InnerForm) {
+            if (typeof previousJQueryConfig.verbose === "boolean") {
+                InnerForm.verbose = previousJQueryConfig.verbose;
+            }
+            if (typeof previousJQueryConfig.onTypeTimeout === "number") {
+                InnerForm.onTypeTimeout = previousJQueryConfig.onTypeTimeout;
+            }
+        }
+        root.jQuery.innerForm = InnerForm;
+        Object.keys(InnerForm.fn).forEach(function (methodName) {
+            if (baseMethods.indexOf(methodName) === -1) {
+                root.jQuery.fn[methodName] = InnerForm.fn[methodName];
+            }
+        });
+    }
+
+    InnerForm.log('InnerFormValidation Loaded');
+})(typeof window !== "undefined" ? window : globalThis);

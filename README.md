@@ -1,10 +1,14 @@
 # 🚀 InnerFormValidation
 
-**Uma biblioteca JavaScript completa para mascaramento e validação de formulários utilizando jQuery e classes CSS.**
+**Uma biblioteca JavaScript completa para mascaramento e validação de formulários, independente de jQuery e compatível com o plugin jQuery.**
+
+## Documentação
+
+Consulte o [site completo de documentação](docs/index.html), com exemplos interativos, referência da API, instalação standalone, compatibilidade jQuery, autocomplete de CEP e geolocalização.
 
 [![CDN](https://img.shields.io/badge/CDN-Available-brightgreen)](https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerFormValidation.js)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![jQuery](https://img.shields.io/badge/Requires-jQuery-blue)](https://jquery.com/)
+[![Standalone](https://img.shields.io/badge/JavaScript-standalone-brightgreen)](docs/index.html)
 
 ## 📖 Índice
 
@@ -27,9 +31,18 @@
 
 ### CDN
 ```html
-<!-- Adicione antes do script principal para ver mensagens detalhadas no console -->
+<!-- Recomendado: funciona sem jQuery -->
+<script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
+<script>
+    InnerFormValidation.validateCPF('529.982.247-25');
+</script>
+```
+
+Para usar como plugin jQuery, carregue jQuery antes do mesmo endereço CDN:
+```html
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>$.innerForm = { verbose: true }</script>
-<script src="https://cdn.jsdelivr.net/gh/zonaro/innerformvalidation@master/InnerFormValidation.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/zonaro/InnerFormValidation@master/InnerFormValidation.js"></script>
 ```
 
 ### Download Local
@@ -41,7 +54,18 @@
 ```
 
 ### Dependências
-- jQuery 3.0+ (obrigatório)
+- Nenhuma para a API standalone.
+- jQuery 3.0+ é opcional e habilita os métodos de plugin legados.
+
+### API standalone
+```html
+<script src="InnerFormValidation.js"></script>
+<script>
+    const valid = InnerFormValidation.validateCPF('529.982.247-25');
+    InnerFormValidation.applyCPFMask(document.querySelector('#cpf'));
+    InnerFormValidation.isValid(document.querySelector('form'));
+</script>
+```
 
 ---
 

@@ -1,0 +1,13 @@
+# InnerFormValidation
+
+InnerFormValidation is a dependency-free JavaScript library for form validation, input masks, Brazilian documents, ViaCEP address autocomplete and geolocation.
+
+## Canonical documentation
+- https://zonaro.github.io/InnerFormValidation/docs/
+- ../README.md
+
+## Primary API
+Load `InnerFormValidation.js`, then call `InnerFormValidation.validateCPF(value)`, `validateCNPJ`, `validateEmail`, `validDate`, `validateUF`, `validateOAB`, `validatePix`, `applyCPFMask(input)`, `applyCEPMask(input)`, `isValid(element, ...rules)`, `startMasks(element)` and `startValidation(element)`.
+
+## jQuery compatibility
+When jQuery is available, the same object is exposed as `$.innerForm` and legacy plugin methods remain available, including `isValid`, `startMasks`, `startValidation`, `validateOnBlur` and `validateOnType`.
