@@ -20,9 +20,8 @@
 
 <body>
     <header class="topbar"><a class="brand" href="#inicio">🦞InnerFormValidation</a>
-                <nav aria-label="Navegação"><a href="#inicio">Início</a><a href="#laboratorio">Laboratório</a><a
-                href="#cep">Integrações</a><a href="#api">API</a></nav><select id="language"
-            aria-label="Idioma">
+        <nav aria-label="Navegação"><a href="#inicio">Início</a><a href="#laboratorio">Laboratório</a><a
+                href="#cep">Integrações</a><a href="#api">API</a></nav><select id="language" aria-label="Idioma">
             <option value="pt">PT-BR</option>
             <option value="en">EN</option>
             <option value="es">ES</option>
@@ -105,7 +104,8 @@ InnerForm('#codigo').isValid('regex');</code></pre>
                         <article class="panel">
                             <h3>Quando validar</h3>
                             <p>Para validar automaticamente enquanto o usuário digita, adicione <code>onkeyup</code> ao
-                                campo. O plugin aguarda <code>InnerForm.onTypeTimeout</code> após a última tecla antes de
+                                campo. O plugin aguarda <code>InnerForm.onTypeTimeout</code> após a última tecla antes
+                                de
                                 executar as regras e atualizar <code>success</code> ou <code>error</code>.</p>
                             <table class="config-table">
                                 <tbody>
@@ -132,9 +132,12 @@ InnerForm('#codigo').isValid('regex');</code></pre>
 
 InnerForm.onTypeTimeout = 1200;</code></pre>
                             <p class="hint">O evento é configurado automaticamente quando o formulário usa
-                                <code>validate</code>, <code>data-validate="true"</code>, <code>data-validation="true"</code>
-                                ou <code>forcevalidate</code>. <code>notonblur</code> e <code>notonchange</code> desativam
-                                apenas esses eventos, não o <code>onkeyup</code>.</p>
+                                <code>validate</code>, <code>data-validate="true"</code>,
+                                <code>data-validation="true"</code>
+                                ou <code>forcevalidate</code>. <code>notonblur</code> e <code>notonchange</code>
+                                desativam
+                                apenas esses eventos, não o <code>onkeyup</code>.
+                            </p>
                         </article>
                         <article class="panel">
                             <h3>Classes que controlam a aparência</h3>
@@ -345,12 +348,15 @@ input.error { border-color: #dc3545; }
                             UF, IBGE, GIA, DDD, SIAFI e endereço completo.</p>
                         <h3>Classes de autocomplete</h3>
                         <p>Use <code>autocomplete cep mask</code> no campo do CEP para iniciar a busca no evento
-                            <code>input</code>. Nos campos de destino, mantenha <code>autocomplete</code> junto da classe
+                            <code>input</code>. Nos campos de destino, mantenha <code>autocomplete</code> junto da
+                            classe
                             correspondente: <code>address</code>, <code>complement</code>, <code>neighborhood</code>,
-                            <code>city</code>, <code>state</code>, <code>ibge</code>, <code>gia</code>, <code>ddd</code>,
-                            <code>siafi</code>, <code>citystate</code> ou <code>fulladdress</code>.</p>
-                        <form id="cep-form" class="address-form"><label>CEP<input id="cep-input" class="autocomplete mask cep"
-                                    placeholder="01001-000"></label><label>Número<input
+                            <code>city</code>, <code>state</code>, <code>ibge</code>, <code>gia</code>,
+                            <code>ddd</code>,
+                            <code>siafi</code>, <code>citystate</code> ou <code>fulladdress</code>.
+                        </p>
+                        <form id="cep-form" class="address-form"><label>CEP<input id="cep-input"
+                                    class="autocomplete mask cep" placeholder="01001-000"></label><label>Número<input
                                     class="autocomplete homenum"></label><label>Logradouro<input
                                     class="autocomplete address" readonly></label><label>Complemento<input
                                     class="autocomplete complement" readonly></label><label>Bairro<input
@@ -363,7 +369,8 @@ input.error { border-color: #dc3545; }
                         <pre><code>InnerForm.searchViaCEP(cep, numero, 0, callback)</code></pre>
                         <p class="hint">O campo de número pode usar <code>homenum</code>, <code>homenumber</code>,
                             <code>number</code> ou <code>num</code>. Campos que não sejam inputs também podem receber os
-                            dados como texto.</p>
+                            dados como texto.
+                        </p>
                     </article>
                 </section>
                 <section id="geolocation" class="section integrations">
@@ -399,15 +406,16 @@ InnerForm.clearLocationWatch(watchId)</code></pre>
                                 placeholder="Deixe vazio e depois preencha"><button id="callback-button"
                                 class="button primary">Executar callback</button><output id="callback-status"></output>
                         </article>
-                            </div>
+                    </div>
                 </section>
                 <section id="css-variaveis" class="section">
                     <p class="eyebrow">13 / personalização</p>
                     <h2>CSS por variáveis</h2>
                     <div class="columns">
                         <article class="panel">
-                                                        <p>O plugin aplica <code>success</code> aos campos válidos e <code>error</code> aos campos
-                                                                inválidos. Use variáveis CSS para personalizar esses estados sem alterar a biblioteca.</p>
+                            <p>O plugin aplica <code>success</code> aos campos válidos e <code>error</code> aos campos
+                                inválidos. Use variáveis CSS para personalizar esses estados sem alterar a biblioteca.
+                            </p>
                             <pre><code>:root {
     --validation-success: #0d6b63;
     --validation-error: #ff815d;
@@ -420,8 +428,8 @@ input.success {
 input.error {
     border-color: var(--validation-error);
 }</code></pre>
-                                                        <p class="hint">Em layouts Bootstrap ou semelhantes, o ancestral <code>.form-group</code>
-                                                                também recebe <code>has-error</code> quando o campo é inválido.</p>
+                            <p class="hint">Em layouts Bootstrap ou semelhantes, o ancestral <code>.form-group</code>
+                                também recebe <code>has-error</code> quando o campo é inválido.</p>
                         </article>
                     </div>
                 </section>
@@ -437,8 +445,11 @@ input.error {
                         <div><code>validateCPF</code><span>CPF brasileiro</span></div>
                         <div><code>validateCNPJ</code><span>CNPJ brasileiro</span></div>
                         <div><code>validateCNH</code><span>CNH brasileira</span></div>
-                        <div><code>validateEmail · validateURL · validatePix</code><span>formatos</span></div>
-                        <div><code>validateUF · validateOAB · validateUUID</code><span>identificadores</span></div>
+                        <div><code>validateEmail · validateURL · validatePix · validatePhone</code><span>formatos</span>
+                        </div>
+                        <div>
+                            <code>validateUF · validateOAB · validateUUID · validateCEP</code><span>identificadores</span>
+                        </div>
                         <div><code>validDate · validDateRange · validMonthYearRange</code><span>datas e períodos</span>
                         </div>
                         <div><code>validateTime · expandYear · getAge</code><span>tempo e idade</span></div>

@@ -217,7 +217,9 @@ InnerForm.validateOAB('123456SA');    // false (invalid UF)
 
 InnerForm.validateCNH('98765432100'); // true/false conforme DV
 InnerForm.validateCNH('00000000000'); // false
-InnerForm.validarCNH('987.654.321-00'); // true/false
+InnerForm.validateCNH('987.654.321-00'); // true/false
+InnerForm.validateCEP('01310-100'); // true (ignora a máscara)
+InnerForm.validatePhone('(11) 98765-4321'); // true
 ```
 ---
 
@@ -1059,6 +1061,22 @@ Validates whether a string is a valid UUID/GUID. Accepts flexible formats, not o
 InnerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
 InnerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
 InnerForm.validateUUID("invalid-uuid"); // false
+```
+
+#### `validatePhone(value)` - **🆕 NOVA**
+Validates Brazilian phone numbers (landline or mobile), ignoring masks, spaces, parentheses and hyphens. Requires at least 8 digits.
+```javascript
+InnerForm.validatePhone("(11) 98765-4321"); // true
+InnerForm.validatePhone("1132221234");      // true
+InnerForm.validatePhone("1234567");         // false (menos de 8 dígitos)
+```
+
+#### `validateCEP(value)` - **🆕 NOVA**
+Validates Brazilian ZIP codes (CEP) with or without mask (8 digits).
+```javascript
+InnerForm.validateCEP("01310100");  // true
+InnerForm.validateCEP("01310-100"); // true (ignora a máscara)
+InnerForm.validateCEP("0131010");   // false
 ```
 
 #### `validateLatitude(value)` - **🆕 NOVA**
