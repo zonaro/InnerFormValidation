@@ -323,12 +323,7 @@
         return true;
     };
 
-    /**
-     * Alias em português para validarOAB
-     * @function validarOAB
-     * @memberof InnerFormValidation
-     */
-    InnerForm.validarOAB = InnerForm.validateOAB;
+
 
     /**
      * Validates latitude coordinate values.
