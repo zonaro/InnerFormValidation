@@ -2883,10 +2883,6 @@
 
     }
 
-
-
-
-
     if (typeof document !== "undefined") {
         var initInnerForm = function () {
             setTimeout(function () {
