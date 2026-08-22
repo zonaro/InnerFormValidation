@@ -1,6 +1,6 @@
 (function (root) {
 
-    InnerForm = function () {
+    InnerForm = function (selector, context) {
         var inputSelector = "input, select, textarea, button";
         var toArray = function (value) {
             return Array.prototype.slice.call(value || []);
@@ -70,10 +70,24 @@
             fetch(options.url).then(function (response) { if (!response.ok) throw new Error(response.statusText); return response.json(); }).then(options.success).catch(function (error) { if (options.error) options.error(null, "error", error); }).finally(function () { if (options.complete) options.complete(); });
         };
         query.ready = function (callback) { if (typeof document === "undefined") return; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", callback); else callback(); };
-        return query;
+        Object.keys(query.fn).forEach(function (methodName) { InnerForm.fn[methodName] = query.fn[methodName]; });
+        query.fn = InnerForm.fn;
+        InnerForm.trim = query.trim;
+        InnerForm.ajax = query.ajax;
+        InnerForm.ready = query.ready;
+        return query(selector, context);
     }
 
+    InnerForm.fn = {};
+    InnerForm.trim = function (value) { return String(value == null ? "" : value).trim(); };
+    InnerForm.ajax = function (options) {
+        if (options.beforeSend) options.beforeSend();
+        fetch(options.url).then(function (response) { if (!response.ok) throw new Error(response.statusText); return response.json(); }).then(options.success).catch(function (error) { if (options.error) options.error(null, "error", error); }).finally(function () { if (options.complete) options.complete(); });
+    };
+    InnerForm.ready = function (callback) { if (typeof document === "undefined") return; if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", callback); else callback(); };
+
     root.InnerForm = InnerForm;
+
     var baseMethods = Object.keys(InnerForm.fn);
 
 

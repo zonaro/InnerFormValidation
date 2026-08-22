@@ -2,7 +2,7 @@
 
 **A complete JavaScript library for form masking and validation, dependency-free and with a native callable API.**
 
-## Documentação
+## Documentation
 
 See the [complete documentation site](docs/index.html), with interactive examples, API reference, standalone installation, jQuery compatibility, postal-code autocomplete, and geolocation.
 
@@ -10,7 +10,7 @@ See the [complete documentation site](docs/index.html), with interactive example
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Standalone](https://img.shields.io/badge/JavaScript-standalone-brightgreen)](docs/index.html)
 
-## 📖 Índice
+## 📖 Table of Contents
 
 1. [Installation and Configuration](#installation-and-configuration)
 2. [Basic Configuration](#basic-configuration)
@@ -75,7 +75,7 @@ To use it as a jQuery plugin, load jQuery before the same CDN address:
 ### 1. Base HTML Structure
 ```html
 <form class="validate">
-    <input type="text" class="form-control obg minlen 5" placeholder="Mínimo 5 caracteres">
+    <input type="text" class="form-control obg minlen 5" placeholder="Minimum 5 characters">
     <button type="submit">Enviar</button>
 </form>
 ```
@@ -170,18 +170,18 @@ Fields with the `num` or `number` classes now support the following attributes f
 
 ### **Date and Time Validation**
 
-| Classe                  | Formato                 | Compatível com Máscara | Exemplo                                    |
-| ----------------------- | ----------------------- | ---------------------- | ------------------------------------------ |
-| `date` `data`           | dd/MM/yyyy              | ✅                      | `<input class="mask date">`                |
-| `time`                  | hh:mm:ss                | ✅                      | `<input class="mask time">`                |
-| `timeshort` `shorttime` | hh:mm                   | ✅                      | `<input class="mask timeshort">`           |
-| `datetime`              | dd/MM/yyyy hh:mm:ss     | ✅                      | `<input class="mask datetime">`            |
-| `datetimeshort`         | dd/MM/yyyy hh:mm        | ✅                      | `<input class="mask datetimeshort">`       |
-| `minutesecond`          | mm:ss                   | ✅                      | `<input class="mask minutesecond">`        |
-| `monthyear`             | MM/yyyy                 | ✅                      | `<input class="mask monthyear">`           |
-| `daterange`             | dd/MM/yyyy ~ dd/MM/yyyy | ✅                      | `<input class="mask daterange">`           |
-| `monthyearrange`        | MM/yyyy ~ MM/yyyy       | ✅                      | `<input class="mask monthyearrange">`      |
-| `shortmonthyearrange`   | MM/yy ~ MM/yy           | ✅                      | `<input class="mask shortmonthyearrange">` |
+| Class                   | Format                  | Mask Compatible | Example                                    |
+| ----------------------- | ----------------------- | --------------- | ------------------------------------------ |
+| `date` `data`           | dd/MM/yyyy              | ✅               | `<input class="mask date">`                |
+| `time`                  | hh:mm:ss                | ✅               | `<input class="mask time">`                |
+| `timeshort` `shorttime` | hh:mm                   | ✅               | `<input class="mask timeshort">`           |
+| `datetime`              | dd/MM/yyyy hh:mm:ss     | ✅               | `<input class="mask datetime">`            |
+| `datetimeshort`         | dd/MM/yyyy hh:mm        | ✅               | `<input class="mask datetimeshort">`       |
+| `minutesecond`          | mm:ss                   | ✅               | `<input class="mask minutesecond">`        |
+| `monthyear`             | MM/yyyy                 | ✅               | `<input class="mask monthyear">`           |
+| `daterange`             | dd/MM/yyyy ~ dd/MM/yyyy | ✅               | `<input class="mask daterange">`           |
+| `monthyearrange`        | MM/yyyy ~ MM/yyyy       | ✅               | `<input class="mask monthyearrange">`      |
+| `shortmonthyearrange`   | MM/yy ~ MM/yy           | ✅               | `<input class="mask shortmonthyearrange">` |
 
 ### **Length Validation**
 
@@ -213,7 +213,7 @@ InnerForm.validateUF('ZZ');           // false
 InnerForm.validateOAB('511061SP');    // true
 InnerForm.validateOAB('511.061/SP');  // true
 InnerForm.validateOAB('12345RJ');     // true
-InnerForm.validateOAB('123456SA');    // false (UF inválida)
+InnerForm.validateOAB('123456SA');    // false (invalid UF)
 
 InnerForm.validateCNH('98765432100'); // true/false conforme DV
 InnerForm.validateCNH('00000000000'); // false
@@ -233,7 +233,7 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 <!-- CNPJ: 12.345.678/0001-90 -->
 <input class="form-control mask cnpj">
 
-<!-- CPF ou CNPJ automático -->
+<!-- Automatic CPF or CNPJ -->
 <input class="form-control mask cpfcnpj">
 
 <!-- CEP: 12345-678 -->
@@ -245,25 +245,25 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 
 ### **Date and Time Masks**
 ```html
-<!-- Data: dd/mm/aaaa -->
+<!-- Date: dd/mm/yyyy -->
 <input class="form-control mask date">
 
-<!-- Data e Hora: dd/mm/aaaa hh:mm:ss -->
+<!-- Date and time: dd/mm/yyyy hh:mm:ss -->
 <input class="form-control mask datetime">
 
-<!-- Hora: hh:mm:ss -->
+<!-- Time: hh:mm:ss -->
 <input class="form-control mask time">
 
-<!-- Mês/Ano: mm/aaaa -->
+<!-- Month/Year: mm/yyyy -->
 <input class="form-control mask monthyear">
 
-<!-- Período de Datas: dd/mm/aaaa ~ dd/mm/aaaa -->
+<!-- Date range: dd/mm/yyyy ~ dd/mm/yyyy -->
 <input class="form-control mask daterange">
 
-<!-- Período de Mês/Ano: mm/aaaa ~ mm/aaaa -->
+<!-- Month/Year range: mm/yyyy ~ mm/yyyy -->
 <input class="form-control mask monthyearrange">
 
-<!-- Período de Mês/Ano Abreviado: mm/aa ~ mm/aa -->
+<!-- Short Month/Year range: mm/yy ~ mm/yy -->
 <input class="form-control mask shortmonthyearrange">
 ```
 
@@ -278,25 +278,25 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 
 ### **Card Masks**
 ```html
-<!-- Qualquer cartão: 1234 5678 9012 3456 -->
+<!-- Any card: 1234 5678 9012 3456 -->
 <input class="form-control mask creditcard">
 
-<!-- Cartão específico (Visa apenas) -->
+<!-- Specific card (Visa only) -->
 <input class="form-control mask creditcard visa">
 ```
 
 ### **Formatting Masks**
 ```html
-<!-- Apenas maiúsculas -->
+<!-- Uppercase only -->
 <input class="form-control mask upper">
 
-<!-- Apenas minúsculas -->
+<!-- Lowercase only -->
 <input class="form-control mask lower alpha">
 
-<!-- Sem espaços -->
+<!-- No spaces -->
 <input class="form-control mask nospace">
 
-<!-- Números com zeros à esquerda -->
+<!-- Numbers with leading zeros -->
 <input class="form-control mask num len 8 leadingzero">
 
 <!-- UUID/GUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -->
@@ -309,49 +309,49 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 
 ### **Age Validation**
 ```html
-<!-- Maior de 18 anos -->
-<input class="form-control mask date minage 18" placeholder="Data de Nascimento">
+<!-- Over 18 years old -->
+<input class="form-control mask date minage 18" placeholder="Date of Birth">
 
-<!-- Menor de 65 anos -->
+<!-- Under 65 years old -->
 <input class="form-control mask date maxage 65">
 
-<!-- Exatamente 30 anos -->
+<!-- Exactly 30 years old -->
 <input class="form-control mask date age 30">
 ```
 
 ### **Numeric Comparison Validation**
 ```html
-<!-- Maior que 10 -->
+<!-- Greater than 10 -->
 <input class="form-control num after 10">
 
-<!-- Menor que 100 -->
+<!-- Less than 100 -->
 <input class="form-control num before 100">
 
-<!-- Entre 1 e 10 -->
+<!-- Between 1 and 10 -->
 <input class="form-control num 1 to 10">
 ```
 
 ### **Date Comparison Validation**
 ```html
-<!-- Após hoje -->
+<!-- After today -->
 <input class="form-control mask date after today">
 
-<!-- Antes de uma data específica -->
+<!-- Before a specific date -->
 <input class="form-control mask date before 31/12/2023">
 
-<!-- Entre duas datas -->
+<!-- Between two dates -->
 <input class="form-control mask date 01/01/2023 to 31/12/2023">
 ```
 
 ### **Password Validation**
 ```html
-<!-- Senha forte (4 de 4 critérios: maiúscula, minúscula, número, símbolo) -->
+<!-- Strong password (4 of 4 criteria: uppercase, lowercase, number, symbol) -->
 <input type="password" class="form-control password strong minlen 8">
 
-<!-- Senha média (3 de 4 critérios) -->
+<!-- Medium password (3 of 4 criteria) -->
 <input type="password" class="form-control password medium minlen 6">
 
-<!-- Senha customizada (2 de 4 critérios) -->
+<!-- Custom password (2 of 4 criteria) -->
 <input type="password" class="form-control password 2 minlen 4">
 ```
 
@@ -370,56 +370,56 @@ InnerForm.validarCNH('987.654.321-00'); // true/false
 - `maestro` - Maestro
 
 ```html
-<!-- Qualquer cartão válido -->
+<!-- Any valid card -->
 <input class="form-control mask creditcard">
 
-<!-- Apenas Visa ou Mastercard -->
+<!-- Visa or Mastercard only -->
 <input class="form-control mask creditcard visa mastercard">
 ```
 
 ### **UUID/GUID Validation**
 ```html
-<!-- UUID/GUID válido em qualquer formato -->
+<!-- Valid UUID/GUID in any format -->
 <input class="form-control uuid">
 
-<!-- UUID com máscara automática -->
+<!-- UUID with automatic masking -->
 <input class="form-control mask uuid">
 ```
 
 ### **PIX Key Validation**
 ```html
-<!-- Aceita email, CPF, CNPJ, telefone ou UUID -->
+<!-- Accepts email, CPF, CNPJ, phone number, or UUID -->
 <input class="form-control pix">
 
-<!-- Alias equivalente -->
+<!-- Equivalent alias -->
 <input class="form-control chavepix">
 ```
 
 ### **String Content Validation**
 ```html
-<!-- Deve conter espaço -->
+<!-- Must contain a space -->
 <input class="form-control contains _space">
 
-<!-- Deve conter texto específico -->
+<!-- Must contain specific text -->
 <input class="form-control contains @gmail.com">
 
-<!-- Deve conter qualquer um dos caracteres -->
+<!-- Must contain any of the characters -->
 <input class="form-control containsanychar {}()">
 
-<!-- Deve conter todos os caracteres -->
+<!-- Must contain all of the characters -->
 <input class="form-control containsallchar ABC">
 
-<!-- NÃO deve conter caracteres específicos -->
+<!-- Must NOT contain specific characters -->
 <input class="form-control notcontainschar ABCD">
 ```
 
 ### **Equality Validation**
 ```html
-<!-- Comparar com outro campo -->
+<!-- Compare with another field -->
 <input id="senha" type="password" class="form-control">
-<input class="form-control eq #senha" placeholder="Confirmar Senha">
+<input class="form-control eq #senha" placeholder="Confirm Password">
 
-<!-- Comparar com valor específico -->
+<!-- Compare with a specific value -->
 <input class="form-control eqv admin" placeholder="Digite 'admin'">
 ```
 
@@ -432,23 +432,23 @@ Use `data-*` attributes to run JavaScript code on validation events:
 ### **Available Callbacks**
 ```html
 <input class="form-control obg" 
-    data-beforevalidatecallback="console.log('Antes da validação')"
+    data-beforevalidatecallback="console.log('Before validation')"
     data-validcallback="$('#success').show()"
     data-invalidcallback="$('#error').show()"
-    data-aftervalidatecallback="console.log('Após validação')">
+    data-aftervalidatecallback="console.log('After validation')">
 ```
 
 ### **HTML5 Message Callback**
 ```html
 <input class="form-control obg" 
-    data-invalidmessage="Este campo é obrigatório! 😊">
+    data-invalidmessage="This field is required! 😊">
 ```
 
 ### **Practical Callback Example**
 ```html
 <input class="form-control obg eq #div_OK" 
-    data-invalidcallback="$('#status').text('❌ Inválido').css('color','red')"
-    data-validcallback="$('#status').text('✅ Válido').css('color','green')">
+    data-invalidcallback="$('#status').text('❌ Invalid').css('color','red')"
+    data-validcallback="$('#status').text('✅ Valid').css('color','green')">
 <div id="status"></div>
 ```
 
@@ -462,20 +462,20 @@ InnerFormValidation includes integration with the **ViaCEP** API for Brazilian a
 
 | Class                               | Description                       | Example                                     |
 | ----------------------------------- | --------------------------------- | ------------------------------------------- |
-| `autocomplete cep`                  | Campo CEP que busca endereço      | `<input class="autocomplete cep mask">`     |
+| `autocomplete cep`                  | Postal-code field that searches for an address      | `<input class="autocomplete cep mask">`     |
 | `autocomplete address`              | Recebe logradouro                 | `<input class="autocomplete address">`      |
 | `autocomplete neighborhood`         | Recebe bairro                     | `<input class="autocomplete neighborhood">` |
 | `autocomplete city`                 | Recebe cidade                     | `<input class="autocomplete city">`         |
 | `autocomplete state`                | Recebe estado (UF)                | `<input class="autocomplete state">`        |
-| `autocomplete fulladdress`          | Recebe endereço completo          | `<p class="autocomplete fulladdress"></p>`  |
-| `autocomplete num` `number`         | Campo número (recebe foco)        | `<input class="autocomplete num">`          |
-| `autocomplete homenum` `homenumber` | Número residencial (alfanumérico) | `<input class="autocomplete homenum">`      |
-| `autocomplete ddd`                  | Código DDD da região              | `<input class="autocomplete ddd">`          |
-| `autocomplete ibge`                 | Código IBGE                       | `<input class="autocomplete ibge">`         |
-| `autocomplete gia`                  | Código GIA                        | `<input class="autocomplete gia">`          |
+| `autocomplete fulladdress`          | Receives the complete address          | `<p class="autocomplete fulladdress"></p>`  |
+| `autocomplete num` `number`         | Number field (receives focus)        | `<input class="autocomplete num">`          |
+| `autocomplete homenum` `homenumber` | House number (alphanumeric) | `<input class="autocomplete homenum">`      |
+| `autocomplete ddd`                  | Regional area code              | `<input class="autocomplete ddd">`          |
+| `autocomplete ibge`                 | IBGE code                       | `<input class="autocomplete ibge">`         |
+| `autocomplete gia`                  | GIA code                        | `<input class="autocomplete gia">`          |
 | `autocomplete latitude` `lat`       | Recebe latitude automaticamente   | `<input class="autocomplete latitude">`     |
 | `autocomplete longitude` `long`     | Recebe longitude automaticamente  | `<input class="autocomplete longitude">`    |
-| `autocomplete siafi`                | Código SIAFI                      | `<input class="autocomplete siafi">`        |
+| `autocomplete siafi`                | SIAFI code                      | `<input class="autocomplete siafi">`        |
 
 ### **Complete Address Example**
 ```html
@@ -485,11 +485,11 @@ InnerFormValidation includes integration with the **ViaCEP** API for Brazilian a
         <input class="form-control mask cep autocomplete obg" placeholder="00000-000">
     </div>
     <div class="col-md-6">
-        <label>Endereço</label>
+        <label>Address</label>
         <input class="form-control autocomplete address" readonly>
     </div>
     <div class="col-md-2">
-        <label>Número</label>
+        <label>Number</label>
         <input class="form-control autocomplete homenum">
     </div>
     <div class="col-md-4">
@@ -687,7 +687,7 @@ Practical example of integrating form fields:
         </div>
         <div class="col-md-12">
             <button type="button" class="btn btn-primary" onclick="obterLocalizacao()">
-                📍 Obter Minha Localização
+                📍 Get My Location
             </button>
         </div>
     </div>
@@ -709,11 +709,11 @@ function obterLocalizacao() {
             $('#latitude, #longitude').addClass('success');
         })
         .catch(function(error) {
-            // Limpar campos em caso de erro
+            // Clear fields on error
             $('#latitude').val('');
             $('#longitude').val('');
             
-            alert('Erro: ' + error.userMessage);
+            alert('Error: ' + error.userMessage);
         });
 }
 </script>
@@ -728,30 +728,30 @@ InnerForm.getLocation()
     .catch(function(error) {
         switch (error.error) {
             case 'PERMISSION_DENIED':
-                alert('Você precisa permitir o acesso à localização');
+                alert('You must allow location access');
                 break;
             case 'POSITION_UNAVAILABLE':
-                alert('Localização não disponível no momento');
+                alert('Location is currently unavailable');
                 break;
             case 'TIMEOUT':
                 alert('Tempo limite excedido. Tente novamente');
                 break;
             case 'GEOLOCATION_NOT_SUPPORTED':
-                alert('Seu navegador não suporta geolocalização');
+                alert('Your browser does not support geolocation');
                 break;
             default:
-                alert('Erro desconhecido: ' + error.message);
+                alert('Error desconhecido: ' + error.message);
         }
     });
 ```
 
 ### **Configuration Options**
 
-| Opção                | Tipo    | Padrão | Descrição                                    |
+| Option                | Type    | Default | Description                                    |
 | -------------------- | ------- | ------ | -------------------------------------------- |
-| `enableHighAccuracy` | boolean | true   | Solicita alta precisão (GPS quando possível) |
+| `enableHighAccuracy` | boolean | true   | Requests high accuracy (GPS when possible) |
 | `timeout`            | number  | 10000  | Tempo limite em milissegundos                |
-| `maximumAge`         | number  | 60000  | Idade máxima aceitável do cache (ms)         |
+| `maximumAge`         | number  | 60000  | Maximum acceptable cache age (ms)         |
 
 ### **Requirements and Limitations**
 
@@ -763,8 +763,8 @@ InnerForm.getLocation()
 ### **Practical Examples**
 
 See the included example files:
-- `ExemploSimples.html` - Basic implementation
-- `ExemploGeolocalizacao.html` - Complete interface with monitoring
+- `ExampleSimples.html` - Basic implementation
+- `ExampleGeolocalizacao.html` - Complete interface with monitoring
 - `TestForm.html` - Dedicated section with all features
 
 ### **Complete Geolocation API**
@@ -795,7 +795,7 @@ InnerForm.clearLocationWatch(watchId)
         </div>
         
         <div class="col-md-6">
-            <label>Data de Nascimento (18+) *</label>
+            <label>Date of Birth (18+) *</label>
             <input class="form-control mask date obg minage 18" placeholder="dd/mm/aaaa">
         </div>
         
@@ -815,30 +815,30 @@ InnerForm.clearLocationWatch(watchId)
             <input class="form-control email obg" placeholder="seu@email.com">
         </div>
         
-        <!-- Endereço via CEP -->
+        <!-- Address via CEP -->
         <div class="col-md-4">
             <label>CEP *</label>
             <input class="form-control mask cep autocomplete obg" placeholder="00000-000">
         </div>
         
         <div class="col-md-6">
-            <label>Endereço</label>
+            <label>Address</label>
             <input class="form-control autocomplete address" readonly>
         </div>
         
         <div class="col-md-2">
-            <label>Número</label>
+            <label>Number</label>
             <input class="form-control autocomplete homenum">
         </div>
         
-        <!-- Senha -->
+        <!-- Password -->
         <div class="col-md-6">
-            <label>Senha *</label>
+            <label>Password *</label>
             <input id="password" type="password" class="form-control password strong minlen 8 obg">
         </div>
         
         <div class="col-md-6">
-            <label>Confirmar Senha *</label>
+            <label>Confirm Password *</label>
             <input type="password" class="form-control eq #password obg">
         </div>
     </div>
@@ -850,9 +850,9 @@ InnerForm.clearLocationWatch(watchId)
 ### **Financial Form**
 ```html
 <form class="validate">
-    <!-- Dados do Cartão -->
+    <!-- Card Details -->
     <div class="col-md-8">
-        <label>Número do Cartão</label>
+        <label>Card Number</label>
         <input class="form-control mask creditcard visa mastercard obg">
     </div>
     
@@ -863,12 +863,12 @@ InnerForm.clearLocationWatch(watchId)
     
     <!-- Valores -->
     <div class="col-md-6">
-        <label>Valor Mínimo</label>
+        <label>Minimum Amount</label>
         <input class="form-control mask num after 0">
     </div>
     
     <div class="col-md-6">
-        <label>Valor Máximo</label>
+        <label>Maximum Amount</label>
         <input class="form-control mask num 1 to 10000">
     </div>
     
@@ -927,8 +927,8 @@ $('#uuid').uuidMask();
 
 ```javascript
 InnerForm.searchViaCEP('01310-100', '123', 0, function(dadosEndereco) {
-    console.log('Endereço encontrado:', dadosEndereco);
-    // dadosEndereco contém: logradouro, bairro, localidade, uf, etc.
+    console.log('Address encontrado:', dadosEndereco);
+    // dadosEndereco contains: logradouro, bairro, localidade, uf, etc.
 });
 ```
 
@@ -943,9 +943,9 @@ $('#input').validateOnType(0);
 
 ### **Value Assignment Utility**
 ```javascript
-// Define valor apenas se campo estiver vazio
-// Se não estiver vazio, só substitui se não tiver classe 'noreplace'
-$('#campo').setOrReplaceVal('Novo valor');
+// Set the value only if the field is empty
+// If not empty, only replaces it if it does not have the class 'noreplace'
+$('#campo').setOrReplaceVal('New value');
 ```
 
 ### **Geolocation API**
@@ -1013,7 +1013,7 @@ InnerForm.log('Mensagem de debug', dados);
 #### `error(...arguments)` 
 Logs error messages to the console when verbose mode is enabled.
 ```javascript
-InnerForm.error('Erro encontrado:', erro);
+    InnerForm.error('Error found:', error);
 ```
 
 #### `warn(...arguments)`
@@ -1034,7 +1034,7 @@ InnerForm.addLeadingZeros(-45, 4);  // "-045"
 #### `barcodeCheckSum(code)`
 Calculates the check digit of barcodes using standard algorithms.
 ```javascript
-InnerForm.barcodeCheckSum("1234567"); // Retorna número do checksum
+InnerForm.barcodeCheckSum("1234567"); // Returns the checksum number
 ```
 
 #### `getAge(birthDate, fromDate)`
@@ -1047,7 +1047,7 @@ InnerForm.getAge("15/03/1990", new Date("2025-01-01")); // Idade em 2025
 #### `expandYear(year, pastDistance, futureDistance)`
 Expands a two-digit year (YY) to four digits (YYYY) based on the current century.
 ```javascript
-InnerForm.expandYear(25, 20, 5); // 2025 (próximo de 2024)
+InnerForm.expandYear(25, 20, 5); // 2025 (near 2024)
 InnerForm.expandYear(90, 20, 5); // 1990 (fora do range futuro)
 ```
 
@@ -1085,32 +1085,32 @@ Validates whether a value contains a valid coordinate pair in several formats.
 InnerForm.validateCoordinate("-23.550520,-46.633308"); // true
 InnerForm.validateCoordinate("-23.5 -46.6");           // true
 InnerForm.validateCoordinate("45;90");                 // true
-InnerForm.validateCoordinate("91,200");                // false (coordenadas inválidas)
+InnerForm.validateCoordinate("91,200");                // false (invalid coordinates)
 ```
 
 #### `parseShortMonthYearPartial(part)`
-Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada.
+Parses and formats a partial short month/year string "MM/YY" during input.
 ```javascript
 InnerForm.parseShortMonthYearPartial("0325"); // "03/25"
 InnerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
 ```
 
 #### `parseMonthYearPartial(part)`
-Analisa e formata uma string parcial de mês/ano "MM/YYYY" durante a entrada.
+Parses and formats a partial month/year string "MM/YYYY" during input.
 ```javascript
 InnerForm.parseMonthYearPartial("032025"); // "03/2025"
 InnerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
 ```
 
 #### `parseDatePartial(part)`
-Analisa e formata uma string parcial de data "DD/MM/YYYY" durante a entrada com validação inteligente.
+Parses and formats a partial date string "DD/MM/YYYY" during input with smart validation.
 ```javascript
 InnerForm.parseDatePartial("25122024"); // "25/12/2024"
 InnerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
 ```
 
 #### `validDate(value)`
-Valida se uma string representa uma data válida no formato DD/MM/YYYY.
+Validates whether a string represents a valid date no formato DD/MM/YYYY.
 ```javascript
 InnerForm.validDate("31/12/2023"); // true
 InnerForm.validDate("31/02/2023"); // false
@@ -1118,29 +1118,29 @@ InnerForm.validDate("15/03/90");   // true (ano expandido)
 ```
 
 #### `parseDate(value)`
-Converte uma string de data em objeto Date.
+Converts a date string into a Date object.
 ```javascript
-InnerForm.parseDate("25/12/2023"); // Objeto Date
+InnerForm.parseDate("25/12/2023"); // Date object
 InnerForm.parseDate("12/2023");    // 01/12/2023
 InnerForm.parseDate("25/12/23");   // 25/12/2023 (ano expandido)
 ```
 
 #### `validDateRange(value)`
-Valida um período de datas no formato "DD/MM/YYYY ~ DD/MM/YYYY".
+Validates a date range no formato "DD/MM/YYYY ~ DD/MM/YYYY".
 ```javascript
 InnerForm.validDateRange("01/01/2023 ~ 31/12/2023"); // true
 InnerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (ordem)
 ```
 
 #### `validMonthYearRange(value)`
-Valida um período de mês/ano no formato "MM/YYYY ~ MM/YYYY".
+Validates a month/year range no formato "MM/YYYY ~ MM/YYYY".
 ```javascript
 InnerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
 InnerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false
 ```
 
 #### `validShortMonthYearRange(value)`
-Valida um período de mês/ano abreviado no formato "MM/YY ~ MM/YY".
+Validates a month/year range abreviado no formato "MM/YY ~ MM/YY".
 ```javascript
 InnerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
 InnerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false
@@ -1156,43 +1156,43 @@ InnerForm.validateTime("25:30");           // false
 ```
 
 #### `validateEAN(value)`
-Valida códigos de barras EAN (European Article Number) com verificação de checksum.
+Validates EAN barcodes (European Article Number) with checksum verification.
 ```javascript
-InnerForm.validateEAN("1234567890123"); // Valida se o checksum está correto
+InnerForm.validateEAN("1234567890123"); // Validates whether the checksum is correct
 ```
 
 #### `validateNotChar(value, chars)`
-Valida que uma string NÃO contém nenhum dos caracteres especificados.
+Validates that a string contains NONE of the specified characters.
 ```javascript
 InnerForm.validateNotChar("abc123", "xyz"); // true
 InnerForm.validateNotChar("abc123", "abc"); // false
 ```
 
 #### `validateAnyChar(value, chars)`
-Valida que uma string contém PELO MENOS UM dos caracteres especificados.
+Validates that a string contains AT LEAST ONE of the specified characters.
 ```javascript
-InnerForm.validateAnyChar("senha123", "123"); // true
-InnerForm.validateAnyChar("senha", "123");    // false
+InnerForm.validateAnyChar("password123", "123"); // true
+InnerForm.validateAnyChar("password", "123");    // false
 ```
 
 #### `validateAllChar(value, chars)`
-Valida que uma string contém TODOS os caracteres especificados.
+Validates that a string contains ALL of the specified characters.
 ```javascript
-InnerForm.validateAllChar("senha123", "123"); // true
-InnerForm.validateAllChar("senha12", "123");  // false
+InnerForm.validateAllChar("password123", "123"); // true
+InnerForm.validateAllChar("password12", "123");  // false
 ```
 
 ### **New Validation Functions**
 
 #### `validShortMonthYearRange(value)`
-Valida um intervalo de mês/ano curto no formato "MM/YY ~ MM/YY".
+Validates a short month/year range in the format "MM/YY ~ MM/YY".
 ```javascript
 InnerForm.validShortMonthYearRange("01/23 ~ 12/23"); // true
 InnerForm.validShortMonthYearRange("12/23 ~ 01/23"); // false (primeira > segunda)
 ```
 
 #### `validMonthYearRange(value)`
-Valida um intervalo de mês/ano no formato "MM/YYYY ~ MM/YYYY".
+Validates a month/year range in the format "MM/YYYY ~ MM/YYYY".
 ```javascript
 InnerForm.validMonthYearRange("01/2023 ~ 12/2023"); // true
 InnerForm.validMonthYearRange("12/2023 ~ 01/2023"); // false (primeira > segunda)
@@ -1206,7 +1206,7 @@ InnerForm.validDateRange("31/12/2023 ~ 01/01/2023"); // false (primeira > segund
 ```
 
 #### `validateUUID(value)` - **🆕 ATUALIZADA**
-Valida se uma string é um UUID/GUID válido. **Agora aceita formatos mais flexíveis**, não apenas RFC 4122.
+Validates whether a string is a valid UUID/GUID. **Now accepts more flexible formats**, not only RFC 4122.
 ```javascript
 InnerForm.validateUUID("ff2bc94c-8ce0-417f-08ce-08ddfce17182"); // true
 InnerForm.validateUUID("12345678-1234-1234-1234-123456789abc"); // true
@@ -1214,21 +1214,21 @@ InnerForm.validateUUID("invalid-uuid"); // false
 ```
 
 #### `validateNotChar(value, chars)`
-Valida que um valor não contém nenhum dos caracteres especificados.
+Validates that a value contains none of the specified characters.
 ```javascript
 InnerForm.validateNotChar("teste123", "!@#"); // true
 InnerForm.validateNotChar("test@123", "@#"); // false
 ```
 
 #### `validateAnyChar(value, chars)`
-Valida que um valor contém pelo menos um dos caracteres especificados.
+Validates that a value contains at least one of the specified characters.
 ```javascript
 InnerForm.validateAnyChar("teste123", "123"); // true
 InnerForm.validateAnyChar("teste", "123"); // false
 ```
 
 #### `validateAllChar(value, chars)`
-Valida que um valor contém todos os caracteres especificados.
+Validates that a value contains all of the specified characters.
 ```javascript
 InnerForm.validateAllChar("teste123!", "t3!"); // true
 InnerForm.validateAllChar("teste", "tx"); // false
@@ -1237,28 +1237,28 @@ InnerForm.validateAllChar("teste", "tx"); // false
 ### **New Smart Parsing Functions**
 
 #### `parseShortMonthYearPartial(part)` - **🆕 NOVA**
-Analisa e formata uma string parcial de mês/ano curto "MM/YY" durante a entrada com validação inteligente.
+Parses and formats a partial short month/year string "MM/YY" during input with smart validation.
 ```javascript
 InnerForm.parseShortMonthYearPartial("0325"); // "03/25"
 InnerForm.parseShortMonthYearPartial("12231 02"); // "12/23 ~ 02"
-InnerForm.parseShortMonthYearPartial("1323"); // "12/23" (limita mês a 12)
+InnerForm.parseShortMonthYearPartial("1323"); // "12/23" (limits month to 12)
 ```
 
 #### `parseMonthYearPartial(part)` - **🆕 NOVA**
-Analisa e formata uma string parcial de mês/ano "MM/YYYY" durante a entrada com validação inteligente.
+Parses and formats a partial month/year string "MM/YYYY" during input with smart validation.
 ```javascript
 InnerForm.parseMonthYearPartial("032025"); // "03/2025"
 InnerForm.parseMonthYearPartial("122024 01"); // "12/2024 ~ 01"
-InnerForm.parseMonthYearPartial("1320245"); // "12/2024 ~ 05" (limita mês a 12)
+InnerForm.parseMonthYearPartial("1320245"); // "12/2024 ~ 05" (limits month to 12)
 ```
 
 #### `parseDatePartial(part)` - **🔄 MELHORADA**
-Analisa e formata uma string parcial de data "DD/MM/YYYY" durante a entrada com validação inteligente melhorada.
+Parses and formats a partial date string "DD/MM/YYYY" during input with improved smart validation.
 ```javascript
 InnerForm.parseDatePartial("25122024"); // "25/12/2024"
 InnerForm.parseDatePartial("311220241 01"); // "31/12/2024 ~ 01"
 InnerForm.parseDatePartial("32122024"); // "31/12/2024" (limita dia a 31)
-InnerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
+InnerForm.parseDatePartial("25132024"); // "25/12/2024" (limits month to 12)
 ```
 
 ### **Mask Functions**
@@ -1266,7 +1266,7 @@ InnerForm.parseDatePartial("25132024"); // "25/12/2024" (limita mês a 12)
 #### `applyNoSpaceMask(input)`
 Applies a mask that removes all spaces from the input.
 ```javascript
-InnerForm.applyNoSpaceMask(document.getElementById('campo'));
+InnerForm.applyNoSpaceMask(document.getElementById('field'));
 ```
 
 #### `applyAlphaMask(input)`
@@ -1282,65 +1282,65 @@ InnerForm.applyAlphaNumericMask(document.getElementById('codigo'));
 ```
 
 #### `applyPhoneMask(input)`
-Aplica máscara de telefone brasileiro (formato automático).
+Applies a Brazilian phone mask (automatic format).
 ```javascript
 InnerForm.applyPhoneMask(document.getElementById('telefone'));
 ```
 
 #### `formatDate(text)`
-Formata uma string de dígitos como data (DD/MM/YYYY).
+Formats a string of digits as a date (DD/MM/YYYY).
 ```javascript
 InnerForm.formatDate("25122023"); // "25/12/2023"
 ```
 
 #### `applyDateTimeMask(input)`
-Aplica máscara de data e hora (DD/MM/YYYY HH:MM:SS).
+Applies a date and time mask (DD/MM/YYYY HH:MM:SS).
 ```javascript
 InnerForm.applyDateTimeMask(document.getElementById('dataHora'));
 ```
 
 #### `applyDateRangeMask(input)`
-Aplica máscara para período de datas (DD/MM/YYYY ~ DD/MM/YYYY).
+Applies a date-range mask (DD/MM/YYYY ~ DD/MM/YYYY).
 ```javascript
 InnerForm.applyDateRangeMask(document.getElementById('periodo'));
 ```
 
 #### `applyMonthYearRangeMask(input)`
-Aplica máscara para período de mês/ano (MM/YYYY ~ MM/YYYY) com parsing inteligente.
+Applies a month/year range mask (MM/YYYY ~ MM/YYYY) with smart parsing.
 ```javascript
 InnerForm.applyMonthYearRangeMask(document.getElementById('periodoMensal'));
 ```
 
 #### `applyShortMonthYearRangeMask(input)`
-Aplica máscara para período de mês/ano curto (MM/YY ~ MM/YY) com parsing inteligente.
+Applies a month/year range mask curto (MM/YY ~ MM/YY) with smart parsing.
 ```javascript
 InnerForm.applyShortMonthYearRangeMask(document.getElementById('periodoMensalCurto'));
 ```
 
 #### `applyUUIDMask(input)`
-Aplica máscara para UUID/GUID com formatação automática de hífens.
+Applies a UUID/GUID mask with automatic hyphen formatting.
 ```javascript
 InnerForm.applyUUIDMask(document.getElementById('uuid'));
 ```
 
 #### `applyLatitudeMask(input)` - **🆕 NOVA**
-Aplica máscara para coordenadas de latitude com validação de limites (-90 a +90).
+Applies a mask for latitude coordinates with range validation (-90 a +90).
 ```javascript
 InnerForm.applyLatitudeMask(document.getElementById('latitude'));
-// Suporte a classe 'precision' para limitar casas decimais
-// Exemplo: <input class="mask latitude precision 6">
+// Supports the 'precision' class to limit decimal places
+// Example: <input class="mask latitude precision 6">
 ```
 
 #### `applyLongitudeMask(input)` - **🆕 NOVA**
-Aplica máscara para coordenadas de longitude com validação de limites (-180 a +180).
+Applies a mask for longitude coordinates with range validation (-180 a +180).
 ```javascript
 InnerForm.applyLongitudeMask(document.getElementById('longitude'));
-// Suporte a classe 'precision' para limitar casas decimais
-// Exemplo: <input class="mask longitude precision 4">
+// Supports the 'precision' class to limit decimal places
+// Example: <input class="mask longitude precision 4">
 ```
 
 #### `applyShortMonthYearRangeMask(input)`
-Aplica máscara para período de mês/ano abreviado (MM/YY ~ MM/YY).
+Applies a month/year range mask abreviado (MM/YY ~ MM/YY).
 ```javascript
 InnerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev'));
 ```
@@ -1348,33 +1348,33 @@ InnerForm.applyShortMonthYearRangeMask(document.getElementById('periodoAbrev'));
 ### **Specialized Functions**
 
 #### `checkLuhn(cardNumber)`
-Valida número de cartão de crédito usando o algoritmo de Luhn.
+Validates a credit card number using the Luhn algorithm.
 ```javascript
-InnerForm.checkLuhn("4111111111111111"); // true (Visa válido)
+InnerForm.checkLuhn("4111111111111111"); // true (valid Visa)
 ```
 
 #### `validateCardBrand(cardNumber)`
-Identifica a bandeira do cartão de crédito e valida o formato.
+Identifies the credit card brand and validates the format.
 ```javascript
 InnerForm.validateCardBrand("4111111111111111"); // "visa"
 InnerForm.validateCardBrand("5555555555554444"); // "mastercard"
 ```
 
 #### `validateCNPJ(CNPJNumber)`
-Valida CNPJ brasileiro com verificação de dígitos verificadores.
+Validates Brazilian CNPJ with check-digit verification.
 ```javascript
 InnerForm.validateCNPJ("11.222.333/0001-81"); // true/false
 ```
 
 #### `validatePassword(input)`
-Analisa a força de uma senha baseada em critérios múltiplos.
+Analyzes password strength based on multiple criteria.
 ```javascript
 InnerForm.validatePassword("MinhaSenh@123"); 
 // Retorna objeto com: score, hasUpper, hasLower, hasNumber, hasSymbol
 ```
 
 #### `searchViaCEP(CEPNumber, homeNumber, delay, callbackFunction)`
-Busca dados de endereço na API ViaCEP e executa callback com os resultados.
+Searches for address data through the ViaCEP API and runs a callback with the results.
 ```javascript
 InnerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
     console.log("Logradouro:", dados.logradouro);
@@ -1387,108 +1387,108 @@ InnerForm.searchViaCEP("01310-100", "123", 500, function(dados) {
 ### **Geolocation Functions - 🆕 NEW**
 
 #### `getLocation(options)`
-Obtém a localização atual do usuário usando a API de Geolocalização do navegador.
+Gets the user's current location using the browser Geolocation API.
 ```javascript
-// Uso básico
+// Basic usage
 InnerForm.getLocation()
     .then(function(location) {
         console.log('Latitude:', location.latitude);
         console.log('Longitude:', location.longitude);
-        console.log('Precisão:', location.accuracyFormatted);
+        console.log('Accuracy:', location.accuracyFormatted);
         console.log('Google Maps:', location.googleMapsUrl);
     })
     .catch(function(error) {
-        console.error('Erro:', error.userMessage);
+        console.error('Error:', error.userMessage);
     });
 
-// Com opções customizadas
+// With custom options
 InnerForm.getLocation({
-    enableHighAccuracy: true,   // Alta precisão (GPS)
+    enableHighAccuracy: true,   // High accuracy (GPS)
     timeout: 15000,            // Timeout de 15 segundos
     maximumAge: 60000          // Cache de 60 segundos
 });
 ```
 
-**Objeto de resposta:**
+**Response object:**
 ```javascript
 {
     latitude: -23.5505,                // Latitude
     longitude: -46.6333,              // Longitude
-    accuracy: 65.0,                   // Precisão em metros
-    accuracyFormatted: "65 metros",   // Precisão formatada
+    accuracy: 65.0,                   // Accuracy em metros
+    accuracyFormatted: "65 metros",   // Accuracy formatada
     altitude: 760.5,                  // Altitude (pode ser null)
-    altitudeAccuracy: 12.0,           // Precisão da altitude
-    heading: 180.5,                   // Direção em graus (pode ser null)
-    speed: 2.5,                       // Velocidade em m/s (pode ser null)
+    altitudeAccuracy: 12.0,           // Accuracy da altitude
+    heading: 180.5,                   // Direction in degrees (may be null)
+    speed: 2.5,                       // Speed in m/s (may be null)
     timestamp: 1704067200000,         // Timestamp
-    formattedTime: "01/01/2024 10:00:00", // Data/hora formatada
-    coordinates: "-23.550500, -46.633300", // Coordenadas formatadas
+    formattedTime: "01/01/2024 10:00:00", // Formatted date/time
+    coordinates: "-23.550500, -46.633300", // Formatted coordinates
     googleMapsUrl: "https://www.google.com/maps?q=-23.5505,-46.6333",
     osmUrl: "https://www.openstreetmap.org/?mlat=-23.5505&mlon=-46.6333&zoom=15"
 }
 ```
 
 #### `watchLocation(successCallback, errorCallback, options)`
-Monitora continuamente a localização do usuário, chamando o callback a cada atualização.
+Continuously monitors the user's location, calling the callback on every update.
 ```javascript
 var watchId = InnerForm.watchLocation(
     function(location) {
-        // Callback de sucesso - chamado a cada nova posição
-        console.log('Nova posição:', location.coordinates);
+            // Success callback - called on every new position
+            console.log('New position:', location.coordinates);
         $('#latitude').val(location.latitude);
         $('#longitude').val(location.longitude);
     },
     function(error) {
-        // Callback de erro
-        console.error('Erro no monitoramento:', error.userMessage);
-        alert('Erro: ' + error.userMessage);
+        // Error callback
+        console.error('Monitoring error:', error.userMessage);
+        alert('Error: ' + error.userMessage);
     },
     {
         enableHighAccuracy: true,
-        timeout: 10000,           // Timeout menor para monitoramento
-        maximumAge: 5000          // Cache menor para dados mais frescos
+        timeout: 10000,           // Shorter monitoring timeout
+        maximumAge: 5000          // Shorter cache for fresher data
     }
 );
 
-// Retorna ID do watcher para controle
+// Returns a watcher ID for control
 console.log('Watch ID:', watchId);
 ```
 
 #### `clearLocationWatch(watchId)`
-Para o monitoramento de localização ativo.
+Stops active location monitoring.
 ```javascript
-// Parar monitoramento específico
+// Stop specific monitoring
 InnerForm.clearLocationWatch(watchId);
 
-// Em aplicações SPA, sempre pare o monitoramento ao trocar de página
+// In SPAs, always stop monitoring when changing pages
 window.addEventListener('beforeunload', function() {
     InnerForm.clearLocationWatch(watchId);
 });
 ```
 
-**Tratamento de erros:**
+**Error handling:**
 ```javascript
-// Erros possíveis:
-// - PERMISSION_DENIED: Usuário negou permissão
-// - POSITION_UNAVAILABLE: Localização indisponível
-// - TIMEOUT: Tempo limite excedido
-// - GEOLOCATION_NOT_SUPPORTED: Navegador não suporta
-// - UNKNOWN_ERROR: Erro desconhecido
+// Possible errors:
+// - PERMISSION_DENIED: User denied permission
+// - POSITION_UNAVAILABLE: Location unavailable
+// - TIMEOUT: Time limit exceeded
+// - GEOLOCATION_NOT_SUPPORTED: Browser does not support geolocation
+// - UNKNOWN_ERROR: Unknown error
 
 InnerForm.getLocation()
     .catch(function(error) {
         switch (error.error) {
             case 'PERMISSION_DENIED':
-                alert('Permissão negada. Habilite a localização no navegador.');
+                alert('Permission denied. Enable location access in your browser.');
                 break;
             case 'POSITION_UNAVAILABLE':
-                alert('Localização não disponível no momento.');
+                alert('Location is currently unavailable.');
                 break;
             case 'TIMEOUT':
-                alert('Tempo limite excedido. Tente novamente.');
+                alert('Time limit exceeded. Try again.');
                 break;
             default:
-                alert('Erro: ' + error.userMessage);
+                alert('Error: ' + error.userMessage);
         }
     });
 ```
@@ -1497,10 +1497,10 @@ InnerForm.getLocation()
 
 #### Configurable Properties:
 ```javascript
-// Ativar logs detalhados
+// Enable detailed logs
 InnerForm.verbose = true;
 
-// Timeout para validação durante digitação (ms)
+// Validation timeout while typing (ms)
 InnerForm.onTypeTimeout = 900;
 ```
 
@@ -1576,13 +1576,13 @@ InnerFormValidation automatically adds CSS classes according to the field state:
 
 ### **Advanced Customization**
 ```css
-/* Estilo para campos obrigatórios */
+/* Style for required fields */
 .obg::before {
     content: "* ";
     color: red;
 }
 
-/* Animação para erros */
+/* Error animation */
 .error {
     animation: shake 0.5s;
 }
@@ -1593,18 +1593,18 @@ InnerFormValidation automatically adds CSS classes according to the field state:
     75% { transform: translateX(5px); }
 }
 
-/* Indicador de força da senha */
+/* Password strength indicator */
 [data-pwstrength="4"] {
     border-left: 5px solid #28a745; /* Verde - Forte */
 }
 
 [data-pwstrength="3"] {
-    border-left: 5px solid #ffc107; /* Amarelo - Média */
+    border-left: 5px solid #ffc107; /* Yellow - Medium */
 }
 
 [data-pwstrength="2"],
 [data-pwstrength="1"] {
-    border-left: 5px solid #dc3545; /* Vermelho - Fraca */
+    border-left: 5px solid #dc3545; /* Red - Weak */
 }
 ```
 
@@ -1629,19 +1629,19 @@ var bandeiraCartao = $('#cartao').attr('data-flagcard');
 | Class         | Description                                 |
 | ------------- | ------------------------------------------- |
 | `onkeyup`     | Validar conforme digita (com delay)         |
-| `notonblur`   | NÃO validar ao sair do campo                |
-| `notonchange` | NÃO validar quando valor muda               |
-| `noreplace`   | Autocompletar não substitui valor existente |
+    | `notonblur`   | Do NOT validate on blur                     |
+    | `notonchange` | Do NOT validate when the value changes     |
+    | `noreplace`   | Autocomplete does not replace existing value |
 
 ### **Special Use Cases**
 ```html
-<!-- Validar apenas ao enviar formulário -->
+<!-- Validate only when submitting the form -->
 <input class="obg notonblur notonchange">
 
 <!-- Validar em tempo real -->
 <input class="obg onkeyup">
 
-<!-- CEP que não substitui endereço já preenchido -->
+<!-- Postal code that does not replace an existing address -->
 <input class="mask cep autocomplete noreplace">
 ```
 
@@ -1683,100 +1683,100 @@ InnerForm.verbose = true; // Enables detailed console logs
 
 ## 🚀 Changelog
 
-### V2.8.0 - Máscaras e Validações de Coordenadas 🌍
-- ✅ **Máscaras para coordenadas** `.mask.latitude` e `.mask.longitude`
-- ✅ **Validações de coordenadas** `.latitude`, `.longitude`, `.coordinate`
-- ✅ **Suporte a precisão** com classe `precision <número>`
-- ✅ **Validação automática de limites** (-90/+90 para latitude, -180/+180 para longitude)
-- ✅ **Máscaras inteligentes** que aceitam vírgula ou ponto decimal
-- ✅ **Classes abreviadas** `.lat`, `.long`, `.lng` para economia de código
+### V2.8.0 - Coordinate Masks and Validations 🌍
+- ✅ **Coordinate masks** `.mask.latitude` and `.mask.longitude`
+- ✅ **Coordinate validations** `.latitude`, `.longitude`, `.coordinate`
+- ✅ **Precision support** with the `precision <number>` class
+- ✅ **Automatic range validation** (-90/+90 for latitude, -180/+180 for longitude)
+- ✅ **Smart masks** that accept comma or period decimal separators
+- ✅ **Short classes** `.lat`, `.long`, `.lng` to reduce code
 
-### V2.7.0 - AutoComplete de Geolocalização ✨
-- ✅ **AutoComplete automático** para coordenadas de geolocalização
-- ✅ **Preenchimento automático** de campos `.autocomplete.latitude` e `.autocomplete.longitude` 
-- ✅ **Suporte a classes abreviadas** `.autocomplete.lat` e `.autocomplete.long`
-- ✅ **Exemplo dedicado** com `ExemploAutoComplete.html`
-- ✅ **Integração perfeita** com funções de geolocalização existentes
+### V2.7.0 - Geolocation Autocomplete ✨
+- ✅ **Automatic autocomplete** for geolocation coordinates
+- ✅ **Automatic population** of `.autocomplete.latitude` and `.autocomplete.longitude` fields
+- ✅ **Support for short classes** `.autocomplete.lat` and `.autocomplete.long`
+- ✅ **Dedicated example** with `ExampleAutoComplete.html`
+- ✅ **Seamless integration** with existing geolocation functions
 
-### Funcionalidades Principais:
-- ✅ **Máscaras automatizadas** para 30+ tipos de dados
-- ✅ **Validações em tempo real** configuráveis  
-- ✅ **Sistema de callbacks** robusto
-- ✅ **Autocompletar endereços** via ViaCEP
-- ✅ **Autocompletar coordenadas** via Geolocalização
-- ✅ **Sistema de geolocalização** completo e moderno
-- ✅ **Validação de cartões de crédito** com 15+ bandeiras
-- ✅ **Validação de senhas** com critérios configuráveis
-- ✅ **Suporte completo** a documentos brasileiros
-- ✅ **API JavaScript** para validação programática
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
+### Main Features:
+- ✅ **Automated masks** for 30+ data types
+- ✅ **Configurable real-time validation**
+- ✅ **Robust callbacks system**
+- ✅ **Address autocomplete** via ViaCEP
+- ✅ **Coordinate autocomplete** via Geolocation
+- ✅ **Complete, modern geolocation system**
+- ✅ **Credit card validation** with 15+ brands
+- ✅ **Password validation** with configurable criteria
+- ✅ **Full support** for Brazilian documents
+- ✅ **JavaScript API** for programmatic validation
 
 ---
 
-## 🤝 Contribuições
+## 📄 License
 
-Contribuições são bem-vindas! Por favor, abra uma issue ou faça um pull request.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-## 📞 Suporte
+## 🤝 Contributions
 
-- **Documentação**: [GitHub Pages](https://zonaro.github.io/InnerFormValidation/TestForm)
+Contributions are welcome! Please open an issue or submit a pull request.
+
+---
+
+## 📞 Support
+
+- **Documentation**: [GitHub Pages](https://zonaro.github.io/InnerFormValidation/TestForm)
 - **Issues**: [GitHub Issues](https://github.com/zonaro/InnerFormValidation/issues)
-- **Exemplos**: Veja o arquivo `TestForm.html` para exemplos práticos
+- **Examples**: See the `TestForm.html` file for practical examples
 
 ---
 
 ---
 
-## 🆕 Novidades e Melhorias Recentes
+## 🆕 Recent News and Improvements
 
-### **v2.6.0 - Outubro 2025**
+### **v2.6.0 - October 2025**
 
-#### **🌍 Sistema de Geolocalização Completo - NOVO!**
-- **Nova função**: `InnerForm.getLocation()` - Obtém localização atual do usuário
-- **Nova função**: `InnerForm.watchLocation()` - Monitoramento contínuo de localização  
-- **Nova função**: `InnerForm.clearLocationWatch()` - Para monitoramento ativo
-- **Recursos avançados**: 
-  - Promise-based API moderna
-  - Objeto de resposta rico com coordenadas, precisão, altitude, velocidade
-  - URLs automáticas para Google Maps e OpenStreetMap
-  - Tratamento inteligente de erros com mensagens amigáveis
-  - Suporte a opções de alta precisão e cache configurável
-- **Exemplos incluídos**: 
-  - `ExemploSimples.html` - Implementação básica
-  - `ExemploGeolocalizacao.html` - Interface completa
-  - Seção dedicada no `TestForm.html`
+#### **🌍 Complete Geolocation System - NEW!**
+- **New function**: `InnerForm.getLocation()` - Gets the user's current location
+- **New function**: `InnerForm.watchLocation()` - Continuously monitors location
+- **New function**: `InnerForm.clearLocationWatch()` - Stops active monitoring
+- **Advanced features**:
+    - Modern Promise-based API
+    - Rich response object with coordinates, accuracy, altitude, and speed
+    - Automatic Google Maps and OpenStreetMap URLs
+    - Smart error handling with friendly messages
+    - Support for high-accuracy and configurable cache options
+- **Included examples**:
+    - `ExampleSimples.html` - Basic implementation
+    - `ExampleGeolocalizacao.html` - Complete interface
+    - Dedicated section in `TestForm.html`
 
 ### **v2.5.0 - Setembro 2025**
 
-#### **✅ Validação de UUID/GUID Aprimorada**
-- **Correção importante**: A validação de UUID agora aceita formatos mais flexíveis
-- **Antes**: Apenas UUIDs RFC 4122 rigorosos eram aceitos
-- **Agora**: Qualquer GUID válido em formato é aceito, incluindo GUIDs do .NET/C#
-- **Exemplo**: `ff2bc94c-8ce0-417f-08ce-08ddfce17182` agora valida corretamente ✅
+#### **✅ Improved UUID/GUID Validation**
+- **Important fix**: UUID validation now accepts more flexible formats
+- **Before**: Only strict RFC 4122 UUIDs were accepted
+- **Now**: Any structurally valid GUID is accepted, including .NET/C# GUIDs
+- **Example**: `ff2bc94c-8ce0-417f-08ce-08ddfce17182` now validates correctly ✅
 
-#### **🎯 Parsing Inteligente para Períodos**
-- **Nova função**: `parseMonthYearPartial()` - Formatação inteligente para MM/YYYY ~ MM/YYYY
-- **Nova função**: `parseShortMonthYearPartial()` - Formatação inteligente para MM/YY ~ MM/YY  
-- **Melhorias**: Validação automática de mês (máximo 12) e formatação progressiva
-- **Experiência**: Máscaras de período agora têm a mesma fluidez das máscaras de data
+#### **🎯 Smart Parsing for Ranges**
+- **New function**: `parseMonthYearPartial()` - Smart formatting for MM/YYYY ~ MM/YYYY
+- **New function**: `parseShortMonthYearPartial()` - Smart formatting for MM/YY ~ MM/YY
+- **Improvements**: Automatic month validation (maximum 12) and progressive formatting
+- **Experience**: Range masks now have the same fluidity as date masks
 
-#### **🔧 Máscaras Aprimoradas**
-- **Máscara UUID**: Nova máscara para formatação automática de GUIDs
-- **Períodos melhorados**: Máscaras de `monthyearrange` e `shortmonthyearrange` completamente reescritas
-- **Validação progressiva**: Campos são validados conforme o usuário digita, com feedback imediato
+#### **🔧 Improved Masks**
+- **UUID mask**: New mask for automatic GUID formatting
+- **Improved ranges**: `monthyearrange` and `shortmonthyearrange` masks completely rewritten
+- **Progressive validation**: Fields are validated as the user types, with immediate feedback
 
-#### **📝 Funcionalidades Adicionais**
-- **Expansão de anos**: Função `expandYear()` para conversão inteligente YY → YYYY
-- **Validações robustas**: Novas funções de validação para intervalos de datas e períodos
-- **Compatibilidade**: Mantém 100% de compatibilidade com versões anteriores
+#### **📝 Additional Features**
+- **Year expansion**: `expandYear()` function for smart YY → YYYY conversion
+- **Robust validation**: New validation functions for date and range values
+- **Compatibility**: Maintains 100% compatibility with previous versions
 
 ---
 
-**⭐ Se este projeto foi útil, não esqueça de dar uma estrela no GitHub!**
+**⭐ If this project was useful, don't forget to star it on GitHub!**
