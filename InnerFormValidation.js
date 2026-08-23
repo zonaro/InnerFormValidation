@@ -48,22 +48,27 @@
     InnerForm.fn = {};
 
 
-    InnerForm.fn.each = function (callback) { this.elements.forEach(function (element, index) { callback.call(element, index, element); }); return this; }
+    // Helper to safely get elements array from the collection
+    var getElements = function (collection) {
+        return (collection && Array.isArray(collection.elements)) ? collection.elements : [];
+    };
+
+    InnerForm.fn.each = function (callback) { getElements(this).forEach(function (element, index) { callback.call(element, index, element); }); return this; }
     InnerForm.fn.find = function (selector) { var found = []; this.each(function () { found = found.concat(select(selector, this)); }); return query(found); }
-    InnerForm.fn.get = function (index) { return index === undefined ? this.elements : this.elements[index]; }
-    InnerForm.fn.first = function () { return query(this.elements.slice(0, 1)); }
-    InnerForm.fn.not = function (selector) { return query(this.elements.filter(function (element) { return !matches(element, selector); })); }
-    InnerForm.fn.is = function (selector) { return this.elements.some(function (element) { return matches(element, selector); }); }
-    InnerForm.fn.closest = function (selector) { return query(this.elements.map(function (element) { return element.closest(selector); }).filter(Boolean)); }
+    InnerForm.fn.get = function (index) { var elements = getElements(this); return index === undefined ? elements : elements[index]; }
+    InnerForm.fn.first = function () { return query(getElements(this).slice(0, 1)); }
+    InnerForm.fn.not = function (selector) { return query(getElements(this).filter(function (element) { return !matches(element, selector); })); }
+    InnerForm.fn.is = function (selector) { return getElements(this).some(function (element) { return matches(element, selector); }); }
+    InnerForm.fn.closest = function (selector) { return query(getElements(this).map(function (element) { return element.closest(selector); }).filter(Boolean)); }
     InnerForm.fn.addClass = function (name) { return this.each(function () { this.classList.add.apply(this.classList, name.split(/\s+/)); }); }
     InnerForm.fn.removeClass = function (name) { return this.each(function () { this.classList.remove.apply(this.classList, name.split(/\s+/)); }); }
-    InnerForm.fn.hasClass = function (name) { return this.elements.some(function (element) { return element.classList.contains(name); }); }
-    InnerForm.fn.attr = function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0].getAttribute(name) : undefined; return this.each(function () { this.setAttribute(name, value); }); }
+    InnerForm.fn.hasClass = function (name) { return getElements(this).some(function (element) { return element.classList.contains(name); }); }
+    InnerForm.fn.attr = function (name, value) { var elements = getElements(this); if (value === undefined) return elements[0] ? elements[0].getAttribute(name) : undefined; return this.each(function () { this.setAttribute(name, value); }); }
     InnerForm.fn.removeAttr = function (name) { return this.each(function () { this.removeAttribute(name); }); }
-    InnerForm.fn.prop = function (name, value) { if (value === undefined) return this.elements[0] ? this.elements[0][name] : undefined; return this.each(function () { this[name] = value; }); }
-    InnerForm.fn.data = function (name, value) { name = name.replace(/^data-/, ""); if (value === undefined) return this.elements[0] ? this.elements[0].dataset[name] : undefined; return this.each(function () { this.dataset[name] = value; }); }
-    InnerForm.fn.val = function (value) { if (value === undefined) return this.elements[0] && this.elements[0].value !== undefined ? this.elements[0].value : undefined; return this.each(function () { this.value = value; }); }
-    InnerForm.fn.text = function (value) { if (value === undefined) return this.elements.map(function (element) { return element.textContent; }).join(""); return this.each(function () { this.textContent = value; }); }
+    InnerForm.fn.prop = function (name, value) { var elements = getElements(this); if (value === undefined) return elements[0] ? elements[0][name] : undefined; return this.each(function () { this[name] = value; }); }
+    InnerForm.fn.data = function (name, value) { name = name.replace(/^data-/, ""); var elements = getElements(this); if (value === undefined) return elements[0] ? elements[0].dataset[name] : undefined; return this.each(function () { this.dataset[name] = value; }); }
+    InnerForm.fn.val = function (value) { var elements = getElements(this); if (value === undefined) return elements[0] && elements[0].value !== undefined ? elements[0].value : undefined; return this.each(function () { this.value = value; }); }
+    InnerForm.fn.text = function (value) { var elements = getElements(this); if (value === undefined) return elements.map(function (element) { return element.textContent; }).join(""); return this.each(function () { this.textContent = value; }); }
     InnerForm.fn.append = function (html) { return this.each(function () { this.insertAdjacentHTML("beforeend", html); }); }
     InnerForm.fn.change = function () { return this.each(function () { this.dispatchEvent(new Event("change", { bubbles: true })); }); }
     InnerForm.fn.focus = function () { return this.each(function () { if (this.focus) this.focus(); }); }
