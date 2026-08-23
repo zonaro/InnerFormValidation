@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>InnerFormValidation jQuery Compatibility Test</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="InnerFormValidation.js"></script>
+</head>
+<body>
+    <h1>jQuery Compatibility Test</h1>
+    <form id="test-form" class="validate">
+        <input type="text" class="obg email" name="email" placeholder="Email">
+        <input type="text" class="obg cpf" name="cpf" placeholder="CPF">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        function log(msg, isError) {
+            var div = document.createElement('div');
+            div.textContent = msg;
+            div.style.color = isError ? 'red' : 'green';
+            document.getElementById('results').appendChild(div);
+        }
+
+        // Test 1: Standalone API
+        try {
+            var standalone = InnerForm('#test-form');
+            log('✓ Standalone InnerForm() works');
+            
+            var elements = standalone.find('input');
+            log('✓ Standalone .find() works, found ' + elements.length + ' elements');
+            
+            elements.each(function() {
+                log('  ✓ Standalone .each() works on element: ' + this.name);
+            });
+            
+            standalone.on('submit', function(e) {
+                e.preventDefault();
+                log('✓ Standalone .on() works');
+            });
+            
+            standalone.removeClass('validate');
+            log('✓ Standalone .removeClass() works');
+            standalone.addClass('validate');
+            log('✓ Standalone .addClass() works');
+        } catch (e) {
+            log('✗ Standalone API error: ' + e.message, true);
+        }
+
+        // Test 2: jQuery plugin compatibility
+        try {
+            var $form = $('#test-form');
+            log('✓ jQuery selector works');
+            
+            var $inputs = $form.find('input');
+            log('✓ jQuery .find() works, found ' + $inputs.length + ' elements');
+            
+            $inputs.each(function() {
+                log('  ✓ jQuery .each() works on element: ' + this.name);
+            });
+            
+            $form.on('submit', function(e) {
+                e.preventDefault();
+                log('✓ jQuery .on() works');
+            });
+            
+            $form.removeClass('validate');
+            log('✓ jQuery .removeClass() works');
+            $form.addClass('validate');
+            log('✓ jQuery .addClass() works');
+            
+            // Test chaining
+            var chained = $form.addClass('test-class').removeClass('test-class');
+            log('✓ jQuery chaining works: ' + (chained === $form ? 'returns jQuery object' : 'broken'));
+            
+        } catch (e) {
+            log('✗ jQuery plugin error: ' + e.message, true);
+        }
+
+        // Test 3: InnerForm methods on jQuery objects
+        try {
+            var $inputs = $('#test-form input');
+            $inputs.val('test value');
+            log('✓ jQuery .val() setter works');
+            
+            var val = $inputs.first().val();
+            log('✓ jQuery .val() getter works: ' + val);
+            
+            $inputs.attr('data-test', 'value');
+            log('✓ jQuery .attr() setter works');
+            
+            var attr = $inputs.first().attr('data-test');
+            log('✓ jQuery .attr() getter works: ' + attr);
+            
+            $inputs.data('test-key', 'test-value');
+            log('✓ jQuery .data() setter works');
+            
+            var data = $inputs.first().data('test-key');
+            log('✓ jQuery .data() getter works: ' + data);
+            
+        } catch (e) {
+            log('✗ jQuery InnerForm methods error: ' + e.message, true);
+        }
+
+        // Test 4: Validation methods
+        try {
+            var $email = $('#test-form input[name="email"]');
+            $email.val('test@example.com');
+            var isValid = $email.isValid('email');
+            log('✓ jQuery .isValid("email") works: ' + isValid);
+            
+            $email.val('invalid-email');
+            isValid = $email.isValid('email');
+            log('✓ jQuery .isValid("email") correctly rejects invalid: ' + isValid);
+            
+        } catch (e) {
+            log('✗ jQuery validation error: ' + e.message, true);
+        }
+
+        log('\n--- All tests completed ---');
+    </script>
+</body>
+</html>

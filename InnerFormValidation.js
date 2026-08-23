@@ -3591,9 +3591,26 @@
             }
         }
         root.jQuery.innerForm = InnerForm;
-        Object.keys(InnerForm.fn).forEach(function (methodName) {
-            root.jQuery.fn[methodName] = InnerForm.fn[methodName];
-        });
+
+        // Create a helper to convert jQuery object to InnerForm collection
+        var toInnerForm = function (jq) {
+            return InnerForm(jq.get());
+        };
+
+        // Wrap InnerForm.fn methods to work with jQuery objects
+        var wrapMethod = function (methodName) {
+            var originalMethod = InnerForm.fn[methodName];
+            if (typeof originalMethod !== "function") return;
+            root.jQuery.fn[methodName] = function () {
+                var innerFormCollection = toInnerForm(this);
+                var result = originalMethod.apply(innerFormCollection, arguments);
+                // If the result is an InnerForm collection, return the jQuery object for chaining
+                // Otherwise return the actual result
+                return (result && result.elements) ? this : result;
+            };
+        };
+
+        Object.keys(InnerForm.fn).forEach(wrapMethod);
     }
 
     InnerForm.log('InnerFormValidation Loaded');
