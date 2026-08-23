@@ -30,7 +30,7 @@
         if (selector.indexOf(":input") >= 0) return matches(element, selector.replace(/:input/g, "")) && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
         return element.matches(selector);
     };
-    var query = function (selector, context) {
+var query = function (selector, context) {
         var elements = Array.isArray(selector) ? selector : select(selector, context);
         var api = Object.create(InnerForm.fn);
         api.elements = elements;
@@ -39,40 +39,157 @@
         return api;
     };
 
+    // ============================================
+    // Vanilla JS DOM Helpers (operate on element arrays)
+    // ============================================
+    var forEachElement = function (elements, callback) {
+        if (!elements || !elements.length) return;
+        for (var i = 0; i < elements.length; i++) {
+            callback.call(elements[i], elements[i], i);
+        }
+    };
+
+    var getFirstElement = function (elements) {
+        return elements && elements.length ? elements[0] : null;
+    };
+
+    var filterElements = function (elements, selector) {
+        if (!elements || !elements.length) return [];
+        return elements.filter(function (el) { return !matches(el, selector); });
+    };
+
+    var findElements = function (elements, selector) {
+        if (!elements || !elements.length) return [];
+        var found = [];
+        for (var i = 0; i < elements.length; i++) {
+            found = found.concat(select(selector, elements[i]));
+        }
+        return found;
+    };
+
+    var closestElement = function (elements, selector) {
+        if (!elements || !elements.length) return [];
+        var found = [];
+        for (var i = 0; i < elements.length; i++) {
+            var el = elements[i].closest(selector);
+            if (el) found.push(el);
+        }
+        return found;
+    };
+
+    var addClassToElements = function (elements, name) {
+        var classes = name.split(/\s+/);
+        forEachElement(elements, function (el) {
+            el.classList.add.apply(el.classList, classes);
+        });
+    };
+
+    var removeClassFromElements = function (elements, name) {
+        var classes = name.split(/\s+/);
+        forEachElement(elements, function (el) {
+            el.classList.remove.apply(el.classList, classes);
+        });
+    };
+
+    var hasClassOnElements = function (elements, name) {
+        if (!elements || !elements.length) return false;
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].classList.contains(name)) return true;
+        }
+        return false;
+    };
+
+    var getAttrFromElements = function (elements, name) {
+        var el = getFirstElement(elements);
+        return el ? el.getAttribute(name) : undefined;
+    };
+
+    var setAttrOnElements = function (elements, name, value) {
+        forEachElement(elements, function (el) { el.setAttribute(name, value); });
+    };
+
+    var removeAttrFromElements = function (elements, name) {
+        forEachElement(elements, function (el) { el.removeAttribute(name); });
+    };
+
+    var getPropFromElements = function (elements, name) {
+        var el = getFirstElement(elements);
+        return el ? el[name] : undefined;
+    };
+
+    var setPropOnElements = function (elements, name, value) {
+        forEachElement(elements, function (el) { el[name] = value; });
+    };
+
+    var getDataFromElements = function (elements, name) {
+        name = name.replace(/^data-/, "");
+        var el = getFirstElement(elements);
+        return el ? el.dataset[name] : undefined;
+    };
+
+    var setDataOnElements = function (elements, name, value) {
+        name = name.replace(/^data-/, "");
+        forEachElement(elements, function (el) { el.dataset[name] = value; });
+    };
+
+    var getValFromElements = function (elements) {
+        var el = getFirstElement(elements);
+        return el && el.value !== undefined ? el.value : undefined;
+    };
+
+    var setValOnElements = function (elements, value) {
+        forEachElement(elements, function (el) { el.value = value; });
+    };
+
+    var getTextFromElements = function (elements) {
+        if (!elements || !elements.length) return "";
+        var texts = [];
+        for (var i = 0; i < elements.length; i++) {
+            texts.push(elements[i].textContent);
+        }
+        return texts.join("");
+    };
+
+    var setTextOnElements = function (elements, value) {
+        forEachElement(elements, function (el) { el.textContent = value; });
+    };
+
+    var appendHtmlToElements = function (elements, html) {
+        forEachElement(elements, function (el) { el.insertAdjacentHTML("beforeend", html); });
+    };
+
+    var triggerChangeOnElements = function (elements) {
+        forEachElement(elements, function (el) { el.dispatchEvent(new Event("change", { bubbles: true })); });
+    };
+
+    var triggerFocusOnElements = function (elements) {
+        forEachElement(elements, function (el) { if (el.focus) el.focus(); });
+    };
+
+    var onElements = function (elements, event, selector, handler) {
+        if (typeof selector === "function") { handler = selector; selector = null; }
+        forEachElement(elements, function (el) {
+            el.addEventListener(event, function (e) {
+                if (!selector || matches(e.target, selector)) handler.call(e.target, e);
+            });
+        });
+    };
+
+    var isElements = function (elements, selector) {
+        if (!elements || !elements.length) return false;
+        for (var i = 0; i < elements.length; i++) {
+            if (matches(elements[i], selector)) return true;
+        }
+        return false;
+    };
+
     /**
      * InnerForm is a lightweight DOM manipulation and validation library.
      * It provides methods for selecting elements, manipulating classes and attributes,
      * and handling form validation.
      */
     InnerForm = function (selector, context) { return query(selector, context); }
-    InnerForm.fn = {};
-
-
-    // Helper to safely get elements array from the collection
-    var getElements = function (collection) {
-        return (collection && Array.isArray(collection.elements)) ? collection.elements : [];
-    };
-
-    InnerForm.fn.each = function (callback) { getElements(this).forEach(function (element, index) { callback.call(element, index, element); }); return this; }
-    InnerForm.fn.find = function (selector) { var found = []; this.each(function () { found = found.concat(select(selector, this)); }); return query(found); }
-    InnerForm.fn.get = function (index) { var elements = getElements(this); return index === undefined ? elements : elements[index]; }
-    InnerForm.fn.first = function () { return query(getElements(this).slice(0, 1)); }
-    InnerForm.fn.not = function (selector) { return query(getElements(this).filter(function (element) { return !matches(element, selector); })); }
-    InnerForm.fn.is = function (selector) { return getElements(this).some(function (element) { return matches(element, selector); }); }
-    InnerForm.fn.closest = function (selector) { return query(getElements(this).map(function (element) { return element.closest(selector); }).filter(Boolean)); }
-    InnerForm.fn.addClass = function (name) { return this.each(function () { this.classList.add.apply(this.classList, name.split(/\s+/)); }); }
-    InnerForm.fn.removeClass = function (name) { return this.each(function () { this.classList.remove.apply(this.classList, name.split(/\s+/)); }); }
-    InnerForm.fn.hasClass = function (name) { return getElements(this).some(function (element) { return element.classList.contains(name); }); }
-    InnerForm.fn.attr = function (name, value) { var elements = getElements(this); if (value === undefined) return elements[0] ? elements[0].getAttribute(name) : undefined; return this.each(function () { this.setAttribute(name, value); }); }
-    InnerForm.fn.removeAttr = function (name) { return this.each(function () { this.removeAttribute(name); }); }
-    InnerForm.fn.prop = function (name, value) { var elements = getElements(this); if (value === undefined) return elements[0] ? elements[0][name] : undefined; return this.each(function () { this[name] = value; }); }
-    InnerForm.fn.data = function (name, value) { name = name.replace(/^data-/, ""); var elements = getElements(this); if (value === undefined) return elements[0] ? elements[0].dataset[name] : undefined; return this.each(function () { this.dataset[name] = value; }); }
-    InnerForm.fn.val = function (value) { var elements = getElements(this); if (value === undefined) return elements[0] && elements[0].value !== undefined ? elements[0].value : undefined; return this.each(function () { this.value = value; }); }
-    InnerForm.fn.text = function (value) { var elements = getElements(this); if (value === undefined) return elements.map(function (element) { return element.textContent; }).join(""); return this.each(function () { this.textContent = value; }); }
-    InnerForm.fn.append = function (html) { return this.each(function () { this.insertAdjacentHTML("beforeend", html); }); }
-    InnerForm.fn.change = function () { return this.each(function () { this.dispatchEvent(new Event("change", { bubbles: true })); }); }
-    InnerForm.fn.focus = function () { return this.each(function () { if (this.focus) this.focus(); }); }
-    InnerForm.fn.on = function (event, selector, handler) { if (typeof selector === "function") { handler = selector; selector = null; } return this.each(function () { this.addEventListener(event, function (e) { if (!selector || matches(e.target, selector)) handler.call(e.target, e); }); }); }
+    InnerForm.fn = {}
 
 
     /**
@@ -1913,13 +2030,15 @@
 
         // Check the conditions
         var ctr = 0;
+        var elements = select(input);
+        var value = getValFromElements(elements);
         for (var i = 0; i < matchedCase.length; i++) {
-            if (matchedCase[i].test(InnerForm(input).val())) {
+            if (matchedCase[i].test(value)) {
                 ctr++;
             }
         }
 
-        InnerForm(input).attr("data-pwstrength", ctr);
+        setAttrOnElements(elements, "data-pwstrength", ctr);
         return ctr;
     };
 
@@ -1947,7 +2066,8 @@
         delay = delay || 0;
         callbackFunction = callbackFunction || function (o) { InnerForm.log('No callback defined', o); }
         InnerForm.log('Searching CEP', CEPNumber, homeNumber, delay);
-        var cepInput = InnerForm(".autocomplete.cep:input").first();
+        var cepInputElements = select(".autocomplete.cep:input");
+        var cepInput = getFirstElement(cepInputElements);
 
 
         if (InnerForm.validateCEP(CEPNumber)) {
@@ -1969,161 +2089,81 @@
 
                     InnerForm.log("ViaCEP Response", obj);
 
-                    InnerForm(".autocomplete.address:input")
-                        .setOrReplaceVal(obj.logradouro)
-                        .change().focus();
-                    InnerForm(".autocomplete.complement:input")
-                        .setOrReplaceVal(obj.complemento)
-                        .change().focus();
-                    InnerForm(".autocomplete.neighborhood:input")
-                        .setOrReplaceVal(obj.bairro)
-                        .change().focus();
-                    InnerForm(".autocomplete.city:input")
-                        .setOrReplaceVal(obj.localidade)
-                        .change().focus();
-                    InnerForm(".autocomplete.state:input")
-                        .setOrReplaceVal(obj.uf)
-                        .change().focus();
-                    InnerForm(".autocomplete.ibge:input")
-                        .setOrReplaceVal(obj.ibge)
-                        .change().focus();
-                    InnerForm(".autocomplete.gia:input")
-                        .setOrReplaceVal(obj.gia)
-                        .change().focus();
-                    InnerForm(".autocomplete.ddd:input")
-                        .setOrReplaceVal(obj.ddd)
-                        .change().focus();
-                    InnerForm(".autocomplete.siafi:input")
-                        .setOrReplaceVal(obj.siafi)
-                        .change().focus();
-                    InnerForm(".autocomplete.citystate:input")
-                        .setOrReplaceVal(
-                            obj.localidade +
-                            " - " +
-                            obj.uf
-                        )
-                        .change().focus();
-                    InnerForm(".autocomplete.fulladdress:input")
-                        .setOrReplaceVal(
-                            obj.logradouro + ', ' +
-                            homeNumber +
-                            " " +
-                            obj.complemento +
-                            " - " +
-                            obj.bairro +
-                            " - " +
-                            obj.localidade +
-                            " - " +
-                            obj.uf
-                        )
-                        .change().focus();
+                    // Helper to set value and trigger change/focus on input elements
+                    var setValChangeFocus = function (selector, value) {
+                        var els = select(selector);
+                        setValOnElements(els, value);
+                        triggerChangeOnElements(els);
+                        triggerFocusOnElements(els);
+                    };
+
+                    setValChangeFocus(".autocomplete.address:input", obj.logradouro);
+                    setValChangeFocus(".autocomplete.complement:input", obj.complemento);
+                    setValChangeFocus(".autocomplete.neighborhood:input", obj.bairro);
+                    setValChangeFocus(".autocomplete.city:input", obj.localidade);
+                    setValChangeFocus(".autocomplete.state:input", obj.uf);
+                    setValChangeFocus(".autocomplete.ibge:input", obj.ibge);
+                    setValChangeFocus(".autocomplete.gia:input", obj.gia);
+                    setValChangeFocus(".autocomplete.ddd:input", obj.ddd);
+                    setValChangeFocus(".autocomplete.siafi:input", obj.siafi);
+                    setValChangeFocus(".autocomplete.citystate:input", obj.localidade + " - " + obj.uf);
+                    setValChangeFocus(".autocomplete.fulladdress:input", obj.logradouro + ', ' + homeNumber + " " + obj.complemento + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
 
                     /// verifica se cidade ou estado são selects e se nao existe a opcao, adiciona
-                    InnerForm(".autocomplete.city:input").each(function () {
-                        let val = obj.localidade || "";
-                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
-                            InnerForm.log("Setting city select to", val);
-                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
-                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
+                    var processSelectInputs = function (selector, val, logMsg) {
+                        var els = select(selector);
+                        forEachElement(els, function (el) {
+                            if (el.tagName.toUpperCase() == "SELECT") {
+                                InnerForm.log(logMsg, val);
+                                var options = findElements([el], "option[value='" + val + "']");
+                                if (!options.length) {
+                                    appendHtmlToElements([el], "<option value='" + val + "' selected>" + val + "</option>");
+                                }
                             }
-                            //fire change to update any dependent selects
-                        }
-                        InnerForm(this).val(val).change().focus();
-                    });
+                            setValOnElements([el], val);
+                            triggerChangeOnElements([el]);
+                            triggerFocusOnElements([el]);
+                        });
+                    };
 
-                    InnerForm(".autocomplete.state:input").each(function () {
-                        let val = obj.uf || "";
-                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
-                            InnerForm.log("Setting state select to", val);
-                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
-                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
-                            }
-                        }
-                        InnerForm(this).setOrReplaceVal(val).change().focus();
-                    });
+                    processSelectInputs(".autocomplete.city:input", obj.localidade || "", "Setting city select to");
+                    processSelectInputs(".autocomplete.state:input", obj.uf || "", "Setting state select to");
+                    processSelectInputs(".autocomplete.ibge:input", obj.ibge || "", "Setting ibge select to");
+                    processSelectInputs(".autocomplete.citystate:input", (obj.localidade || "") + " - " + (obj.uf || ""), "Setting citystate select to");
 
-                    InnerForm(".autocomplete.ibge:input").each(function () {
-                        let val = obj.ibge || "";
-                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
-                            InnerForm.log("Setting ibge select to", val);
-                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
-                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
-                            }
-                        }
-                        InnerForm(this).setOrReplaceVal(val).change().focus();
-                    });
+                    // Set text on non-input elements
+                    var setTextOnNonInputs = function (selector, text) {
+                        var allEls = select(selector);
+                        var nonInputs = allEls.filter(function (el) { return !/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName); });
+                        setTextOnElements(nonInputs, text);
+                    };
 
-                    InnerForm(".autocomplete.citystate:input").each(function () {
-                        let val = (obj.localidade || "") + " - " + (obj.uf || "");
-                        if (InnerForm(this).prop("tagName").toUpperCase() == "SELECT") {
-                            InnerForm.log("Setting citystate select to", val);
-                            if (!InnerForm(this).find("option[value='" + val + "']").length) {
-                                InnerForm(this).append("<option value='" + val + "' selected>" + val + "</option>");
-                            }
-                        }
-                        InnerForm(this).setOrReplaceVal(val).change().focus();
-                    });
-
-                    InnerForm(".autocomplete.address")
-                        .not(":input")
-                        .text(obj.logradouro);
-                    InnerForm(".autocomplete.complement")
-                        .not(":input")
-                        .text(obj.complemento);
-                    InnerForm(".autocomplete.neighborhood")
-                        .not(":input")
-                        .text(obj.bairro);
-                    InnerForm(".autocomplete.city")
-                        .not(":input")
-                        .text(obj.localidade);
-                    InnerForm(".autocomplete.state")
-                        .not(":input")
-                        .text(obj.uf);
-                    InnerForm(".autocomplete.ibge")
-                        .not(":input")
-                        .text(obj.ibge);
-                    InnerForm(".autocomplete.gia")
-                        .not(":input")
-                        .text(obj.gia);
-                    InnerForm(".autocomplete.siafi")
-                        .not(":input")
-                        .text(obj.siafi);
-                    InnerForm(".autocomplete.ddd")
-                        .not(":input")
-                        .text(obj.ddd);
-                    InnerForm(".autocomplete.citystate")
-                        .not(":input")
-                        .text(
-                            obj.localidade + " - " + obj.uf
-                        );
-                    InnerForm(".autocomplete.fulladdress")
-                        .not(":input")
-                        .text(
-                            obj.logradouro + ', ' +
-                            homeNumber +
-                            " - " +
-                            obj.bairro +
-                            " - " +
-                            obj.localidade +
-                            " - " +
-                            obj.uf
-                        );
+                    setTextOnNonInputs(".autocomplete.address", obj.logradouro);
+                    setTextOnNonInputs(".autocomplete.complement", obj.complemento);
+                    setTextOnNonInputs(".autocomplete.neighborhood", obj.bairro);
+                    setTextOnNonInputs(".autocomplete.city", obj.localidade);
+                    setTextOnNonInputs(".autocomplete.state", obj.uf);
+                    setTextOnNonInputs(".autocomplete.ibge", obj.ibge);
+                    setTextOnNonInputs(".autocomplete.gia", obj.gia);
+                    setTextOnNonInputs(".autocomplete.siafi", obj.siafi);
+                    setTextOnNonInputs(".autocomplete.ddd", obj.ddd);
+                    setTextOnNonInputs(".autocomplete.citystate", obj.localidade + " - " + obj.uf);
+                    setTextOnNonInputs(".autocomplete.fulladdress", obj.logradouro + ', ' + homeNumber + " - " + obj.bairro + " - " + obj.localidade + " - " + obj.uf);
 
                     if (obj.logradouro) {
                         setTimeout(function () {
-                            InnerForm(".autocomplete.num:input, .autocomplete.number:input").focus();
-                            InnerForm(".autocomplete.homenum:input, .autocomplete.homenumber:input").focus();
+                            triggerFocusOnElements(select(".autocomplete.num:input, .autocomplete.number:input"));
+                            triggerFocusOnElements(select(".autocomplete.homenum:input, .autocomplete.homenumber:input"));
                         }, delay);
                     } else {
                         InnerForm.error('Address not found');
-                        let nft = cepInput.attr("data-addressnotfoundtext") || cepInput.attr("data-notfoundtext") || "";
-                        InnerForm(".autocomplete.fulladdress")
-                            .not(":input").text(nft);
-                        InnerForm(".autocomplete.fulladdress:input")
-                            .val(nft).change();
-                        eval(cepInput.attr("data-addressnotfound") || cepInput.attr("data-notfound") || "void(0)");
+                        var nft = getAttrFromElements(cepInputElements, "data-addressnotfoundtext") || getAttrFromElements(cepInputElements, "data-notfoundtext") || "";
+                        setTextOnNonInputs(".autocomplete.fulladdress", nft);
+                        setValOnElements(select(".autocomplete.fulladdress:input"), nft);
+                        triggerChangeOnElements(select(".autocomplete.fulladdress:input"));
+                        eval(getAttrFromElements(cepInputElements, "data-addressnotfound") || getAttrFromElements(cepInputElements, "data-notfound") || "void(0)");
                         setTimeout(function () {
-                            InnerForm(".autocomplete.address:input").focus();
+                            triggerFocusOnElements(select(".autocomplete.address:input"));
                         }, delay);
                     }
                     if (obj) callbackFunction(obj);
@@ -2132,7 +2172,7 @@
                     //Error event
                     InnerForm.log("VIACEP error", error);
                     setTimeout(function () {
-                        InnerForm(".autocomplete.address:input").focus();
+                        triggerFocusOnElements(select(".autocomplete.address:input"));
                     }, delay);
                 })
                 .finally(function () {
@@ -2149,11 +2189,13 @@
      * @param {Object} value any input value 
      */
     InnerForm.fn.setOrReplaceVal = function (value) {
-        let valor = InnerForm.trim(InnerForm(this).val() || "");
-        if (valor == "" || InnerForm(this).is(".noreplace") == false) {
-            InnerForm(this).val(value).change();
+        var elements = getElements(this);
+        var currentVal = InnerForm.trim(getValFromElements(elements) || "");
+        if (currentVal == "" || !isElements(elements, ".noreplace")) {
+            setValOnElements(elements, value);
+            triggerChangeOnElements(elements);
         }
-        return InnerForm(this);
+        return this;
     }
 
 
@@ -2164,36 +2206,37 @@
      * @return {Boolean} true if is valid, otherwise false
      */
     InnerForm.fn.isValid = function () {
-        let results = [];
+        var results = [];
+        var elements = getElements(this);
 
-        if (InnerForm(this).length > 1 || InnerForm(this).prop("tagName") == "FORM") {
-            eval(InnerForm(this).attr("data-beforevalidatecallback") || "void(0)");
-            var elements = [];
+        if (elements.length > 1 || (elements[0] && elements[0].tagName == "FORM")) {
+            eval(getAttrFromElements(elements, "data-beforevalidatecallback") || "void(0)");
             var config = Array.prototype.slice.call(arguments)[0];
-            InnerForm(this)
-                .find(":input.prevFocus" + (config || ""))
-                .each(function () {
-                    results.push(InnerForm(this).isValid());
-                    elements.push(InnerForm(this));
-                });
+            var formElements = elements[0] && elements[0].tagName == "FORM" ? elements[0].elements : elements;
+            var inputs = findElements(formElements, ":input.prevFocus" + (config || ""));
+            forEachElement(inputs, function (el) {
+                results.push(InnerForm(el).isValid());
+            });
 
             for (var mm = 0; mm < results.length; mm++) {
                 if (results[mm] === false) {
-                    eval(InnerForm(this).attr("data-invalidcallback") || "void(0)");
-                    eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
+                    eval(getAttrFromElements(elements, "data-invalidcallback") || "void(0)");
+                    eval(getAttrFromElements(elements, "data-aftervalidatecallback") || "void(0)");
                     return false;
                 }
             }
-            eval(InnerForm(this).attr("data-validcallback") || "void(0)");
-            eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
+            eval(getAttrFromElements(elements, "data-validcallback") || "void(0)");
+            eval(getAttrFromElements(elements, "data-aftervalidatecallback") || "void(0)");
             return true;
         } else {
-            if (!this.get(0)) return false;
-            this.removeClass("error");
-            this.removeClass("success");
-            this.closest(".form-group").removeClass("has-error");
-            if (this.get(0).setCustomValidity) {
-                this.get(0).setCustomValidity("");
+            var el = getFirstElement(elements);
+            if (!el) return false;
+            removeClassFromElements(elements, "error");
+            removeClassFromElements(elements, "success");
+            var closestFormGroup = closestElement(elements, ".form-group");
+            removeClassFromElements(closestFormGroup, "has-error");
+            if (el.setCustomValidity) {
+                el.setCustomValidity("");
             }
             var valids = [];
             var allargs = Array.prototype.slice.call(arguments);
@@ -2202,16 +2245,17 @@
                     valids.push(el);
                 });
             }
-            var value = this.val();
-            var type = this.attr("type");
+            var value = getValFromElements(elements);
+            var type = getAttrFromElements(elements, "type");
             if (arguments.length < 1) {
-                var classes = (this.attr("class") || "").split(" ");
+                var classAttr = getAttrFromElements(elements, "class") || "";
+                var classes = classAttr.split(" ");
                 for (var vc = 0; vc < classes.length; vc++) {
                     valids.push("" + classes[vc]);
                 }
             }
             for (var i = 0; i < valids.length; i++) {
-                if (this.prop("disabled") == false) {
+                if (getPropFromElements(elements, "disabled") == false) {
                     let currentValid = valids[i].toLowerCase();
                     switch (currentValid) {
                         case "nospace":
@@ -2575,12 +2619,13 @@
                                 break;
                             }
                             var selector =
-                                InnerForm(this).attr("data-eq") ||
-                                InnerForm(this).data("data-equal") ||
+                                getAttrFromElements(elements, "data-eq") ||
+                                getDataFromElements(elements, "data-equal") ||
                                 valids[i + 1] ||
                                 null;
-                            var valor1 = InnerForm(this).val();
-                            var valor2 = InnerForm(selector).val() || InnerForm(selector).text();
+                            var valor1 = getValFromElements(elements);
+                            var selectorElements = select(selector);
+                            var valor2 = getValFromElements(selectorElements) || getTextFromElements(selectorElements);
                             results.push(valor1 == valor2);
                             break;
                         case "notchars":
@@ -2815,25 +2860,25 @@
 
             for (var i = 0; i < results.length; i++) {
                 if (results[i] === false) {
-                    InnerForm(this).addClass("error");
-                    InnerForm(this)
-                        .closest(".form-group")
-                        .addClass("has-error");
-                    InnerForm(this)
-                        .get(0)
-                        .setCustomValidity(InnerForm(this).attr("data-invalidmessage") || "");
-                    eval(InnerForm(this).attr("data-invalidcallback") || "void(0)");
-                    eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
+                    addClassToElements(elements, "error");
+                    var closestFormGroup = closestElement(elements, ".form-group");
+                    addClassToElements(closestFormGroup, "has-error");
+                    var el = getFirstElement(elements);
+                    if (el) {
+                        el.setCustomValidity(getAttrFromElements(elements, "data-invalidmessage") || "");
+                    }
+                    eval(getAttrFromElements(elements, "data-invalidcallback") || "void(0)");
+                    eval(getAttrFromElements(elements, "data-aftervalidatecallback") || "void(0)");
                     return false;
                 }
             }
 
             if (InnerForm.trim(value) !== "") {
-                InnerForm(this).addClass("success");
+                addClassToElements(elements, "success");
             }
-            InnerForm(this).removeClass("error");
-            eval(InnerForm(this).attr("data-validcallback") || "void(0)");
-            eval(InnerForm(this).attr("data-aftervalidatecallback") || "void(0)");
+            removeClassFromElements(elements, "error");
+            eval(getAttrFromElements(elements, "data-validcallback") || "void(0)");
+            eval(getAttrFromElements(elements, "data-aftervalidatecallback") || "void(0)");
             return true;
         }
     };
@@ -2891,18 +2936,21 @@
     if (typeof document !== "undefined") {
         var initInnerForm = function () {
             setTimeout(function () {
-                InnerForm(document).on("keydown", ":input", function (e) {
+                onElements(select(document), "keydown", ":input", function (e) {
                     if (e.key === "Backspace" || e.key === "Delete") {
                         isDeleting = true;
                     } else {
                         isDeleting = false;
                     }
-
                 });
-                InnerForm('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate').startValidation().startMasks();
-                InnerForm(":input").each(function () {
-                    InnerForm(this).focus(function () {
-                        InnerForm(this).addClass("prevFocus");
+                var forms = select('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate');
+                forEachElement(forms, function (form) {
+                    InnerForm(form).startValidation().startMasks();
+                });
+                var inputs = select(":input");
+                forEachElement(inputs, function (input) {
+                    onElements([input], "focus", function () {
+                        addClassToElements([input], "prevFocus");
                     });
                 });
             }, 0);
@@ -2914,51 +2962,66 @@
 
     /** Starts automatic masks for the current collection. @returns {Object} Chainable InnerForm collection */
     InnerForm.fn.startMasks = function () {
-
-        InnerForm(this).find(".mask.phone, .mask.tel, .mask.cel").phoneMask();
-        InnerForm(this).find(".mask.upper").upperMask();
-        InnerForm(this).find(".mask.lower, .mask.email, .mask.mail").lowerMask();
-        InnerForm(this).find(".mask.cpf").cpfMask();
-        InnerForm(this).find(".mask.cnh").cnhMask();
-        InnerForm(this).find(".mask.cep").cepMask();
-        InnerForm(this).find(".mask.cnpj").cnpjMask();
-        InnerForm(this).find(".mask.cpfcnpj, .mask.cnpjcpf").cpfCnpjMask();
-        InnerForm(this).find(".mask.creditcard, .mask.debitcard").creditCardMask();
-        InnerForm(this).find(".mask.date, .mask.data").dateMask();
-        InnerForm(this).find(".mask.monthyear").monthYearMask();
-        InnerForm(this).find(".mask.num, .mask.number, .mask.month, .mask.money, .mask.decimal, .mask.integer, .mask.int").numberMask();
-        InnerForm(this).find(".mask.len").lenMask();
-        InnerForm(this).find(".autocomplete.cep").cepAutoComplete();
-        InnerForm(this).find(".mask.time").timeMask();
-        InnerForm(this).find(".mask.shorttime, .mask.timeshort, .mask.minutesecond").shortTimeMask();
-        InnerForm(this).find(".mask.dateshorttime, .mask.datetimeshort").dateShortTimeMask();
-        InnerForm(this).find(".mask.datetime").dateTimeMask();
-        InnerForm(this).find(".mask.alpha").alphaMask();
-        InnerForm(this).find(".mask.alphanum, .mask.alphanumeric").alphaNumericMask();
-        InnerForm(this).find(".mask.state, .mask.uf").ufMask();
-        InnerForm(this).find(".mask.nospace").noSpaceMask();
-        InnerForm(this).find(".mask.maxlen").maxLenMask();
-        InnerForm(this).find(".mask.leadingzero").leadingZeroMask();
-        InnerForm(this).find(".mask.daterange").dateRangeMask();
-        InnerForm(this).find(".mask.monthyearrange").monthYearRangeMask();
-        InnerForm(this).find(".mask.shortmonthyearrange").shortMonthYearRangeMask();
-        InnerForm(this).find(".mask.uuid").uuidMask();
-        InnerForm(this).find(".mask.oab").oabMask();
-        InnerForm(this).find(".mask.latitude, .mask.lat").latitudeMask();
-        InnerForm(this).find(".mask.longitude, .mask.long, .mask.lng").longitudeMask();
-        return InnerForm(this);
+        var elements = getElements(this);
+        var masks = [
+            [".mask.phone, .mask.tel, .mask.cel", "phoneMask"],
+            [".mask.upper", "upperMask"],
+            [".mask.lower, .mask.email, .mask.mail", "lowerMask"],
+            [".mask.cpf", "cpfMask"],
+            [".mask.cnh", "cnhMask"],
+            [".mask.cep", "cepMask"],
+            [".mask.cnpj", "cnpjMask"],
+            [".mask.cpfcnpj, .mask.cnpjcpf", "cpfCnpjMask"],
+            [".mask.creditcard, .mask.debitcard", "creditCardMask"],
+            [".mask.date, .mask.data", "dateMask"],
+            [".mask.monthyear", "monthYearMask"],
+            [".mask.num, .mask.number, .mask.month, .mask.money, .mask.decimal, .mask.integer, .mask.int", "numberMask"],
+            [".mask.len", "lenMask"],
+            [".autocomplete.cep", "cepAutoComplete"],
+            [".mask.time", "timeMask"],
+            [".mask.shorttime, .mask.timeshort, .mask.minutesecond", "shortTimeMask"],
+            [".mask.dateshorttime, .mask.datetimeshort", "dateShortTimeMask"],
+            [".mask.datetime", "dateTimeMask"],
+            [".mask.alpha", "alphaMask"],
+            [".mask.alphanum, .mask.alphanumeric", "alphaNumericMask"],
+            [".mask.state, .mask.uf", "ufMask"],
+            [".mask.nospace", "noSpaceMask"],
+            [".mask.maxlen", "maxLenMask"],
+            [".mask.leadingzero", "leadingZeroMask"],
+            [".mask.daterange", "dateRangeMask"],
+            [".mask.monthyearrange", "monthYearRangeMask"],
+            [".mask.shortmonthyearrange", "shortMonthYearRangeMask"],
+            [".mask.uuid", "uuidMask"],
+            [".mask.oab", "oabMask"],
+            [".mask.latitude, .mask.lat", "latitudeMask"],
+            [".mask.longitude, .mask.long, .mask.lng", "longitudeMask"]
+        ];
+        for (var i = 0; i < masks.length; i++) {
+            var found = findElements(elements, masks[i][0]);
+            forEachElement(found, function (el) {
+                InnerForm(el)[masks[i][1]]();
+            });
+        }
+        return this;
     }
 
     /** Starts blur, change, type, and submit validation for the current collection. @returns {Object} Chainable InnerForm collection */
     InnerForm.fn.startValidation = function () {
-        InnerForm(this).not(".notonblur").validateOnBlur();
-        InnerForm(this).not(".notonchange").validateOnChange();
-        InnerForm(this).find(".onkeyup").validateOnType();
-        return InnerForm(this).on("submit", function () {
-            InnerForm(this).find(":input").addClass('prevFocus');
+        var elements = getElements(this);
+        var notOnBlur = filterElements(elements, ".notonblur");
+        var notOnChange = filterElements(elements, ".notonchange");
+        var onKeyup = findElements(elements, ".onkeyup");
+        
+        forEachElement(notOnBlur, function (el) { InnerForm(el).validateOnBlur(); });
+        forEachElement(notOnChange, function (el) { InnerForm(el).validateOnChange(); });
+        forEachElement(onKeyup, function (el) { InnerForm(el).validateOnType(); });
+        
+        onElements(elements, "submit", function () {
+            var inputs = findElements(elements, ":input");
+            addClassToElements(inputs, "prevFocus");
             return InnerForm(this).isValid();
         });
-
+        return this;
     }
 
     /** Starts automatic masks on an element or selector. @param {Object|string} element - Target element or selector @returns {Object} Chainable collection */
@@ -2975,20 +3038,21 @@
     /** Validates fields after typing pauses. @param {number} time - Delay in milliseconds @returns {Object} Chainable collection */
     InnerForm.fn.validateOnType = function (time) {
         time = time || InnerForm.onTypeTimeout;
-        let x = InnerForm(this)
-            .on("keyup", function () {
-                var p = InnerForm(this);
-                p.removeClass("error");
-                p.closest(".form-group").removeClass("has-error");
-                if (InnerForm.onTypeTimeoutFunction) {
-                    clearTimeout(InnerForm.onTypeTimeoutFunction);
-                }
-                InnerForm.onTypeTimeoutFunction = setTimeout(function () {
-                    p.isValid();
-                }, time);
-            });
-        InnerForm.log("InnerFormValidation:", "Validation on Type started", x, "delay", time);
-        return x;
+        var elements = getElements(this);
+        onElements(elements, "keyup", function () {
+            var el = this;
+            removeClassFromElements([el], "error");
+            var closestFormGroup = closestElement([el], ".form-group");
+            removeClassFromElements(closestFormGroup, "has-error");
+            if (InnerForm.onTypeTimeoutFunction) {
+                clearTimeout(InnerForm.onTypeTimeoutFunction);
+            }
+            InnerForm.onTypeTimeoutFunction = setTimeout(function () {
+                InnerForm(el).isValid();
+            }, time);
+        });
+        InnerForm.log("InnerFormValidation:", "Validation on Type started", this, "delay", time);
+        return this;
     }
 
     /**
@@ -2996,7 +3060,7 @@
      * @returns 
      */
     InnerForm.fn.validateOnBlur = function () {
-        return InnerForm(this).validateOn("blur");
+        return this.validateOn("blur");
     }
     /**
      * Fires validation on the given event
@@ -3004,353 +3068,364 @@
      * @returns 
      */
     InnerForm.fn.validateOn = function (event) {
-        let x = InnerForm(this)
-            .on(event, function () {
-                InnerForm(this).isValid();
-            });
-        InnerForm.log("InnerFormValidation:", "Validation on " + event + " started", x);
-        return x;
+        var elements = getElements(this);
+        onElements(elements, event, function () {
+            InnerForm(this).isValid();
+        });
+        InnerForm.log("InnerFormValidation:", "Validation on " + event + " started", this);
+        return this;
     }
 
     InnerForm.fn.validateOnChange = function () {
-        return InnerForm(this).validateOn("change");
+        return this.validateOn("change");
     }
 
 
     InnerForm.fn.phoneMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyPhoneMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "PhoneMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "PhoneMask started", this);
+        return this;
     }
 
 
     /** Applies the uppercase mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.upperMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyUpperMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "UpperMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "UpperMask started", this);
+        return this;
     }
 
 
     /** Applies the lowercase mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.lowerMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyLowerMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "LowerMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "LowerMask started", this);
+        return this;
     }
+
 
     /** Applies the CPF mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cpfMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyCPFMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "CpfMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "CpfMask started", this);
+        return this;
     }
 
 
     /** Applies the CEP mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cepMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyCEPMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "CepMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "CepMask started", this);
+        return this;
     }
 
 
     /** Applies the CNPJ mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cnpjMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyCNPJMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "CnpjMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "CnpjMask started", this);
+        return this;
     }
 
 
     /** Applies the CNH mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cnhMask = function () {
-        let x = InnerForm(this).on('input', function () {
+        var elements = getElements(this);
+        onElements(elements, 'input', function () {
             InnerForm.applyCNHMask(this);
         });
-        InnerForm.log('InnerFormValidation:', 'CNHMask started', x);
-        return x;
+        InnerForm.log('InnerFormValidation:', 'CNHMask started', this);
+        return this;
     }
 
     /** Applies the CPF or CNPJ mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cpfCnpjMask = function () {
-        let x = InnerForm(this).on('input', function () {
+        var elements = getElements(this);
+        onElements(elements, 'input', function () {
             InnerForm.applyCPForCNPJMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "CpfCnpjMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "CpfCnpjMask started", this);
+        return this;
     }
 
 
     /** Applies the credit card mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.creditCardMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyCreditCardMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "CreditCardMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "CreditCardMask started", this);
+        return this;
     }
 
     /** Applies the date mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyDateMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "DateMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "DateMask started", this);
+        return this;
     }
 
     /** Applies the month/year mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.monthYearMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyMonthYearMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "MonthYearMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "MonthYearMask started", this);
+        return this;
     }
 
     /** Applies the number mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.numberMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyNumberMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "NumberMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "NumberMask started", this);
+        return this;
     }
 
     /** Applies the date range mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateRangeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyDateRangeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "DateRangeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "DateRangeMask started", this);
+        return this;
     }
 
     /** Applies the short month/year range mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.shortMonthYearRangeMask = function () {
-
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyShortMonthYearRangeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "ShortMonthYearRangeMask started", x);
-        return x;
-
+        InnerForm.log("InnerFormValidation:", "ShortMonthYearRangeMask started", this);
+        return this;
     }
+
     /** Applies the month/year range mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.monthYearRangeMask = function () {
-
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyMonthYearRangeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "MonthYearRangeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "MonthYearRangeMask started", this);
+        return this;
     }
 
     /** Limits the length of fields in the current collection. @param {number} [tam] - Maximum length @returns {Object} Chainable collection */
     InnerForm.fn.lenMask = function (tam) {
-        let x = InnerForm(this).on("input", function () {
-            var array = InnerForm(this)
-                .attr("class")
-                .split(" ")
-                .filter(function (el) {
-                    return el != null && el != "";
-                });
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
+            var classAttr = getAttrFromElements([this], "class") || "";
+            var array = classAttr.split(" ").filter(function (el) {
+                return el != null && el != "";
+            });
             tam = tam || parseInt(array[array.indexOf("len") + 1]);
             if (!isNaN(tam)) {
-                InnerForm(this).attr("maxlength", tam);
-                InnerForm(this).val(
-                    InnerForm(this)
-                        .val()
-                        .substring(0, tam)
-                );
+                setAttrOnElements([this], "maxlength", tam);
+                var val = getValFromElements([this]);
+                setValOnElements([this], val.substring(0, tam));
             }
         });
-        InnerForm.log("InnerFormValidation:", "LenMax started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "LenMax started", this);
+        return this;
     }
 
     /** Enables ViaCEP autocomplete for the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.cepAutoComplete = function () {
-        let x = InnerForm(this).on("input", function () {
-            InnerForm.searchViaCEP(
-                InnerForm(this).val(),
-                InnerForm(".autocomplete.homenum").val() || InnerForm(".autocomplete.homenumber").val() || InnerForm(".autocomplete.number").val() || InnerForm(".autocomplete.num").val(),
-                InnerForm(this).data('timeout') || 0
-            );
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
+            var homeNum = getValFromElements(select(".autocomplete.homenum")) || getValFromElements(select(".autocomplete.homenumber")) || getValFromElements(select(".autocomplete.number")) || getValFromElements(select(".autocomplete.num"));
+            var timeout = getDataFromElements([this], 'timeout') || 0;
+            InnerForm.searchViaCEP(getValFromElements([this]), homeNum, timeout);
         });
-        InnerForm.log("InnerFormValidation:", "Autocomplete for CEP started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "Autocomplete for CEP started", this);
+        return this;
     }
 
     /** Applies the time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.timeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyTimeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "TimeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "TimeMask started", this);
+        return this;
     }
 
     /** Applies the short time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.shortTimeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyShortTimeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "ShortTimeMask started", x);
-        return x;
-
+        InnerForm.log("InnerFormValidation:", "ShortTimeMask started", this);
+        return this;
     }
 
     /** Applies the short date/time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateShortTimeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyDateShortMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "DateShortTimeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "DateShortTimeMask started", this);
+        return this;
     }
 
     /** Applies the date/time mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.dateTimeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyDateTimeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "DateTimeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "DateTimeMask started", this);
+        return this;
     }
 
     /** Applies the alphabetic mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.alphaMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyAlphaMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "AlphaMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "AlphaMask started", this);
+        return this;
     }
 
     /** Applies the alphanumeric mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.alphaNumericMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyAlphaNumericMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "AlphaNumericMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "AlphaNumericMask started", this);
+        return this;
     }
 
     /** Applies the UF mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.ufMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyUFMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "UFMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "UFMask started", this);
+        return this;
     }
-
 
     /** Applies the no-space mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.noSpaceMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyNoSpaceMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "NoSpaceMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "NoSpaceMask started", this);
+        return this;
     }
 
     /** Applies the UUID mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.uuidMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyUUIDMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "UUIDMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "UUIDMask started", this);
+        return this;
     }
 
     /** Applies the OAB mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.oabMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyOABMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "OABMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "OABMask started", this);
+        return this;
     }
 
     /** Applies the latitude mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.latitudeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyLatitudeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "LatitudeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "LatitudeMask started", this);
+        return this;
     }
 
     /** Applies the longitude mask to the current collection. @returns {Object} Chainable collection */
     InnerForm.fn.longitudeMask = function () {
-        let x = InnerForm(this).on("input", function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
             InnerForm.applyLongitudeMask(this);
         });
-        InnerForm.log("InnerFormValidation:", "LongitudeMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "LongitudeMask started", this);
+        return this;
     }
 
     /** Limits field values to the configured maximum length. @returns {Object} Chainable collection */
     InnerForm.fn.maxLenMask = function () {
-        let x = InnerForm(this).on("input", function () {
-            var array = InnerForm(this)
-                .attr("class")
-                .split(" ")
-                .filter(function (el) {
-                    return el != null && el != "";
-                });
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
+            var classAttr = getAttrFromElements([this], "class") || "";
+            var array = classAttr.split(" ").filter(function (el) {
+                return el != null && el != "";
+            });
             var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("maxlen") + 1]);
             if (!isNaN(tam)) {
-                InnerForm(this).attr("maxlength", tam);
-                InnerForm(this).val(
-                    InnerForm(this)
-                        .val()
-                        .substring(0, tam)
-                );
+                setAttrOnElements([this], "maxlength", tam);
+                var val = getValFromElements([this]);
+                setValOnElements([this], val.substring(0, tam));
             }
         });
-        InnerForm.log("InnerFormValidation:", "MaxLenMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "MaxLenMask started", this);
+        return this;
     }
-
-
 
     /** Pads field values with leading zeros on blur. @returns {Object} Chainable collection */
     InnerForm.fn.leadingZeroMask = function () {
-        let x = InnerForm(this).on("blur", function () {
-            var array = InnerForm(this)
-                .attr("class")
-                .split(" ")
-                .filter(function (el) {
-                    return el != null && el != "";
-                });
+        var elements = getElements(this);
+        onElements(elements, "blur", function () {
+            var classAttr = getAttrFromElements([this], "class") || "";
+            var array = classAttr.split(" ").filter(function (el) {
+                return el != null && el != "";
+            });
             var tam = parseInt(array[array.indexOf("len") + 1] || array[array.indexOf("minlen") + 1]);
             if (!isNaN(tam)) {
-                InnerForm(this).val(
-                    InnerForm.addLeadingZeros(InnerForm(this).val(), tam)
-                ).isValid();
+                setValOnElements([this], InnerForm.addLeadingZeros(getValFromElements([this]), tam));
+                InnerForm(this).isValid();
             }
         });
-        InnerForm.log("InnerFormValidation:", "LeadingZeroMask started", x);
-        return x;
+        InnerForm.log("InnerFormValidation:", "LeadingZeroMask started", this);
+        return this;
     }
 
-    /**
+    /**    /**
      * Obtém a localização atual do usuário usando a API de Geolocalização do navegador
      * @function getLocation
      * @memberof InnerFormValidation
@@ -3416,20 +3491,22 @@
                 };
 
                 // Preenche automaticamente os campos de latitude e longitude
-                InnerForm(".autocomplete.latitude:input, .autocomplete.lat:input")
-                    .setOrReplaceVal(coords.latitude)
-                    .change().focus();
-                InnerForm(".autocomplete.longitude:input, .autocomplete.long:input")
-                    .setOrReplaceVal(coords.longitude)
-                    .change().focus();
+                var latInputs = select(".autocomplete.latitude:input, .autocomplete.lat:input");
+                setValOnElements(latInputs, coords.latitude);
+                triggerChangeOnElements(latInputs);
+                triggerFocusOnElements(latInputs);
+                var lngInputs = select(".autocomplete.longitude:input, .autocomplete.long:input");
+                setValOnElements(lngInputs, coords.longitude);
+                triggerChangeOnElements(lngInputs);
+                triggerFocusOnElements(lngInputs);
 
                 // Preenche elementos não-input também
-                InnerForm(".autocomplete.latitude, .autocomplete.lat")
-                    .not(":input")
-                    .text(coords.latitude);
-                InnerForm(".autocomplete.longitude, .autocomplete.long")
-                    .not(":input")
-                    .text(coords.longitude);
+                var latElements = select(".autocomplete.latitude, .autocomplete.lat");
+                var latNonInputs = latElements.filter(function (el) { return !/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName); });
+                setTextOnElements(latNonInputs, coords.latitude);
+                var lngElements = select(".autocomplete.longitude, .autocomplete.long");
+                var lngNonInputs = lngElements.filter(function (el) { return !/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName); });
+                setTextOnElements(lngNonInputs, coords.longitude);
 
                 InnerForm.log('Localização obtida com sucesso:', locationData);
                 resolve(locationData);
@@ -3519,20 +3596,22 @@
             };
 
             // Preenche automaticamente os campos de latitude e longitude
-            InnerForm(".autocomplete.latitude:input, .autocomplete.lat:input")
-                .setOrReplaceVal(coords.latitude)
-                .change().focus();
-            InnerForm(".autocomplete.longitude:input, .autocomplete.long:input")
-                .setOrReplaceVal(coords.longitude)
-                .change().focus();
+            var latInputs = select(".autocomplete.latitude:input, .autocomplete.lat:input");
+            setValOnElements(latInputs, coords.latitude);
+            triggerChangeOnElements(latInputs);
+            triggerFocusOnElements(latInputs);
+            var lngInputs = select(".autocomplete.longitude:input, .autocomplete.long:input");
+            setValOnElements(lngInputs, coords.longitude);
+            triggerChangeOnElements(lngInputs);
+            triggerFocusOnElements(lngInputs);
 
             // Preenche elementos não-input também
-            InnerForm(".autocomplete.latitude, .autocomplete.lat")
-                .not(":input")
-                .text(coords.latitude);
-            InnerForm(".autocomplete.longitude, .autocomplete.long")
-                .not(":input")
-                .text(coords.longitude);
+            var latElements = select(".autocomplete.latitude, .autocomplete.lat");
+            var latNonInputs = latElements.filter(function (el) { return !/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName); });
+            setTextOnElements(latNonInputs, coords.latitude);
+            var lngElements = select(".autocomplete.longitude, .autocomplete.long");
+            var lngNonInputs = lngElements.filter(function (el) { return !/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName); });
+            setTextOnElements(lngNonInputs, coords.longitude);
 
             callback(locationData);
         }
