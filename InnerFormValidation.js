@@ -3611,33 +3611,8 @@
         };
 
         // Only add methods that don't already exist in jQuery.fn
-        // (methods like each, on, find, addClass, removeClass, val, attr, data, etc. are native to jQuery)
-        var jqueryNativeMethods = {
-            each: true, on: true, off: true, find: true, filter: true, not: true, is: true, closest: true,
-            addClass: true, removeClass: true, toggleClass: true, hasClass: true,
-            attr: true, removeAttr: true, prop: true, removeProp: true,
-            data: true, removeData: true, val: true, text: true, html: true,
-            append: true, prepend: true, before: true, after: true, remove: true, empty: true,
-            clone: true, wrap: true, unwrap: true, replaceWith: true, replaceAll: true,
-            css: true, width: true, height: true, innerWidth: true, innerHeight: true,
-            outerWidth: true, outerHeight: true, offset: true, position: true, scrollTop: true, scrollLeft: true,
-            show: true, hide: true, toggle: true, fadeIn: true, fadeOut: true, fadeToggle: true,
-            slideDown: true, slideUp: true, slideToggle: true, animate: true, stop: true, delay: true,
-            eq: true, first: true, last: true, slice: true, map: true, get: true, index: true,
-            add: true, addBack: true, parent: true, parents: true, parentsUntil: true,
-            children: true, siblings: true, next: true, prev: true, nextAll: true, prevAll: true,
-            nextUntil: true, prevUntil: true, contents: true, end: true, pushStack: true,
-            serialize: true, serializeArray: true, submit: true, trigger: true, triggerHandler: true,
-            focus: true, blur: true, focusin: true, focusout: true, load: true, unload: true,
-            error: true, resize: true, scroll: true, select: true, change: true, click: true,
-            dblclick: true, mousedown: true, mouseup: true, mousemove: true, mouseover: true,
-            mouseout: true, mouseenter: true, mouseleave: true, keydown: true, keyup: true, keypress: true,
-            hover: true, bind: true, unbind: true, delegate: true, undelegate: true,
-            ready: true, holdReady: true, noConflict: true
-        };
-
         Object.keys(InnerForm.fn).forEach(function (methodName) {
-            if (!jqueryNativeMethods[methodName]) {
+            if (!(methodName in root.jQuery.fn)) {
                 wrapMethod(methodName);
             }
         });
