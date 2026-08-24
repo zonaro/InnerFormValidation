@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>InnerFormValidation Browser Test</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="InnerFormValidation.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .test { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .pass { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .fail { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        form { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 4px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .error { border-color: #dc3545 !important; }
+        .success { border-color: #28a745 !important; }
+        .has-error { color: #dc3545; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>InnerFormValidation Browser Test Suite</h1>
+    <div id="results"></div>
+
+    <h2>Standalone API Tests</h2>
+    <form id="test-form" class="validate">
+        <div class="form-group">
+            <label>Email (obg email)</label>
+            <input type="email" name="email" class="obg email" placeholder="test@example.com">
+        </div>
+        <div class="form-group">
+            <label>CPF (obg cpf)</label>
+            <input type="text" name="cpf" class="obg cpf" placeholder="000.000.000-00">
+        </div>
+        <div class="form-group">
+            <label>Phone (tel)</label>
+            <input type="text" name="phone" class="tel" placeholder="(11) 99999-9999">
+        </div>
+        <div class="form-group">
+            <label>CEP (cep)</label>
+            <input type="text" name="cep" class="cep autocomplete cep" placeholder="00000-000">
+        </div>
+        <div class="form-group">
+            <label>Date (data)</label>
+            <input type="text" name="date" class="data" placeholder="DD/MM/YYYY">
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>jQuery Plugin Compatibility Tests</h2>
+    <form id="jquery-form">
+        <div class="form-group">
+            <label>jQuery Email</label>
+            <input type="email" name="email" class="obg email" placeholder="test@example.com">
+        </div>
+        <div class="form-group">
+            <label>jQuery CPF</label>
+            <input type="text" name="cpf" class="obg cpf" placeholder="000.000.000-00">
+        </div>
+        <button type="submit">Submit via jQuery</button>
+    </form>
+
+    <script>
+        function log(msg, isError) {
+            var div = document.createElement('div');
+            div.className = 'test ' + (isError ? 'fail' : 'pass');
+            div.textContent = msg;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function logInfo(msg) {
+            var div = document.createElement('div');
+            div.className = 'test info';
+            div.textContent = msg;
+            document.getElementById('results').appendChild(div);
+        }
+
+        // ============================================
+        // Test 1: Standalone API
+        // ============================================
+        logInfo('=== STANDALONE API TESTS ===');
+
+        try {
+            var form = InnerForm('#test-form');
+            log('✓ InnerForm(selector) works');
+        } catch (e) { log('✗ InnerForm(selector) failed: ' + e.message, true); }
+
+        try {
+            var inputs = InnerForm('#test-form').find('input');
+            log('✓ .find() works, found ' + inputs.length + ' elements');
+        } catch (e) { log('✗ .find() failed: ' + e.message, true); }
+
+        try {
+            var count = 0;
+            InnerForm('#test-form input').each(function() { count++; });
+            log('✓ .each() works, iterated ' + count + ' elements');
+        } catch (e) { log('✗ .each() failed: ' + e.message, true); }
+
+        try {
+            var el = InnerForm('#test-form input').first();
+            log('✓ .first() works, got: ' + (el.get(0) ? el.get(0).name : 'none'));
+        } catch (e) { log('✗ .first() failed: ' + e.message, true); }
+
+        try {
+            var el = InnerForm('#test-form input[name="email"]').get(0);
+            log('✓ .get(0) works, got: ' + (el ? el.name : 'none'));
+        } catch (e) { log('✗ .get(0) failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').addClass('test-class');
+            var has = InnerForm('#test-form input[name="email"]').hasClass('test-class');
+            InnerForm('#test-form input[name="email"]').removeClass('test-class');
+            log('✓ .addClass/.hasClass/.removeClass work: ' + has);
+        } catch (e) { log('✗ Class methods failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').attr('data-test', 'value');
+            var attr = InnerForm('#test-form input[name="email"]').attr('data-test');
+            InnerForm('#test-form input[name="email"]').removeAttr('data-test');
+            log('✓ .attr/.removeAttr work: ' + attr);
+        } catch (e) { log('✗ Attr methods failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').prop('disabled', true);
+            var prop = InnerForm('#test-form input[name="email"]').prop('disabled');
+            InnerForm('#test-form input[name="email"]').prop('disabled', false);
+            log('✓ .prop works: ' + prop);
+        } catch (e) { log('✗ Prop methods failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').data('key', 'value');
+            var data = InnerForm('#test-form input[name="email"]').data('key');
+            log('✓ .data works: ' + data);
+        } catch (e) { log('✗ Data methods failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').val('test@val.com');
+            var val = InnerForm('#test-form input[name="email"]').val();
+            log('✓ .val getter/setter works: ' + val);
+        } catch (e) { log('✗ Val methods failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').text('new text');
+            var text = InnerForm('#test-form input[name="email"]').text();
+            log('✓ .text works: ' + text);
+        } catch (e) { log('✗ Text methods failed: ' + e.message, true); }
+
+        try {
+            var div = document.createElement('div');
+            div.id = 'append-test';
+            document.body.appendChild(div);
+            InnerForm('#append-test').append('<span>appended</span>');
+            var html = document.getElementById('append-test').innerHTML;
+            document.getElementById('append-test').remove();
+            log('✓ .append works: ' + html);
+        } catch (e) { log('✗ Append failed: ' + e.message, true); }
+
+        try {
+            var triggered = false;
+            InnerForm('#test-form input[name="email"]').on('custom-event', function() { triggered = true; });
+            InnerForm('#test-form input[name="email"]').get(0).dispatchEvent(new Event('custom-event'));
+            log('✓ .on() works: ' + triggered);
+        } catch (e) { log('✗ On failed: ' + e.message, true); }
+
+        try {
+            var triggered = false;
+            InnerForm('#test-form input[name="email"]').change(function() { triggered = true; });
+            InnerForm('#test-form input[name="email"]').get(0).dispatchEvent(new Event('change'));
+            log('✓ .change() works: ' + triggered);
+        } catch (e) { log('✗ Change failed: ' + e.message, true); }
+
+        try {
+            var focused = false;
+            InnerForm('#test-form input[name="email"]').focus(function() { focused = true; });
+            InnerForm('#test-form input[name="email"]').get(0).focus();
+            log('✓ .focus() works: ' + focused);
+        } catch (e) { log('✗ Focus failed: ' + e.message, true); }
+
+        try {
+            var notInputs = InnerForm('#test-form').not('input');
+            log('✓ .not() works, found ' + notInputs.length + ' non-input elements');
+        } catch (e) { log('✗ Not failed: ' + e.message, true); }
+
+        try {
+            var isInput = InnerForm('#test-form input[name="email"]').is('input');
+            log('✓ .is() works: ' + isInput);
+        } catch (e) { log('✗ Is failed: ' + e.message, true); }
+
+        try {
+            var closest = InnerForm('#test-form input[name="email"]').closest('.form-group');
+            log('✓ .closest() works, found: ' + (closest.length ? 'yes' : 'no'));
+        } catch (e) { log('✗ Closest failed: ' + e.message, true); }
+
+        // ============================================
+        // Test 2: Validation Methods
+        // ============================================
+        logInfo('=== VALIDATION TESTS ===');
+
+        try {
+            InnerForm('#test-form input[name="email"]').val('valid@email.com');
+            var valid = InnerForm('#test-form input[name="email"]').isValid('email');
+            log('✓ isValid("email") valid email: ' + valid);
+        } catch (e) { log('✗ isValid email failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="email"]').val('invalid-email');
+            var valid = InnerForm('#test-form input[name="email"]').isValid('email');
+            log('✓ isValid("email") invalid email: ' + valid);
+        } catch (e) { log('✗ isValid invalid email failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="cpf"]').val('111.444.777-35');
+            var valid = InnerForm('#test-form input[name="cpf"]').isValid('cpf');
+            log('✓ isValid("cpf") valid: ' + valid);
+        } catch (e) { log('✗ isValid cpf failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="cpf"]').val('123.456.789-00');
+            var valid = InnerForm('#test-form input[name="cpf"]').isValid('cpf');
+            log('✓ isValid("cpf") invalid: ' + valid);
+        } catch (e) { log('✗ isValid invalid cpf failed: ' + e.message, true); }
+
+        try {
+            var formValid = InnerForm('#test-form').isValid();
+            log('✓ Form isValid() works: ' + formValid);
+        } catch (e) { log('✗ Form isValid failed: ' + e.message, true); }
+
+        // ============================================
+        // Test 3: Mask Methods
+        // ============================================
+        logInfo('=== MASK TESTS ===');
+
+        try {
+            InnerForm('#test-form input[name="phone"]').phoneMask();
+            InnerForm('#test-form input[name="phone"]').val('11999999999');
+            InnerForm('#test-form input[name="phone"]').get(0).dispatchEvent(new Event('input'));
+            var val = InnerForm('#test-form input[name="phone"]').val();
+            log('✓ phoneMask works: ' + val);
+        } catch (e) { log('✗ phoneMask failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="cpf"]').cpfMask();
+            InnerForm('#test-form input[name="cpf"]').val('11144477735');
+            InnerForm('#test-form input[name="cpf"]').get(0).dispatchEvent(new Event('input'));
+            var val = InnerForm('#test-form input[name="cpf"]').val();
+            log('✓ cpfMask works: ' + val);
+        } catch (e) { log('✗ cpfMask failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="cep"]').cepMask();
+            InnerForm('#test-form input[name="cep"]').val('01310100');
+            InnerForm('#test-form input[name="cep"]').get(0).dispatchEvent(new Event('input'));
+            var val = InnerForm('#test-form input[name="cep"]').val();
+            log('✓ cepMask works: ' + val);
+        } catch (e) { log('✗ cepMask failed: ' + e.message, true); }
+
+        try {
+            InnerForm('#test-form input[name="date"]').dateMask();
+            InnerForm('#test-form input[name="date"]').val('25122024');
+            InnerForm('#test-form input[name="date"]').get(0).dispatchEvent(new Event('input'));
+            var val = InnerForm('#test-form input[name="date"]').val();
+            log('✓ dateMask works: ' + val);
+        } catch (e) { log('✗ dateMask failed: ' + e.message, true); }
+
+        // ============================================
+        // Test 4: jQuery Plugin Compatibility
+        // ============================================
+        logInfo('=== JQUERY PLUGIN COMPATIBILITY TESTS ===');
+
+        try {
+            var $form = $('#jquery-form');
+            log('✓ jQuery selector works');
+        } catch (e) { log('✗ jQuery selector failed: ' + e.message, true); }
+
+        try {
+            var $inputs = $('#jquery-form input');
+            log('✓ jQuery .find() works, found ' + $inputs.length + ' elements');
+        } catch (e) { log('✗ jQuery find failed: ' + e.message, true); }
+
+        try {
+            var count = 0;
+            $('#jquery-form input').each(function() { count++; });
+            log('✓ jQuery .each() works, iterated ' + count + ' elements');
+        } catch (e) { log('✗ jQuery each failed: ' + e.message, true); }
+
+        try {
+            $('#jquery-form input[name="email"]').addClass('test-jq');
+            var has = $('#jquery-form input[name="email"]').hasClass('test-jq');
+            $('#jquery-form input[name="email"]').removeClass('test-jq');
+            log('✓ jQuery .addClass/.hasClass/.removeClass work: ' + has);
+        } catch (e) { log('✗ jQuery class methods failed: ' + e.message, true); }
+
+        try {
+            $('#jquery-form input[name="email"]').attr('data-jq', 'value');
+            var attr = $('#jquery-form input[name="email"]').attr('data-jq');
+            $('#jquery-form input[name="email"]').removeAttr('data-jq');
+            log('✓ jQuery .attr/.removeAttr work: ' + attr);
+        } catch (e) { log('✗ jQuery attr methods failed: ' + e.message, true); }
+
+        try {
+            $('#jquery-form input[name="email"]').val('jq@test.com');
+            var val = $('#jquery-form input[name="email"]').val();
+            log('✓ jQuery .val getter/setter works: ' + val);
+        } catch (e) { log('✗ jQuery val methods failed: ' + e.message, true); }
+
+        try {
+            var triggered = false;
+            $('#jquery-form').on('submit', function(e) { e.preventDefault(); triggered = true; });
+            $('#jquery-form').trigger('submit');
+            log('✓ jQuery .on() works: ' + triggered);
+        } catch (e) { log('✗ jQuery on failed: ' + e.message, true); }
+
+        try {
+            var triggered = false;
+            $('#jquery-form input[name="email"]').change(function() { triggered = true; });
+            $('#jquery-form input[name="email"]').trigger('change');
+            log('✓ jQuery .change() works: ' + triggered);
+        } catch (e) { log('✗ jQuery change failed: ' + e.message, true); }
+
+        try {
+            var focused = false;
+            $('#jquery-form input[name="email"]').focus(function() { focused = true; });
+            $('#jquery-form input[name="email"]').trigger('focus');
+            log('✓ jQuery .focus() works: ' + focused);
+        } catch (e) { log('✗ jQuery focus failed: ' + e.message, true); }
+
+        // Test InnerForm custom methods on jQuery objects
+        try {
+            var valid = $('#jquery-form input[name="email"]').isValid('email');
+            log('✓ jQuery .isValid() custom method works: ' + valid);
+        } catch (e) { log('✗ jQuery isValid failed: ' + e.message, true); }
+
+        try {
+            $('#jquery-form input[name="cpf"]').cpfMask();
+            $('#jquery-form input[name="cpf"]').val('11144477735');
+            $('#jquery-form input[name="cpf"]').trigger('input');
+            var val = $('#jquery-form input[name="cpf"]').val();
+            log('✓ jQuery .cpfMask() custom method works: ' + val);
+        } catch (e) { log('✗ jQuery cpfMask failed: ' + e.message, true); }
+
+        try {
+            $('#jquery-form').startValidation();
+            log('✓ jQuery .startValidation() custom method works');
+        } catch (e) { log('✗ jQuery startValidation failed: ' + e.message, true); }
+
+        // ============================================
+        // Test 5: Static Methods
+        // ============================================
+        logInfo('=== STATIC METHODS TESTS ===');
+
+        try {
+            var valid = InnerForm.validateCPF('111.444.777-35');
+            log('✓ InnerForm.validateCPF: ' + valid);
+        } catch (e) { log('✗ validateCPF failed: ' + e.message, true); }
+
+        try {
+            var valid = InnerForm.validateCNPJ('11.222.333/0001-81');
+            log('✓ InnerForm.validateCNPJ: ' + valid);
+        } catch (e) { log('✗ validateCNPJ failed: ' + e.message, true); }
+
+        try {
+            var valid = InnerForm.validateCEP('01310-100');
+            log('✓ InnerForm.validateCEP: ' + valid);
+        } catch (e) { log('✗ validateCEP failed: ' + e.message, true); }
+
+        try {
+            var valid = InnerForm.validateEmail('test@example.com');
+            log('✓ InnerForm.validateEmail: ' + valid);
+        } catch (e) { log('✗ validateEmail failed: ' + e.message, true); }
+
+        try {
+            var valid = InnerForm.validatePhone('(11) 99999-9999');
+            log('✓ InnerForm.validatePhone: ' + valid);
+        } catch (e) { log('✗ validatePhone failed: ' + e.message, true); }
+
+        try {
+            var masked = '11144477735';
+            InnerForm.applyCPFMask({ value: masked });
+            log('✓ InnerForm.applyCPFMask: ' + masked);
+        } catch (e) { log('✗ applyCPFMask failed: ' + e.message, true); }
+
+        try {
+            var age = InnerForm.getAge('01/01/2000');
+            log('✓ InnerForm.getAge: ' + age);
+        } catch (e) { log('✗ getAge failed: ' + e.message, true); }
+
+        try {
+            var valid = InnerForm.validDate('25/12/2024');
+            log('✓ InnerForm.validDate: ' + valid);
+        } catch (e) { log('✗ validDate failed: ' + e.message, true); }
+
+        try {
+            var valid = InnerForm.validateUUID('550e8400-e29b-41d4-a716-446655440000');
+            log('✓ InnerForm.validateUUID: ' + valid);
+        } catch (e) { log('✗ validateUUID failed: ' + e.message, true); }
+
+        // ============================================
+        // Test 6: setOrReplaceVal
+        // ============================================
+        logInfo('=== SETORREPLACEVAL TESTS ===');
+
+        try {
+            var $input = $('#test-form input[name="email"]');
+            $input.val('');
+            $input.setOrReplaceVal('new@value.com');
+            var val = $input.val();
+            log('✓ setOrReplaceVal on empty: ' + val);
+        } catch (e) { log('✗ setOrReplaceVal empty failed: ' + e.message, true); }
+
+        try {
+            var $input = $('#test-form input[name="email"]');
+            $input.val('existing@value.com');
+            $input.setOrReplaceVal('should-not-replace@value.com');
+            var val = $input.val();
+            log('✓ setOrReplaceVal on filled (noreplace): ' + val);
+        } catch (e) { log('✗ setOrReplaceVal filled failed: ' + e.message, true); }
+
+        try {
+            var $input = $('#test-form input[name="email"]');
+            $input.val('existing@value.com');
+            $input.addClass('noreplace');
+            $input.setOrReplaceVal('should-replace@value.com');
+            var val = $input.val();
+            log('✓ setOrReplaceVal with .noreplace: ' + val);
+            $input.removeClass('noreplace');
+        } catch (e) { log('✗ setOrReplaceVal noreplace failed: ' + e.message, true); }
+
+        logInfo('=== ALL TESTS COMPLETED ===');
+    </script>
+</body>
+</html>
