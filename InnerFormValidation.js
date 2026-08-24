@@ -49,6 +49,10 @@ var query = function (selector, context) {
         }
     };
 
+    var getElements = function (collection) {
+        return (collection && Array.isArray(collection.elements)) ? collection.elements : [];
+    };
+
     var getFirstElement = function (elements) {
         return elements && elements.length ? elements[0] : null;
     };
