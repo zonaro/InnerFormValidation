@@ -195,6 +195,35 @@
     InnerForm = function (selector, context) { return query(selector, context); }
     InnerForm.fn = {}
 
+    /**
+     * Normalizes any value into a string for validation purposes.
+     * Accepts inputs, strings, numbers, dates, jQuery objects and other objects.
+     * @function normalizeValue
+     * @memberof InnerFormValidation
+     * @param {*} value - Value to normalize (input element, string, number, Date, etc.)
+     * @returns {string} Normalized string value
+     */
+    InnerForm.normalizeValue = function (value) {
+        // Se for um elemento de input, pega o valor
+        if (value instanceof HTMLInputElement || value instanceof HTMLTextAreaElement || value instanceof HTMLSelectElement) {
+            return String(value.value == null ? "" : value.value);
+        }
+        // Se for um objeto jQuery ou wrapper com .value
+        if (value && typeof value === "object" && "value" in value) {
+            return InnerForm.normalizeValue(value.value);
+        }
+        // Se for uma data, formata como DD/MM/YYYY
+        if (value instanceof Date && !isNaN(value.getTime())) {
+            var d = value.getDate().toString().padStart(2, "0");
+            var m = (value.getMonth() + 1).toString().padStart(2, "0");
+            return d + "/" + m + "/" + value.getFullYear();
+        }
+        // null, undefined ou vazio
+        if (value === null || value === undefined) return "";
+        // Converte para string
+        return String(value);
+    };
+
     // API de colecao standalone. Essas operacoes existiam na API publica e
     // usam os helpers nativos definidos acima; o adaptador jQuery continua
     // apenas como camada opcional de compatibilidade.
@@ -267,7 +296,7 @@
             return value;
         }
         //forca a conversão para string e trim
-        return String(value || "").trim();
+        return InnerForm.normalizeValue(value).trim();
     };
 
     root.InnerForm = InnerForm;
@@ -374,7 +403,7 @@
      * @returns {boolean} True if the time format is valid, false otherwise
      */
     InnerForm.validateTime = function (value, minutesSeconds) {
-        value = String(value || "");
+        value = InnerForm.normalizeValue(value);
         minutesSeconds = minutesSeconds || false;
         if (!/^\d{1,2}:\d{2}(?::\d{2})?$/.test(value)) return false;
         var comp = value.split(":");
@@ -411,7 +440,7 @@
      * @returns {boolean} True if the EAN is valid, false otherwise
      */
     InnerForm.validateEAN = function (value) {
-        value = value || ""
+        value = InnerForm.normalizeValue(value)
         if (!isNaN(value) && value.length > 1 && value.length <= 16) {
             let bar = value.slice(0, -1);
             let ver = value.slice(-1);
@@ -442,6 +471,7 @@
      * @returns {boolean} True if none of the characters are found, false otherwise
      */
     InnerForm.validateNotChar = function (value, chars) {
+        value = InnerForm.normalizeValue(value);
         chars = chars.split("");
         for (var i = 0; i < chars.length; i++) {
             if (value.indexOf(chars[i]) >= 0) {
@@ -460,7 +490,7 @@
      * @returns {boolean} True if the value is a valid UUID, false otherwise
      */
     InnerForm.validateUUID = function (value) {
-        value = value || "";
+        value = InnerForm.normalizeValue(value);
         // More flexible UUID pattern that accepts any hexadecimal characters
         // Format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
         var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -476,7 +506,7 @@
      * @see https://en.wikipedia.org/wiki/States_of_Brazil
      */
     InnerForm.validateUF = function (value) {
-        value = value || "";
+        value = InnerForm.normalizeValue(value);
         var ufsValidas = [
             "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
             "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
@@ -495,7 +525,7 @@
      * @returns {boolean} True if the OAB is valid, false otherwise
      */
     InnerForm.validateOAB = function (value) {
-        value = value || "";
+        value = InnerForm.normalizeValue(value);
         var clean = value.trim().toUpperCase().replace(/[^0-9A-Z]/g, "");
 
         // Debe terminar con UF de dois caracteres
@@ -527,7 +557,7 @@
      * @returns {boolean} True if the value is a valid latitude (-90 to +90), false otherwise
      */
     InnerForm.validateLatitude = function (value) {
-        value = String(value || "").trim().replace(',', '.');
+        value = InnerForm.normalizeValue(value).trim().replace(',', '.');
 
         if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(value)) return false;
 
@@ -546,7 +576,7 @@
      * @returns {boolean} True if the value is a valid longitude (-180 to +180), false otherwise
      */
     InnerForm.validateLongitude = function (value) {
-        value = String(value || "").trim().replace(',', '.');
+        value = InnerForm.normalizeValue(value).trim().replace(',', '.');
 
         if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(value)) return false;
 
@@ -565,7 +595,7 @@
      * @returns {boolean} True if the value contains valid coordinates, false otherwise
      */
     InnerForm.validateCoordinate = function (value) {
-        value = value || "";
+        value = InnerForm.normalizeValue(value);
 
         // Remove espaços extras e substitui vírgulas por pontos nos decimais
         value = value.trim();
@@ -603,6 +633,7 @@
      * @returns {boolean} True if any of the characters are found, false otherwise
      */
     InnerForm.validateAnyChar = function (value, chars) {
+        value = InnerForm.normalizeValue(value);
         chars = chars.split("");
         var v = [];
         for (var i = 0; i < chars.length; i++) {
@@ -622,6 +653,7 @@
      * @returns {boolean} True if all characters are found, false otherwise
      */
     InnerForm.validateAllChar = function (value, chars) {
+        value = InnerForm.normalizeValue(value);
         chars = chars.split("");
         var v = [];
         for (var i = 0; i < chars.length; i++) {
@@ -652,7 +684,7 @@
      * @returns {Date|null} The parsed Date object or null if invalid
      */
     InnerForm.parseDateInt = function (value) {
-        value = String(value || "");
+        value = InnerForm.normalizeValue(value);
         var dt = 0;
         var d = 0;
         var m = 0;
@@ -686,7 +718,7 @@
      * @returns {Date|null} The parsed Date object or null if invalid
      */
     InnerForm.parseDate = function (value) {
-        value = value || "";
+        value = InnerForm.normalizeValue(value);
         var datenumber = InnerForm.parseDateInt(value);
         if (datenumber != null) {
             return new Date(datenumber);
@@ -699,7 +731,8 @@
      * @returns {boolean} True if both dates are valid and first date <= second date
      */
     InnerForm.validDateRange = function (value) {
-        if (!value || typeof value !== 'string') return false;
+        value = InnerForm.normalizeValue(value);
+        if (!value) return false;
 
         var parts = value.split(' ~ ');
         if (parts.length !== 2) return false;
@@ -726,7 +759,8 @@
      * @returns {boolean} True if both month/years are valid and first <= second
      */
     InnerForm.validMonthYearRange = function (value) {
-        if (!value || typeof value !== 'string') return false;
+        value = InnerForm.normalizeValue(value);
+        if (!value) return false;
 
         var parts = value.split(' ~ ');
         if (parts.length !== 2) return false;
@@ -748,7 +782,8 @@
      * @returns {boolean} True if both month/years are valid and first <= second
      */
     InnerForm.validShortMonthYearRange = function (value) {
-        if (!value || typeof value !== 'string') return false;
+        value = InnerForm.normalizeValue(value);
+        if (!value) return false;
 
         var parts = value.split(' ~ ');
         if (parts.length !== 2) return false;
@@ -1899,7 +1934,7 @@
     InnerForm.checkLuhn = function (cardNumber) {
         var s = 0;
         var doubleDigit = false;
-        cardNumber = String(cardNumber || "").replace(/[^\d]+/g, "");
+        cardNumber = InnerForm.normalizeValue(cardNumber).replace(/[^\d]+/g, "");
         if (!cardNumber) return false;
         for (var i = cardNumber.length - 1; i >= 0; i--) {
             var digit = +cardNumber[i];
@@ -1916,7 +1951,7 @@
 
     /** Identifies the brand of a card number. @param {string} cardNumber - Card number @returns {string|boolean} Brand name or false */
     InnerForm.validateCardBrand = function (cardNumber) {
-        cardNumber = String(cardNumber || "").replace(/[^0-9]+/g, "");
+        cardNumber = InnerForm.normalizeValue(cardNumber).replace(/[^0-9]+/g, "");
         var cards = {
             visa: /^4[0-9]{12}(?:[0-9]{3})/,
             mastercard: /^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/,
@@ -1950,7 +1985,7 @@
 
     /** Validates a Brazilian CPF. @param {string} CPFNumber - CPF value @returns {boolean} Whether the CPF is valid */
     InnerForm.validateCPF = function (CPFNumber) {
-        CPFNumber = String(CPFNumber || "").replace(/\D/g, "");
+        CPFNumber = InnerForm.normalizeValue(CPFNumber).replace(/\D/g, "");
 
         // Elimina CPFS invalidos conhecidos
         if (
@@ -1995,7 +2030,7 @@
 
     /** Validates a Brazilian CNPJ. @param {string} CNPJNumber - CNPJ value @returns {boolean} Whether the CNPJ is valid */
     InnerForm.validateCNPJ = function (CNPJNumber) {
-        CNPJNumber = String(CNPJNumber || "").replace(/\D/g, "");
+        CNPJNumber = InnerForm.normalizeValue(CNPJNumber).replace(/\D/g, "");
 
         if (CNPJNumber == '')
             return false;
@@ -2049,7 +2084,7 @@
 
     /** Validates a Brazilian CNH. @param {string} cnh - CNH value @returns {boolean} Whether the CNH is valid */
     InnerForm.validateCNH = function (cnh) {
-        cnh = (cnh || "").toString();
+        cnh = InnerForm.normalizeValue(cnh);
         cnh = cnh.replace(/[^\d]/g, "");
 
         var char1 = cnh.charAt(0);
@@ -2118,7 +2153,7 @@
 
     /** Validates a Brazilian CEP (8 digits), ignoring mask characters. @param {string} CEPNumber - CEP value @returns {boolean} Whether the format is valid */
     InnerForm.validateCEP = function (CEPNumber) {
-        CEPNumber = String(CEPNumber || "").replace(/\D/g, "");
+        CEPNumber = InnerForm.normalizeValue(CEPNumber).replace(/\D/g, "");
         return /^[0-9]{8}$/.test(CEPNumber);
     }
 
@@ -2973,6 +3008,7 @@
 
     /** Validates a value against a regular expression. @param {string} value - Value to validate @param {string|RegExp} pattern - Pattern or expression source @param {string} [flags] - Regular expression flags @returns {boolean} Whether the value matches */
     InnerForm.validateRegex = function (value, pattern, flags) {
+        value = InnerForm.normalizeValue(value);
         var regex = new RegExp(pattern, flags);
         return regex.test(value);
     }
@@ -2980,7 +3016,7 @@
 
     /** Validates a Brazilian phone number (at least 8 digits, ignoring masks). @param {string} value - Phone value @returns {boolean} Whether the phone is valid */
     InnerForm.validatePhone = function (value) {
-        value = String(value || "")
+        value = InnerForm.normalizeValue(value)
             .replaceAll("(", "")
             .replaceAll(")", "")
             .replaceAll(" ", "")
@@ -2990,6 +3026,7 @@
 
     /** Validates a PIX key as email, CPF, CNPJ, phone, or UUID. @param {string} value - PIX key @returns {boolean} Whether the key is valid */
     InnerForm.validatePix = function (value) {
+        value = InnerForm.normalizeValue(value);
         /// Validar se é um email, cpf, cnpj ou telefone válido, ou se é uma chave aleatória válida (UUID)
         return InnerForm.validateEmail(value) ||
             InnerForm.validateCPF(value) ||
@@ -3003,6 +3040,7 @@
 
     /** Validates an email address. @param {string} value - Email address @returns {boolean} Whether the address is valid */
     InnerForm.validateEmail = function (value) {
+        value = InnerForm.normalizeValue(value);
         var re = /^[\w-]+(\.[\w-]+)*@[\w]+(\.[a-z]{2,6})*(\.[a-z]{2,6})$/gi;
         return InnerForm.validateRegex(value, re);
 
