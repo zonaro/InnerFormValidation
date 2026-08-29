@@ -32,23 +32,18 @@
     });
     document.addEventListener('click', function (event) { if (!event.target.closest('.field-menu') && !event.target.closest('.field-menu-trigger')) fieldMenu.hidden = true; });
     document.addEventListener('keydown', function (event) { if (event.key === 'Escape') fieldMenu.hidden = true; });
-    var maskMethods = {
-        phone: 'applyPhoneMask', tel: 'applyPhoneMask', cel: 'applyPhoneMask', date: 'applyDateMask', data: 'applyDateMask',
-        datetime: 'applyDateTimeMask', datetimeshort: 'applyDateShortMask', dateshorttime: 'applyDateShortMask', time: 'applyTimeMask',
-        shorttime: 'applyShortTimeMask', timeshort: 'applyShortTimeMask', minutesecond: 'applyShortTimeMask', monthyear: 'applyMonthYearMask',
-        daterange: 'applyDateRangeMask', monthyearrange: 'applyMonthYearRangeMask', shortmonthyearrange: 'applyShortMonthYearRangeMask',
-        cpf: 'applyCPFMask', cnpj: 'applyCNPJMask', cpfcnpj: 'applyCPForCNPJMask', cnpjcpf: 'applyCPForCNPJMask', cep: 'applyCEPMask',
-        cnh: 'applyCNHMask', oab: 'applyOABMask', creditcard: 'applyCreditCardMask', debitcard: 'applyCreditCardMask', number: 'applyNumberMask',
-        num: 'applyNumberMask', integer: 'applyNumberMask', int: 'applyNumberMask', decimal: 'applyNumberMask', money: 'applyNumberMask',
-        alpha: 'applyAlphaMask', alphanum: 'applyAlphaNumericMask', alphanumeric: 'applyAlphaNumericMask', upper: 'applyUpperMask',
-        lower: 'applyLowerMask', nospace: 'applyNoSpaceMask', uf: 'applyUFMask', state: 'applyUFMask', uuid: 'applyUUIDMask',
-        latitude: 'applyLatitudeMask', lat: 'applyLatitudeMask', longitude: 'applyLongitudeMask', long: 'applyLongitudeMask', lng: 'applyLongitudeMask'
-    };
-    function allInputs(scope) { return scope.querySelectorAll('input, select, textarea'); }
-    function wireMasks(scope) { allInputs(scope).forEach(function (input) { input.addEventListener('input', function () { input.className.split(/\s+/).some(function (name) { var method = maskMethods[name]; if (method && api[method]) { api[method](input); return true; } return false; }); if (input.classList.contains('onkeyup') || input.closest('[data-live-validation]')) api.isValid(input); }); }); }
-    function wireForms() { document.querySelectorAll('[data-demo-form]').forEach(function (form) { wireMasks(form); form.addEventListener('submit', function (event) { event.preventDefault(); allInputs(form).forEach(function (input) { input.classList.add('prevFocus'); }); var valid = api.isValid(form); var output = form.querySelector('output'); output.textContent = valid ? '✓ Válido' : 'Revise os campos destacados'; output.className = valid ? 'valid' : 'invalid'; }); }); }
-    wireForms();
-    wireMasks(document.getElementById('cep-form'));
+    // A biblioteca se auto-inicializa pelas classes dos campos (máscaras, validação e
+    // autocomplete de CEP). Aqui fica apenas a UI de demonstração: feedback do resultado
+    // no <output> de cada formulário do laboratório.
+    document.querySelectorAll('[data-demo-form]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var valid = api.isValid(form);
+            var output = form.querySelector('output');
+            output.textContent = valid ? '✓ Válido' : 'Revise os campos destacados';
+            output.className = valid ? 'valid' : 'invalid';
+        });
+    });
     document.getElementById('cep-button').addEventListener('click', function () { var status = document.getElementById('cep-status'); status.textContent = 'Consultando ViaCEP...'; api.searchViaCEP(document.getElementById('cep-input').value, document.querySelector('#cep-form .homenum').value, 0, function (data) { status.textContent = data.erro ? 'CEP não encontrado.' : 'Endereço preenchido com sucesso.'; }); });
     var geoWatchId = null;
     function showLocation(location) { var result = document.getElementById('geo-result'); result.innerHTML = '<dt>Coordenadas</dt><dd>' + location.coordinates + '</dd><dt>Precisão</dt><dd>' + location.accuracyFormatted + '</dd><dt>Horário</dt><dd>' + location.formattedTime + '</dd><dt>Mapas</dt><dd><a href="' + location.googleMapsUrl + '" target="_blank" rel="noopener">Google Maps</a> · <a href="' + location.osmUrl + '" target="_blank" rel="noopener">OpenStreetMap</a></dd>'; document.getElementById('geo-status').textContent = 'Localização recebida.'; }

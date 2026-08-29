@@ -3020,8 +3020,11 @@
                 });
                 var forms = select('form.validate, form[data-validate="true"], form[data-validation="true"], .forcevalidate');
                 forEachElement(forms, function (form) {
-                    InnerForm(form).startValidation().startMasks();
+                    InnerForm(form).startValidation();
                 });
+                // Auto-inicializa máscaras e autocomplete de CEP em qualquer elemento com as classes
+                // apropriadas (.mask.*, .autocomplete.cep), mesmo fora de formulários com "validate"
+                InnerForm(document).startMasks();
                 var inputs = select(":input");
                 forEachElement(inputs, function (input) {
                     onElements([input], "focus", function () {
