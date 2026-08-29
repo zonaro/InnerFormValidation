@@ -66,6 +66,18 @@
         <button type="submit">Submit via jQuery</button>
     </form>
 
+    <h2>Pre-filled form validation</h2>
+    <form id="prefilled-form" class="validate" novalidate>
+        <div class="form-group">
+            <label>Required name</label>
+            <input type="text" name="name" class="obg" value="Evento já carregado">
+        </div>
+        <div class="form-group">
+            <label>Required state</label>
+            <input type="text" name="state" class="obg uf" value="SP">
+        </div>
+    </form>
+
     <script>
         function log(msg, isError) {
             var div = document.createElement('div');
@@ -230,6 +242,20 @@
             var formValid = InnerForm('#test-form').isValid();
             log('✓ Form isValid() works: ' + formValid);
         } catch (e) { log('✗ Form isValid failed: ' + e.message, true); }
+
+        try {
+            var prefilled = document.getElementById('prefilled-form');
+            Array.prototype.forEach.call(prefilled.elements, function (input) {
+                input.classList.add('prevFocus');
+            });
+            var prefilledValid = InnerForm(prefilled).isValid();
+            prefilled.elements.name.value = '';
+            var prefilledInvalid = InnerForm(prefilled).isValid();
+            log(
+                '✓ Pre-filled form is valid and an emptied required field is invalid: ' + prefilledValid + '/' + prefilledInvalid,
+                prefilledValid !== true || prefilledInvalid !== false
+            );
+        } catch (e) { log('✗ Pre-filled form validation failed: ' + e.message, true); }
 
         // ============================================
         // Test 3: Mask Methods

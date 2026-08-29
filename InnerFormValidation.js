@@ -30,7 +30,7 @@
         if (selector.indexOf(":input") >= 0) return matches(element, selector.replace(/:input/g, "")) && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(element.tagName);
         return element.matches(selector);
     };
-var query = function (selector, context) {
+    var query = function (selector, context) {
         var elements = Array.isArray(selector) ? selector : select(selector, context);
         var api = Object.create(InnerForm.fn);
         api.elements = elements;
@@ -194,6 +194,65 @@ var query = function (selector, context) {
      */
     InnerForm = function (selector, context) { return query(selector, context); }
     InnerForm.fn = {}
+
+    // API de colecao standalone. Essas operacoes existiam na API publica e
+    // usam os helpers nativos definidos acima; o adaptador jQuery continua
+    // apenas como camada opcional de compatibilidade.
+    InnerForm.fn.find = function (selector) {
+        return query(findElements(getElements(this), selector));
+    };
+    InnerForm.fn.each = function (callback) {
+        forEachElement(getElements(this), function (el, index) {
+            callback.call(el, index, el);
+        });
+        return this;
+    };
+    InnerForm.fn.first = function () { return query(getFirstElement(getElements(this))); };
+    InnerForm.fn.get = function (index) { return getElements(this)[index]; };
+    InnerForm.fn.addClass = function (name) { addClassToElements(getElements(this), name); return this; };
+    InnerForm.fn.removeClass = function (name) { removeClassFromElements(getElements(this), name); return this; };
+    InnerForm.fn.hasClass = function (name) { return hasClassOnElements(getElements(this), name); };
+    InnerForm.fn.attr = function (name, value) {
+        if (arguments.length === 1) return getAttrFromElements(getElements(this), name);
+        setAttrOnElements(getElements(this), name, value);
+        return this;
+    };
+    InnerForm.fn.removeAttr = function (name) { removeAttrFromElements(getElements(this), name); return this; };
+    InnerForm.fn.prop = function (name, value) {
+        if (arguments.length === 1) return getPropFromElements(getElements(this), name);
+        setPropOnElements(getElements(this), name, value);
+        return this;
+    };
+    InnerForm.fn.data = function (name, value) {
+        if (arguments.length === 1) return getDataFromElements(getElements(this), name);
+        setDataOnElements(getElements(this), name, value);
+        return this;
+    };
+    InnerForm.fn.val = function (value) {
+        if (arguments.length === 0) return getValFromElements(getElements(this));
+        setValOnElements(getElements(this), value);
+        return this;
+    };
+    InnerForm.fn.text = function (value) {
+        if (arguments.length === 0) return getTextFromElements(getElements(this));
+        setTextOnElements(getElements(this), value);
+        return this;
+    };
+    InnerForm.fn.append = function (html) { appendHtmlToElements(getElements(this), html); return this; };
+    InnerForm.fn.on = function (event, selector, handler) { onElements(getElements(this), event, selector, handler); return this; };
+    InnerForm.fn.change = function (handler) {
+        if (typeof handler === "function") onElements(getElements(this), "change", handler);
+        else triggerChangeOnElements(getElements(this));
+        return this;
+    };
+    InnerForm.fn.focus = function (handler) {
+        if (typeof handler === "function") onElements(getElements(this), "focus", handler);
+        else triggerFocusOnElements(getElements(this));
+        return this;
+    };
+    InnerForm.fn.not = function (selector) { return query(filterElements(getElements(this), selector)); };
+    InnerForm.fn.is = function (selector) { return isElements(getElements(this), selector); };
+    InnerForm.fn.closest = function (selector) { return query(closestElement(getElements(this), selector)); };
 
 
     /**
@@ -2082,6 +2141,23 @@ var query = function (selector, context) {
                     return response.json();
                 })
                 .then(function (obj) {
+                    InnerForm.log("ViaCEP Response", obj);
+
+                    // CEP não encontrado: não preenche nenhum campo e foca no endereço
+                    if (obj.erro) {
+                        InnerForm.error('Address not found');
+                        var nft = getAttrFromElements(cepInputElements, "data-addressnotfoundtext") || getAttrFromElements(cepInputElements, "data-notfoundtext") || "";
+                        setTextOnNonInputs(".autocomplete.fulladdress", nft);
+                        setValOnElements(select(".autocomplete.fulladdress:input"), nft);
+                        triggerChangeOnElements(select(".autocomplete.fulladdress:input"));
+                        eval(getAttrFromElements(cepInputElements, "data-addressnotfound") || getAttrFromElements(cepInputElements, "data-notfound") || "void(0)");
+                        setTimeout(function () {
+                            triggerFocusOnElements(select(".autocomplete.address:input"));
+                        }, delay);
+                        if (obj) callbackFunction(obj);
+                        return;
+                    }
+
                     obj["numero"] = obj["numero"] || "";
                     if (homeNumber != "") {
                         if (obj["numero"] == "") {
@@ -2090,8 +2166,6 @@ var query = function (selector, context) {
                             obj["numero"] = ", " + homeNumber;
                         }
                     }
-
-                    InnerForm.log("ViaCEP Response", obj);
 
                     // Helper to set value and trigger change/focus on input elements
                     var setValChangeFocus = function (selector, value) {
@@ -2159,16 +2233,6 @@ var query = function (selector, context) {
                             triggerFocusOnElements(select(".autocomplete.num:input, .autocomplete.number:input"));
                             triggerFocusOnElements(select(".autocomplete.homenum:input, .autocomplete.homenumber:input"));
                         }, delay);
-                    } else {
-                        InnerForm.error('Address not found');
-                        var nft = getAttrFromElements(cepInputElements, "data-addressnotfoundtext") || getAttrFromElements(cepInputElements, "data-notfoundtext") || "";
-                        setTextOnNonInputs(".autocomplete.fulladdress", nft);
-                        setValOnElements(select(".autocomplete.fulladdress:input"), nft);
-                        triggerChangeOnElements(select(".autocomplete.fulladdress:input"));
-                        eval(getAttrFromElements(cepInputElements, "data-addressnotfound") || getAttrFromElements(cepInputElements, "data-notfound") || "void(0)");
-                        setTimeout(function () {
-                            triggerFocusOnElements(select(".autocomplete.address:input"));
-                        }, delay);
                     }
                     if (obj) callbackFunction(obj);
                 })
@@ -2216,8 +2280,15 @@ var query = function (selector, context) {
         if (elements.length > 1 || (elements[0] && elements[0].tagName == "FORM")) {
             eval(getAttrFromElements(elements, "data-beforevalidatecallback") || "void(0)");
             var config = Array.prototype.slice.call(arguments)[0];
-            var formElements = elements[0] && elements[0].tagName == "FORM" ? elements[0].elements : elements;
-            var inputs = findElements(formElements, ":input.prevFocus" + (config || ""));
+            // Quando o alvo e' um formulario, os controles devem ser buscados
+            // a partir do proprio formulario. `form.elements` contem os inputs,
+            // mas eles nao possuem descendentes; usar `findElements` nesse
+            // collection produzia uma lista vazia e impedia a validacao real.
+            var inputs = elements[0] && elements[0].tagName == "FORM"
+                ? select(":input.prevFocus" + (config || ""), elements[0])
+                : elements.filter(function (input) {
+                    return matches(input, ":input.prevFocus" + (config || ""));
+                });
             forEachElement(inputs, function (el) {
                 results.push(InnerForm(el).isValid());
             });
@@ -3012,16 +3083,30 @@ var query = function (selector, context) {
     /** Starts blur, change, type, and submit validation for the current collection. @returns {Object} Chainable InnerForm collection */
     InnerForm.fn.startValidation = function () {
         var elements = getElements(this);
-        var notOnBlur = filterElements(elements, ".notonblur");
-        var notOnChange = filterElements(elements, ".notonchange");
-        var onKeyup = findElements(elements, ".onkeyup");
-        
+        var inputs = [];
+        var forms = [];
+
+        forEachElement(elements, function (el) {
+            if (el.tagName === "FORM") {
+                forms.push(el);
+                inputs = inputs.concat(select(":input", el));
+            } else if (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName)) {
+                inputs.push(el);
+            } else {
+                inputs = inputs.concat(select(":input", el));
+            }
+        });
+
+        var notOnBlur = filterElements(inputs, ".notonblur");
+        var notOnChange = filterElements(inputs, ".notonchange");
+        var onKeyup = filterElements(inputs, ".onkeyup");
+
         forEachElement(notOnBlur, function (el) { InnerForm(el).validateOnBlur(); });
         forEachElement(notOnChange, function (el) { InnerForm(el).validateOnChange(); });
         forEachElement(onKeyup, function (el) { InnerForm(el).validateOnType(); });
-        
-        onElements(elements, "submit", function () {
-            var inputs = findElements(elements, ":input");
+
+        onElements(forms, "submit", function () {
+            var inputs = select(":input", this);
             addClassToElements(inputs, "prevFocus");
             return InnerForm(this).isValid();
         });
