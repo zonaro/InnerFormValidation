@@ -187,6 +187,16 @@
         return false;
     };
 
+    // Detecta se o modo rascunho esta' ativo para uma colecao de elementos.
+    // Considera a flag global InnerForm.draftMode, o atributo data-draft
+    // (qualquer valor exceto "false") e a classe .draft.
+    var isDraftMode = function (elements) {
+        if (InnerForm.draftMode) return true;
+        if (hasClassOnElements(elements, "draft")) return true;
+        var draftAttr = getAttrFromElements(elements, "data-draft");
+        return draftAttr !== undefined && draftAttr !== null && draftAttr !== "false";
+    };
+
     /**
      * InnerForm is a lightweight DOM manipulation and validation library.
      * It provides methods for selecting elements, manipulating classes and attributes,
@@ -310,6 +320,13 @@
      * Timeout duration (in milliseconds) for input type events before triggering validation.
      */
     InnerForm.onTypeTimeout = 900;
+
+    /**
+     * Enables or disables draft mode globally. When active, the required rule
+     * (obg/req/required) is ignored so an incomplete form can be saved as a
+     * draft; all other validations still apply.
+     */
+    InnerForm.draftMode = false;
 
     var isDeleting = false;
 
@@ -2341,6 +2358,10 @@
         } else {
             var el = getFirstElement(elements);
             if (!el) return false;
+            // Modo rascunho: considera a flag global, o proprio campo e o
+            // formulario associado (data-draft / .draft). Apenas a validacao
+            // de obrigatorio e' ignorada; as demais regras continuam valendo.
+            var draft = isDraftMode(elements) || (el.form && isDraftMode([el.form]));
             removeClassFromElements(elements, "error");
             removeClassFromElements(elements, "success");
             var closestFormGroup = closestElement(elements, ".form-group");
@@ -2497,6 +2518,11 @@
                         case "required":
                         case "req":
                         case "obg":
+                            // Em modo rascunho, a validacao de obrigatorio e' ignorada.
+                            if (draft) {
+                                results.push(true);
+                                break;
+                            }
                             if (type == "checkbox" || type == "radio") {
                                 results.push(InnerForm(this).is(":checked"));
                             } else {
@@ -2993,10 +3019,57 @@
         }
     };
 
+    /**
+     * Enables draft mode for the current collection (sets data-draft="true").
+     * While active, the required rule (obg/req/required) is ignored; all other
+     * validations still apply.
+     * @returns {Object} Chainable InnerForm collection
+     */
+    InnerForm.fn.draft = function () {
+        setDataOnElements(getElements(this), "draft", "true");
+        InnerForm.log("InnerFormValidation:", "Draft mode enabled", this);
+        return this;
+    };
+
+    /**
+     * Disables draft mode for the current collection (removes data-draft).
+     * @returns {Object} Chainable InnerForm collection
+     */
+    InnerForm.fn.undraft = function () {
+        removeAttrFromElements(getElements(this), "data-draft");
+        InnerForm.log("InnerFormValidation:", "Draft mode disabled", this);
+        return this;
+    };
+
+    /**
+     * Checks whether draft mode is active for the current collection.
+     * Considers the global InnerForm.draftMode flag, the data-draft attribute
+     * and the .draft class.
+     * @returns {boolean} Whether draft mode is active
+     */
+    InnerForm.fn.isDraft = function () {
+        return isDraftMode(getElements(this));
+    };
+
     /** Validates an element or form through the InnerForm API. @param {Object|string} element - Element or selector @returns {boolean} Whether the target is valid */
     InnerForm.isValid = function (element) {
         var args = Array.prototype.slice.call(arguments, 1);
         return InnerForm(element).isValid.apply(InnerForm(element), args);
+    };
+
+    /** Enables draft mode on an element or selector. @param {Object|string} element - Target element or selector @returns {Object} Chainable collection */
+    InnerForm.draft = function (element) {
+        return InnerForm(element).draft();
+    };
+
+    /** Disables draft mode on an element or selector. @param {Object|string} element - Target element or selector @returns {Object} Chainable collection */
+    InnerForm.undraft = function (element) {
+        return InnerForm(element).undraft();
+    };
+
+    /** Checks whether draft mode is active on an element or selector. @param {Object|string} element - Target element or selector @returns {boolean} Whether draft mode is active */
+    InnerForm.isDraft = function (element) {
+        return InnerForm(element).isDraft();
     };
 
 
@@ -3802,6 +3875,9 @@
             }
             if (typeof previousJQueryConfig.onTypeTimeout === "number") {
                 InnerForm.onTypeTimeout = previousJQueryConfig.onTypeTimeout;
+            }
+            if (typeof previousJQueryConfig.draftMode === "boolean") {
+                InnerForm.draftMode = previousJQueryConfig.draftMode;
             }
         }
         root.jQuery.innerForm = InnerForm;

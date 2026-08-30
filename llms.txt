@@ -15,6 +15,9 @@ Forms are initialized automatically when they match `form.validate`, `form[data-
 Validation fields receive `error` when invalid and `success` when valid and non-empty. A `.form-group` ancestor receives `has-error` when invalid. CSS can style these classes directly. Declarative callbacks are supported through `data-beforevalidatecallback`, `data-validcallback`, `data-invalidcallback` and `data-aftervalidatecallback`; `data-invalidmessage` sets the native `setCustomValidity` message.
 
 Useful data attributes include `data-separator`, `data-decimal` and `data-thousand` for number masks, `data-regex-flags` for regex rules, and `data-addressnotfoundtext`/`data-notfoundtext` plus `data-addressnotfound`/`data-notfound` for ViaCEP fallback behavior.
+
+## Draft mode
+Draft mode ignores the required rule (`obg`/`req`/`required`) so an incomplete form can be saved as a draft — empty required fields don't block submission. All other validations still apply: a filled field with an invalid email, CPF, etc. keeps the form invalid. Enable it with the `data-draft` attribute or the `draft` class on the form, the global `InnerForm.draftMode = true` flag, or the API methods `InnerForm(form).draft()` / `InnerForm(form).undraft()` / `InnerForm(form).isDraft()`. `data-draft="false"` explicitly disables the mode.
 ## Callable API and jQuery compatibility
 `InnerForm` is both the public API and the native selector wrapper. Call `InnerForm(selector)` to get a chainable collection, or call methods directly such as `InnerForm.validateCPF(value)` and `InnerForm.isValid(element)`.
 

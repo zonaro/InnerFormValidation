@@ -909,6 +909,51 @@ $('#meuForm').find(':input').addClass('prevFocus');
 var isValid = $('#meuForm').isValid();
 ```
 
+### **Draft Mode (Modo Rascunho)**
+
+Draft mode ignores the **required** rule so an incomplete form can be saved as a draft — while other validations (email, CPF, etc.) still apply.
+
+#### Enable draft mode
+
+**1. HTML attribute** — add `data-draft` to the form:
+```html
+<form class="validate" data-draft>
+    <input type="text" class="obg email" placeholder="Email">
+    <button type="submit">Salvar rascunho</button>
+</form>
+```
+
+**2. CSS class** — add the `draft` class to the form:
+```html
+<form class="validate draft">
+    <input type="text" class="obg email" placeholder="Email">
+</form>
+```
+
+**3. Global flag** — enable for all forms:
+```javascript
+InnerForm.draftMode = true;
+```
+
+**4. Programmatically** — via the API:
+```javascript
+// Enable draft mode on a form
+$('#meuForm').draft();
+
+// Check if draft mode is active
+var isDraft = $('#meuForm').isDraft(); // true
+
+// Disable draft mode
+$('#meuForm').undraft();
+```
+
+#### How it works
+- In draft mode, only the **required** rule (`obg`, `req`, `required`) is ignored — empty required fields don't block the form.
+- **All other validations still apply**: a filled field with an invalid email, CPF, etc. keeps the form invalid even in draft mode.
+- The `data-beforevalidatecallback`, `data-validcallback` and `data-aftervalidatecallback` still run; `data-invalidcallback` runs when a non-required validation fails.
+- `data-draft="false"` explicitly disables draft mode for that form.
+- Static API: `InnerForm.draft(form)`, `InnerForm.undraft(form)`, `InnerForm.isDraft(form)`.
+
 ### **Apply Masks Manually**
 
 ```javascript

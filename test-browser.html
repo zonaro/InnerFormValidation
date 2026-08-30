@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,23 +8,94 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="InnerFormValidation.js"></script>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 20px; }
-        .test { padding: 10px; margin: 10px 0; border-radius: 4px; }
-        .pass { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
-        .fail { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
-        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
-        form { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 4px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .error { border-color: #dc3545 !important; }
-        .success { border-color: #28a745 !important; }
-        .has-error { color: #dc3545; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        #results { margin-top: 20px; }
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .test {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .pass {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .fail {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        form {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .error {
+            border-color: #dc3545 !important;
+        }
+
+        .success {
+            border-color: #28a745 !important;
+        }
+
+        .has-error {
+            color: #dc3545;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
     </style>
 </head>
+
 <body>
     <h1>InnerFormValidation Browser Test Suite</h1>
     <div id="results"></div>
@@ -110,7 +182,7 @@
 
         try {
             var count = 0;
-            InnerForm('#test-form input').each(function() { count++; });
+            InnerForm('#test-form input').each(function () { count++; });
             log('✓ .each() works, iterated ' + count + ' elements');
         } catch (e) { log('✗ .each() failed: ' + e.message, true); }
 
@@ -175,21 +247,21 @@
 
         try {
             var triggered = false;
-            InnerForm('#test-form input[name="email"]').on('custom-event', function() { triggered = true; });
+            InnerForm('#test-form input[name="email"]').on('custom-event', function () { triggered = true; });
             InnerForm('#test-form input[name="email"]').get(0).dispatchEvent(new Event('custom-event'));
             log('✓ .on() works: ' + triggered);
         } catch (e) { log('✗ On failed: ' + e.message, true); }
 
         try {
             var triggered = false;
-            InnerForm('#test-form input[name="email"]').change(function() { triggered = true; });
+            InnerForm('#test-form input[name="email"]').change(function () { triggered = true; });
             InnerForm('#test-form input[name="email"]').get(0).dispatchEvent(new Event('change'));
             log('✓ .change() works: ' + triggered);
         } catch (e) { log('✗ Change failed: ' + e.message, true); }
 
         try {
             var focused = false;
-            InnerForm('#test-form input[name="email"]').focus(function() { focused = true; });
+            InnerForm('#test-form input[name="email"]').focus(function () { focused = true; });
             InnerForm('#test-form input[name="email"]').get(0).focus();
             log('✓ .focus() works: ' + focused);
         } catch (e) { log('✗ Focus failed: ' + e.message, true); }
@@ -242,6 +314,63 @@
             var formValid = InnerForm('#test-form').isValid();
             log('✓ Form isValid() works: ' + formValid);
         } catch (e) { log('✗ Form isValid failed: ' + e.message, true); }
+
+        try {
+            // Modo rascunho: apenas a validacao de obrigatorio e' ignorada
+            InnerForm('#test-form input[name="email"]').val('valid@email.com');
+            InnerForm('#test-form input[name="cpf"]').val('');
+            var testForm = document.getElementById('test-form');
+            Array.prototype.forEach.call(testForm.elements, function (input) {
+                input.classList.add('prevFocus');
+            });
+            var beforeDraft = InnerForm(testForm).isValid();
+            InnerForm(testForm).draft();
+            var draftActive = InnerForm(testForm).isDraft();
+            var duringDraft = InnerForm(testForm).isValid();
+            InnerForm(testForm).undraft();
+            var afterUndraft = InnerForm(testForm).isValid();
+            log(
+                '✓ Draft mode: empty required field is valid while draft is active (' + beforeDraft + '/' + draftActive + '/' + duringDraft + '/' + afterUndraft + ')',
+                beforeDraft !== false || draftActive !== true || duringDraft !== true || afterUndraft !== false
+            );
+        } catch (e) { log('✗ Draft mode failed: ' + e.message, true); }
+
+        try {
+            // Outras validacoes continuam valendo em modo rascunho
+            InnerForm('#test-form input[name="email"]').val('invalid-email');
+            InnerForm('#test-form input[name="cpf"]').val('111.444.777-35');
+            var testForm = document.getElementById('test-form');
+            Array.prototype.forEach.call(testForm.elements, function (input) {
+                input.classList.add('prevFocus');
+            });
+            InnerForm(testForm).draft();
+            var invalidEmailInDraft = InnerForm(testForm).isValid();
+            InnerForm(testForm).undraft();
+            log(
+                '✓ Draft mode: invalid email still invalidates the form (' + invalidEmailInDraft + ')',
+                invalidEmailInDraft !== false
+            );
+        } catch (e) { log('✗ Draft mode other validations failed: ' + e.message, true); }
+
+        try {
+            // data-draft attribute e flag global InnerForm.draftMode
+            InnerForm('#test-form input[name="email"]').val('valid@email.com');
+            InnerForm('#test-form input[name="cpf"]').val('');
+            var testForm = document.getElementById('test-form');
+            Array.prototype.forEach.call(testForm.elements, function (input) {
+                input.classList.add('prevFocus');
+            });
+            testForm.setAttribute('data-draft', 'true');
+            var attrDraft = InnerForm(testForm).isValid();
+            testForm.removeAttribute('data-draft');
+            InnerForm.draftMode = true;
+            var globalDraft = InnerForm(testForm).isValid();
+            InnerForm.draftMode = false;
+            log(
+                '✓ Draft mode via data-draft and global flag: ' + attrDraft + '/' + globalDraft,
+                attrDraft !== true || globalDraft !== true
+            );
+        } catch (e) { log('✗ Draft mode attribute/global failed: ' + e.message, true); }
 
         try {
             var prefilled = document.getElementById('prefilled-form');
@@ -311,7 +440,7 @@
 
         try {
             var count = 0;
-            $('#jquery-form input').each(function() { count++; });
+            $('#jquery-form input').each(function () { count++; });
             log('✓ jQuery .each() works, iterated ' + count + ' elements');
         } catch (e) { log('✗ jQuery each failed: ' + e.message, true); }
 
@@ -337,21 +466,21 @@
 
         try {
             var triggered = false;
-            $('#jquery-form').on('submit', function(e) { e.preventDefault(); triggered = true; });
+            $('#jquery-form').on('submit', function (e) { e.preventDefault(); triggered = true; });
             $('#jquery-form').trigger('submit');
             log('✓ jQuery .on() works: ' + triggered);
         } catch (e) { log('✗ jQuery on failed: ' + e.message, true); }
 
         try {
             var triggered = false;
-            $('#jquery-form input[name="email"]').change(function() { triggered = true; });
+            $('#jquery-form input[name="email"]').change(function () { triggered = true; });
             $('#jquery-form input[name="email"]').trigger('change');
             log('✓ jQuery .change() works: ' + triggered);
         } catch (e) { log('✗ jQuery change failed: ' + e.message, true); }
 
         try {
             var focused = false;
-            $('#jquery-form input[name="email"]').focus(function() { focused = true; });
+            $('#jquery-form input[name="email"]').focus(function () { focused = true; });
             $('#jquery-form input[name="email"]').trigger('focus');
             log('✓ jQuery .focus() works: ' + focused);
         } catch (e) { log('✗ jQuery focus failed: ' + e.message, true); }
@@ -460,4 +589,5 @@
         logInfo('=== ALL TESTS COMPLETED ===');
     </script>
 </body>
+
 </html>

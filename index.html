@@ -151,6 +151,29 @@ input.error { border-color: #dc3545; }
                             <p class="hint">O campo vazio e opcional permanece sem <code>success</code>. Prefira CSS
                                 próprio para manter a aparência consistente com seu design system.</p>
                         </article>
+                        <article class="panel">
+                            <h3>Modo rascunho</h3>
+                            <p>Em modo rascunho, apenas a validação de obrigatório é ignorada — campos obrigatórios
+                                vazios não bloqueiam o envio. As demais validações continuam valendo: um e-mail
+                                inválido, por exemplo, mantém o formulário inválido.</p>
+                            <form class="validate demo-form" data-draft data-demo-form>
+                                <label>E-mail obrigatório<input class="obg email"
+                                        placeholder="nome@dominio.com"></label>
+                                <button class="button primary" type="submit">Salvar rascunho</button>
+                                <output></output>
+                            </form>
+                            <pre><code>&lt;form class="validate" data-draft&gt;
+  &lt;input class="obg email" type="email"&gt;
+  &lt;button type="submit"&gt;Salvar rascunho&lt;/button&gt;
+&lt;/form&gt;
+
+InnerForm.draftMode = true;      // global
+InnerForm('#meuForm').draft();   // via API
+InnerForm('#meuForm').isDraft(); // true
+InnerForm('#meuForm').undraft(); // desativa</code></pre>
+                            <p class="hint">Também funciona com a classe <code>draft</code> no formulário.
+                                <code>data-draft="false"</code> desativa explicitamente o modo.</p>
+                        </article>
                     </div>
                     <article class="panel data-panel">
                         <h3>Atributos <code>data-*</code> para personalizar a experiência</h3>
@@ -458,6 +481,7 @@ input.error {
                                 DOM</span></div>
                         <div><code>searchViaCEP · getLocation · watchLocation</code><span>integrações</span></div>
                         <div><code>isValid · startMasks · startValidation</code><span>formulários</span></div>
+                        <div><code>draft · undraft · isDraft</code><span>modo rascunho</span></div>
                     </div>
                 </section>
             </div>
