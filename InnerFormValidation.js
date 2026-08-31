@@ -36,6 +36,17 @@
         api.elements = elements;
         api.length = elements.length;
         for (var i = 0; i < elements.length; i++) api[i] = elements[i];
+
+        // O modo rascunho e' usado durante a inicializacao de formularios.
+        // Expor esses tres metodos tambem como propriedades da colecao evita
+        // que uma cadeia de prototipos alterada por integracoes externas deixe
+        // `InnerForm(form).undraft()` indisponivel.
+        ["draft", "undraft", "isDraft"].forEach(function (method) {
+            if (typeof InnerForm.fn[method] === "function") {
+                api[method] = InnerForm.fn[method];
+            }
+        });
+
         return api;
     };
 

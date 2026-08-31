@@ -323,6 +323,9 @@
             Array.prototype.forEach.call(testForm.elements, function (input) {
                 input.classList.add('prevFocus');
             });
+            var draftApiAvailable = typeof InnerForm(testForm).draft === 'function'
+                && typeof InnerForm(testForm).undraft === 'function'
+                && typeof InnerForm(testForm).isDraft === 'function';
             var beforeDraft = InnerForm(testForm).isValid();
             InnerForm(testForm).draft();
             var draftActive = InnerForm(testForm).isDraft();
@@ -331,7 +334,7 @@
             var afterUndraft = InnerForm(testForm).isValid();
             log(
                 '✓ Draft mode: empty required field is valid while draft is active (' + beforeDraft + '/' + draftActive + '/' + duringDraft + '/' + afterUndraft + ')',
-                beforeDraft !== false || draftActive !== true || duringDraft !== true || afterUndraft !== false
+                !draftApiAvailable || beforeDraft !== false || draftActive !== true || duringDraft !== true || afterUndraft !== false
             );
         } catch (e) { log('✗ Draft mode failed: ' + e.message, true); }
 
