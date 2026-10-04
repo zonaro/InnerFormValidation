@@ -18,6 +18,9 @@ Useful data attributes include `data-separator`, `data-decimal` and `data-thousa
 
 ## Draft mode
 Draft mode ignores the required rule (`obg`/`req`/`required`) so an incomplete form can be saved as a draft — empty required fields don't block submission. All other validations still apply: a filled field with an invalid email, CPF, etc. keeps the form invalid. Enable it with the `data-draft` attribute or the `draft` class on the form, the global `InnerForm.draftMode = true` flag, or the API methods `InnerForm(form).draft()` / `InnerForm(form).undraft()` / `InnerForm(form).isDraft()`. `data-draft="false"` explicitly disables the mode.
+## Media rules (resolution and aspect ratio)
+`resolution` (`resolucao`, `res`) validates `WIDTHxHEIGHT` (e.g. `1024x768`, any digit count, uppercase `X` accepted); `aspectratio` (`aspect-ratio`, `aspect`, `ratio`) validates `W:H` (e.g. `16:9`, any digit count). Masks: `mask resolution` and `mask aspectratio` (`InnerForm.applyResolutionMask(input)`, `InnerForm.applyAspectRatioMask(input)`). Combine either rule with the auxiliary class `landscape` (width must exceed height) or `portrait` (height must exceed width); square values are invalid with either helper. Programmatic API: `InnerForm.parseResolution(value)`, `InnerForm.validateResolution(value, element?)`, `InnerForm.parseAspectRatio(value)`, `InnerForm.validateAspectRatio(value, element?)`.
+
 ## Callable API and jQuery compatibility
 `InnerForm` is both the public API and the native selector wrapper. Call `InnerForm(selector)` to get a chainable collection, or call methods directly such as `InnerForm.validateCPF(value)` and `InnerForm.isValid(element)`.
 

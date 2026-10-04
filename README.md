@@ -125,6 +125,17 @@ InnerForm('#meu-formulario').isValid();
 | `longitude` `long` `lng` | Longitude coordinate               | ✅               | `<input class="mask longitude">` |
 | `uf` `state`             | State abbreviation (UF)            | ✅               | `<input class="mask uf">`        |
 | `oab`                    | OAB registration (1-6 digits + UF) | ✅               | `<input class="mask oab">`       |
+| `resolution` `resolucao` `res` | Screen resolution (`WIDTHxHEIGHT`, any digit count) | ✅ | `<input class="mask resolution">` |
+| `aspectratio` `aspect` `ratio` | Aspect ratio (`W:H`, any digit count) | ✅ | `<input class="mask aspectratio">` |
+
+Combine `resolution` or `aspectratio` with the auxiliary class `landscape` (width must be greater than height) or `portrait` (height must be greater than width). A square value is invalid with either auxiliary class:
+
+```html
+<input class="mask resolution landscape" placeholder="1920x1080">
+<input class="mask resolution portrait" placeholder="768x1024">
+<input class="mask aspectratio landscape" placeholder="16:9">
+<input class="mask aspectratio portrait" placeholder="9:16">
+```
 
 
 ### **Number Validation and Masking with Custom Separators**
@@ -303,6 +314,16 @@ InnerForm.validatePhone('(11) 98765-4321'); // true
 
 <!-- UUID/GUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx -->
 <input class="form-control mask uuid">
+
+<!-- Resolution: 1024x768 (any digit count, uppercase X is normalized) -->
+<input class="form-control mask resolution">
+
+<!-- Aspect ratio: 16:9 (any digit count) -->
+<input class="form-control mask aspectratio">
+
+<!-- With orientation helpers -->
+<input class="form-control mask resolution landscape">
+<input class="form-control mask aspectratio portrait">
 ```
 
 ---
@@ -386,6 +407,25 @@ InnerForm.validatePhone('(11) 98765-4321'); // true
 
 <!-- UUID with automatic masking -->
 <input class="form-control mask uuid">
+```
+
+### **Resolution and Aspect Ratio Validation**
+```html
+<!-- Any resolution, e.g. 1024x768 or 7680x4320 -->
+<input class="form-control mask resolution">
+
+<!-- Landscape only (width > height) -->
+<input class="form-control mask resolution landscape">
+
+<!-- Portrait only (height > width) -->
+<input class="form-control mask resolution portrait">
+
+<!-- Any aspect ratio, e.g. 16:9 -->
+<input class="form-control mask aspectratio">
+
+<!-- Landscape / portrait aspect ratio -->
+<input class="form-control mask aspectratio landscape">
+<input class="form-control mask aspectratio portrait">
 ```
 
 ### **PIX Key Validation**
@@ -1151,6 +1191,39 @@ InnerForm.validateCoordinate("45;90");                 // true
 InnerForm.validateCoordinate("91,200");                // false (invalid coordinates)
 ```
 
+#### `parseResolution(value)` - **🆕 NOVA**
+Parses a resolution string (`WIDTHxHEIGHT`) into dimensions plus orientation (`landscape`, `portrait` or `square`). Returns `null` when invalid.
+```javascript
+InnerForm.parseResolution("1024x768");  // { width: 1024, height: 768, orientation: "landscape" }
+InnerForm.parseResolution("768x1024");  // { width: 768, height: 1024, orientation: "portrait" }
+InnerForm.parseResolution("abc");       // null
+```
+
+#### `validateResolution(value, element)` - **🆕 NOVA**
+Validates a resolution string with no digit limit on either side. Pass a field/selector as the second argument (or use the `landscape`/`portrait` classes in HTML) to enforce orientation.
+```javascript
+InnerForm.validateResolution("1024x768");   // true
+InnerForm.validateResolution("1024X768");   // true (uppercase X accepted)
+InnerForm.validateResolution("0x768");      // false (dimensions must be > 0)
+InnerForm.validateResolution("1024x768", "#photo-landscape"); // true only if #photo-landscape has no orientation class, or has .landscape
+```
+
+#### `parseAspectRatio(value)` - **🆕 NOVA**
+Parses an aspect ratio string (`W:H`) into dimensions plus orientation (`landscape`, `portrait` or `square`). Returns `null` when invalid.
+```javascript
+InnerForm.parseAspectRatio("16:9");  // { width: 16, height: 9, orientation: "landscape" }
+InnerForm.parseAspectRatio("9:16");  // { width: 9, height: 16, orientation: "portrait" }
+InnerForm.parseAspectRatio("16x9");  // null (separator must be ":")
+```
+
+#### `validateAspectRatio(value, element)` - **🆕 NOVA**
+Validates an aspect ratio string with no digit limit on either side. Pass a field/selector as the second argument (or use the `landscape`/`portrait` classes in HTML) to enforce orientation.
+```javascript
+InnerForm.validateAspectRatio("16:9");  // true
+InnerForm.validateAspectRatio("1:1");   // true (square, valid without orientation classes)
+InnerForm.validateAspectRatio("16:9", "#video-portrait"); // false if #video-portrait has .portrait
+```
+
 #### `parseShortMonthYearPartial(part)`
 Parses and formats a partial short month/year string "MM/YY" during input.
 ```javascript
@@ -1400,6 +1473,20 @@ Applies a mask for longitude coordinates with range validation (-180 a +180).
 InnerForm.applyLongitudeMask(document.getElementById('longitude'));
 // Supports the 'precision' class to limit decimal places
 // Example: <input class="mask longitude precision 4">
+```
+
+#### `applyResolutionMask(input)` - **🆕 NOVA**
+Applies a resolution mask (`WIDTHxHEIGHT`). Keeps only digits and a single `x` separator (uppercase `X` is normalized to lowercase). No digit limit on either side.
+```javascript
+InnerForm.applyResolutionMask(document.getElementById('resolution'));
+// Example: <input class="mask resolution landscape">
+```
+
+#### `applyAspectRatioMask(input)` - **🆕 NOVA**
+Applies an aspect ratio mask (`W:H`). Keeps only digits and a single `:` separator. No digit limit on either side.
+```javascript
+InnerForm.applyAspectRatioMask(document.getElementById('aspect'));
+// Example: <input class="mask aspectratio portrait">
 ```
 
 #### `applyShortMonthYearRangeMask(input)`
@@ -1745,6 +1832,14 @@ InnerForm.verbose = true; // Enables detailed console logs
 ---
 
 ## 🚀 Changelog
+
+### V2.9.0 - Resolution and Aspect Ratio 📐
+- ✅ **Resolution validation** `.resolution` (aliases `.resolucao`, `.res`) — format `WIDTHxHEIGHT` (e.g. `1024x768`), no digit limit
+- ✅ **Aspect ratio validation** `.aspectratio` (aliases `.aspect-ratio`, `.aspect`, `.ratio`) — format `W:H` (e.g. `16:9`), no digit limit
+- ✅ **Orientation helpers** `.landscape` / `.portrait` — enforce width > height or height > width (square is invalid with either)
+- ✅ **Masks** `.mask.resolution` and `.mask.aspectratio` (+ `InnerForm.applyResolutionMask` / `InnerForm.applyAspectRatioMask`)
+- ✅ **API** `InnerForm.parseResolution`, `InnerForm.validateResolution`, `InnerForm.parseAspectRatio`, `InnerForm.validateAspectRatio`
+- ✅ **Docs** new interactive lab block, API reference, translations (pt-BR, en, es)
 
 ### V2.8.0 - Coordinate Masks and Validations 🌍
 - ✅ **Coordinate masks** `.mask.latitude` and `.mask.longitude`

@@ -59,9 +59,10 @@ InnerForm.validateCPF(value)</code></pre>
                     Básicas</a><a href="#strings">02
                     Caracteres</a><a href="#tamanho">03 Comprimento</a><a href="#documentos">04 Documentos</a><a
                     href="#datas">05 Data e hora</a><a href="#comparacoes">06 Idade e comparação</a><a href="#senha">07
-                    Senhas</a><a href="#cartoes">08 Cartões</a><a href="#conteudo">09 Conteúdo</a><a href="#cep">10
-                    Autocomplete de CEP</a><a href="#geolocation">11 Geolocalização</a><a href="#callbacks">12 Callbacks
-                    declarativos</a><a href="#css-variaveis">13 CSS por variáveis</a><a href="#api">14 API</a>
+                    Senhas</a><a href="#cartoes">08 Cartões</a><a href="#conteudo">09 Conteúdo</a><a href="#midia">10
+                    Resolução e proporção</a><a href="#cep">11
+                    Autocomplete de CEP</a><a href="#geolocation">12 Geolocalização</a><a href="#callbacks">13 Callbacks
+                    declarativos</a><a href="#css-variaveis">14 CSS por variáveis</a><a href="#api">15 API</a>
             </aside>
             <div class="content">
                 <section id="configuracao" class="section configuration">
@@ -362,9 +363,32 @@ InnerForm('#meuForm').undraft(); // desativa</code></pre>
                                     class="eqv admin"></label><button class="button primary" type="submit">Validar
                                 conteúdo</button><output></output></form>
                     </section>
+                    <section id="midia" class="demo-block">
+                        <header><span>10</span>
+                            <div>
+                                <h3>Resolução e proporção</h3>
+                                <p><code>resolution</code> · <code>aspectratio</code> · auxiliares
+                                    <code>landscape</code> · <code>portrait</code>
+                                </p>
+                            </div>
+                        </header>
+                        <form class="validate demo-grid" data-demo-form><label>Resolução<input
+                                    class="mask resolution" placeholder="1024x768"></label><label>Resolução
+                                landscape<input class="mask resolution landscape"
+                                    placeholder="1920x1080"></label><label>Resolução portrait<input
+                                    class="mask resolution portrait" placeholder="768x1024"></label><label>Aspect
+                                ratio<input class="mask aspectratio" placeholder="16:9"></label><label>Aspect
+                                landscape<input class="mask aspectratio landscape" placeholder="21:9"></label><label>Aspect
+                                portrait<input class="mask aspectratio portrait" placeholder="9:16"></label><button
+                                class="button primary" type="submit">Validar mídia</button><output></output></form>
+                        <p class="hint">Sem limite de dígitos em nenhum dos lados do <code>x</code> ou do
+                            <code>:</code>. Com <code>landscape</code>, a largura precisa ser maior que a altura; com
+                            <code>portrait</code>, a altura precisa ser maior que a largura (quadrado é inválido nos
+                            dois casos).</p>
+                    </section>
                 </section>
                 <section id="cep" class="section integrations">
-                    <p class="eyebrow">10 / browser APIs</p>
+                    <p class="eyebrow">11 / browser APIs</p>
                     <h2>Autocomplete de CEP</h2>
                     <article>
                         <p>O CEP é o primeiro campo. A busca ViaCEP preenche endereço, complemento, bairro, cidade,
@@ -397,7 +421,7 @@ InnerForm('#meuForm').undraft(); // desativa</code></pre>
                     </article>
                 </section>
                 <section id="geolocation" class="section integrations">
-                    <p class="eyebrow">11 / browser APIs</p>
+                    <p class="eyebrow">12 / browser APIs</p>
                     <h2>Geolocalização</h2>
                     <article>
                         <p>Use HTTPS e permissão do navegador. <code>getLocation</code> retorna coordenadas,
@@ -415,7 +439,7 @@ InnerForm.clearLocationWatch(watchId)</code></pre>
                     </article>
                 </section>
                 <section id="callbacks" class="section">
-                    <p class="eyebrow">12 / extensibilidade</p>
+                    <p class="eyebrow">13 / extensibilidade</p>
                     <h2>Callbacks declarativos</h2>
                     <div class="columns">
                         <article class="panel">
@@ -432,7 +456,7 @@ InnerForm.clearLocationWatch(watchId)</code></pre>
                     </div>
                 </section>
                 <section id="css-variaveis" class="section">
-                    <p class="eyebrow">13 / personalização</p>
+                    <p class="eyebrow">14 / personalização</p>
                     <h2>CSS por variáveis</h2>
                     <div class="columns">
                         <article class="panel">
@@ -457,7 +481,7 @@ input.error {
                     </div>
                 </section>
                 <section id="api" class="section api">
-                    <p class="eyebrow">14 / referência</p>
+                    <p class="eyebrow">15 / referência</p>
                     <h2>API pública</h2>
                     <p class="intro">A função <code>InnerFormValidation</code> também é o seletor nativo da biblioteca:
                         use <code>InnerForm(selector)</code> para obter uma coleção encadeável. Todos os
@@ -475,10 +499,14 @@ input.error {
                         </div>
                         <div><code>validDate · validDateRange · validMonthYearRange</code><span>datas e períodos</span>
                         </div>
+                        <div><code>validateResolution · validateAspectRatio</code><span>resolução e proporção (com
+                                <code>landscape</code> / <code>portrait</code>)</span></div>
                         <div><code>validateTime · expandYear · getAge</code><span>tempo e idade</span></div>
                         <div><code>checkLuhn · validateCardBrand</code><span>cartões</span></div>
                         <div><code>applyCPFMask · applyCNPJMask · applyCEPMask · applyNumberMask</code><span>máscaras
                                 DOM</span></div>
+                        <div><code>applyResolutionMask · applyAspectRatioMask</code><span>máscaras de mídia</span>
+                        </div>
                         <div><code>searchViaCEP · getLocation · watchLocation</code><span>integrações</span></div>
                         <div><code>isValid · startMasks · startValidation</code><span>formulários</span></div>
                         <div><code>draft · undraft · isDraft</code><span>modo rascunho</span></div>

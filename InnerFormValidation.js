@@ -653,6 +653,115 @@
     };
 
     /**
+     * Parses a resolution string in the format "WIDTHxHEIGHT" (e.g. "1024x768").
+     * Accepts any number of digits on each side (no fixed length) and both
+     * lowercase/uppercase "x" (also the "×" sign). Optional spaces around
+     * the separator are ignored.
+     * @function parseResolution
+     * @memberof InnerFormValidation
+     * @param {string} value - The resolution string to parse
+     * @returns {{width:number,height:number,orientation:string}|null} Parsed dimensions with orientation ("landscape", "portrait" or "square"), or null if invalid
+     */
+    InnerForm.parseResolution = function (value) {
+        value = InnerForm.normalizeValue(value).trim().replace(/×/g, "x").replace(/X/g, "x");
+        var match = /^(\d+)\s*x\s*(\d+)$/.exec(value);
+        if (!match) return null;
+        var width = parseInt(match[1], 10);
+        var height = parseInt(match[2], 10);
+        if (!isFinite(width) || !isFinite(height) || width <= 0 || height <= 0) return null;
+        return {
+            width: width,
+            height: height,
+            orientation: width > height ? "landscape" : (height > width ? "portrait" : "square")
+        };
+    };
+
+    /**
+     * Validates a resolution string in the format "WIDTHxHEIGHT" (e.g. "1024x768").
+     * There is no digit limit on either side. When the field carries the
+     * auxiliary class .landscape, width must be greater than height; with
+     * .portrait, height must be greater than width (square is invalid in both).
+     * @function validateResolution
+     * @memberof InnerFormValidation
+     * @param {string} value - The resolution string to validate
+     * @param {*} [element] - Optional field/selector used to detect .landscape/.portrait
+     * @returns {boolean} True if the resolution is valid, false otherwise
+     */
+    InnerForm.validateResolution = function (value, element) {
+        var parsed = InnerForm.parseResolution(value);
+        if (!parsed) return false;
+        var needLandscape = false;
+        var needPortrait = false;
+        if (element !== undefined && element !== null) {
+            try {
+                needLandscape = InnerForm(element).is(".landscape");
+                needPortrait = InnerForm(element).is(".portrait");
+            } catch (e) {
+                needLandscape = false;
+                needPortrait = false;
+            }
+        }
+        if (needLandscape && needPortrait) return true;
+        if (needLandscape) return parsed.width > parsed.height;
+        if (needPortrait) return parsed.height > parsed.width;
+        return true;
+    };
+
+    /**
+     * Parses an aspect ratio string in the format "W:H" (e.g. "16:9").
+     * Accepts any number of digits on each side (no fixed length).
+     * Optional spaces around the separator are ignored.
+     * @function parseAspectRatio
+     * @memberof InnerFormValidation
+     * @param {string} value - The aspect ratio string to parse
+     * @returns {{width:number,height:number,orientation:string}|null} Parsed ratio with orientation ("landscape", "portrait" or "square"), or null if invalid
+     */
+    InnerForm.parseAspectRatio = function (value) {
+        value = InnerForm.normalizeValue(value).trim();
+        var match = /^(\d+)\s*:\s*(\d+)$/.exec(value);
+        if (!match) return null;
+        var width = parseInt(match[1], 10);
+        var height = parseInt(match[2], 10);
+        if (!isFinite(width) || !isFinite(height) || width <= 0 || height <= 0) return null;
+        return {
+            width: width,
+            height: height,
+            orientation: width > height ? "landscape" : (height > width ? "portrait" : "square")
+        };
+    };
+
+    /**
+     * Validates an aspect ratio string in the format "W:H" (e.g. "16:9").
+     * There is no digit limit on either side. When the field carries the
+     * auxiliary class .landscape, width must be greater than height; with
+     * .portrait, height must be greater than width (square is invalid in both).
+     * @function validateAspectRatio
+     * @memberof InnerFormValidation
+     * @param {string} value - The aspect ratio string to validate
+     * @param {*} [element] - Optional field/selector used to detect .landscape/.portrait
+     * @returns {boolean} True if the aspect ratio is valid, false otherwise
+     */
+    InnerForm.validateAspectRatio = function (value, element) {
+        var parsed = InnerForm.parseAspectRatio(value);
+        if (!parsed) return false;
+        var needLandscape = false;
+        var needPortrait = false;
+        if (element !== undefined && element !== null) {
+            try {
+                needLandscape = InnerForm(element).is(".landscape");
+                needPortrait = InnerForm(element).is(".portrait");
+            } catch (e) {
+                needLandscape = false;
+                needPortrait = false;
+            }
+        }
+        if (needLandscape && needPortrait) return true;
+        if (needLandscape) return parsed.width > parsed.height;
+        if (needPortrait) return parsed.height > parsed.width;
+        return true;
+    };
+
+    /**
      * Validates that a value contains at least one of the specified characters.
      * @function validateAnyChar
      * @memberof InnerFormValidation
@@ -1022,6 +1131,44 @@
             }
         }
 
+        input.value = text;
+    };
+
+    /**
+     * Applies a resolution mask in the format WIDTHxHEIGHT (e.g. "1024x768").
+     * Keeps only digits and a single "x" separator (uppercase X is normalized
+     * to lowercase). There is no digit limit on either side.
+     * @function applyResolutionMask
+     * @memberof InnerFormValidation
+     * @param {HTMLInputElement} [input] - The input element to apply the mask to
+     */
+    InnerForm.applyResolutionMask = function (input = new HTMLInputElement()) {
+        var text = input.value || "";
+        text = text.replace(/[^0-9xX×]/g, "").replace(/X/g, "x").replace(/×/g, "x");
+        text = text.replace(/^x+/, "");
+        var sep = text.indexOf("x");
+        if (sep !== -1) {
+            text = text.substring(0, sep + 1) + text.substring(sep + 1).replace(/x/g, "");
+        }
+        input.value = text;
+    };
+
+    /**
+     * Applies an aspect ratio mask in the format W:H (e.g. "16:9").
+     * Keeps only digits and a single ":" separator. There is no digit
+     * limit on either side.
+     * @function applyAspectRatioMask
+     * @memberof InnerFormValidation
+     * @param {HTMLInputElement} [input] - The input element to apply the mask to
+     */
+    InnerForm.applyAspectRatioMask = function (input = new HTMLInputElement()) {
+        var text = input.value || "";
+        text = text.replace(/[^0-9:]/g, "");
+        text = text.replace(/^:+/, "");
+        var sep = text.indexOf(":");
+        if (sep !== -1) {
+            text = text.substring(0, sep + 1) + text.substring(sep + 1).replace(/:/g, "");
+        }
         input.value = text;
     };
 
@@ -2922,6 +3069,63 @@
                             var idade = InnerForm.getAge(value);
                             results.push(idade == parseInt(valids[i + 1]));
                             break;
+                        case "resolution":
+                        case "resolucao":
+                        case "res":
+                            if (InnerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+                            var needLandscapeRes = InnerForm(this).is(".landscape");
+                            var needPortraitRes = InnerForm(this).is(".portrait");
+                            var parsedRes = InnerForm.parseResolution(value);
+                            if (!parsedRes) {
+                                results.push(false);
+                                break;
+                            }
+                            if (needLandscapeRes && needPortraitRes) {
+                                results.push(true);
+                                break;
+                            }
+                            if (needLandscapeRes) {
+                                results.push(parsedRes.width > parsedRes.height);
+                                break;
+                            }
+                            if (needPortraitRes) {
+                                results.push(parsedRes.height > parsedRes.width);
+                                break;
+                            }
+                            results.push(true);
+                            break;
+                        case "aspectratio":
+                        case "aspect-ratio":
+                        case "aspect":
+                        case "ratio":
+                            if (InnerForm.isBlank(value)) {
+                                results.push(true);
+                                break;
+                            }
+                            var needLandscapeRatio = InnerForm(this).is(".landscape");
+                            var needPortraitRatio = InnerForm(this).is(".portrait");
+                            var parsedRatio = InnerForm.parseAspectRatio(value);
+                            if (!parsedRatio) {
+                                results.push(false);
+                                break;
+                            }
+                            if (needLandscapeRatio && needPortraitRatio) {
+                                results.push(true);
+                                break;
+                            }
+                            if (needLandscapeRatio) {
+                                results.push(parsedRatio.width > parsedRatio.height);
+                                break;
+                            }
+                            if (needPortraitRatio) {
+                                results.push(parsedRatio.height > parsedRatio.width);
+                                break;
+                            }
+                            results.push(true);
+                            break;
                         case "latitude":
                         case "lat":
                             if (InnerForm.isBlank(value)) {
@@ -3194,7 +3398,9 @@
             [".mask.uuid", "uuidMask"],
             [".mask.oab", "oabMask"],
             [".mask.latitude, .mask.lat", "latitudeMask"],
-            [".mask.longitude, .mask.long, .mask.lng", "longitudeMask"]
+            [".mask.longitude, .mask.long, .mask.lng", "longitudeMask"],
+            [".mask.resolution, .mask.resolucao, .mask.res", "resolutionMask"],
+            [".mask.aspectratio, .mask.aspect-ratio, .mask.aspect, .mask.ratio", "aspectRatioMask"]
         ];
         for (var i = 0; i < masks.length; i++) {
             var found = findElements(elements, masks[i][0]);
@@ -3599,6 +3805,26 @@
             InnerForm.applyLongitudeMask(this);
         });
         InnerForm.log("InnerFormValidation:", "LongitudeMask started", this);
+        return this;
+    }
+
+    /** Applies the resolution mask (WIDTHxHEIGHT) to the current collection. @returns {Object} Chainable collection */
+    InnerForm.fn.resolutionMask = function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
+            InnerForm.applyResolutionMask(this);
+        });
+        InnerForm.log("InnerFormValidation:", "ResolutionMask started", this);
+        return this;
+    }
+
+    /** Applies the aspect ratio mask (W:H) to the current collection. @returns {Object} Chainable collection */
+    InnerForm.fn.aspectRatioMask = function () {
+        var elements = getElements(this);
+        onElements(elements, "input", function () {
+            InnerForm.applyAspectRatioMask(this);
+        });
+        InnerForm.log("InnerFormValidation:", "AspectRatioMask started", this);
         return this;
     }
 
